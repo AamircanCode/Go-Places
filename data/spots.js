@@ -79,21 +79,24 @@ window.GO_PLACES = {
     },
     {
       id: "hinterbruehl",
-      name: "Ducks at Hinterbrühler See",
+      name: "Ducks at Hinterbrühl",
       emoji: "🦆",
-      lat: 48.0905, lng: 11.5350, // VERIFY: approximate position
+      lat: 48.08321, lng: 11.54089, // from the photos' GPS data, at the statue
       themes: ["side-quests", "sunsets"],
       cost: "Free",
       when: "Late afternoon to sunset",
-      summary: "A small, quiet lake near the Isar with ducks and swans, good for picnics, walks and sunsets. A statue overlooks the water.",
-      history: "Hinterbrühl lies in Thalkirchen, in the south of Munich, on the green belt along the Isar. Few tourists know it, which is exactly why locals like it: it feels like a village pond twenty minutes from the city centre.",
+      summary: "A quiet stretch of water near the Isar with ducks and swans, an old arched bridge and a bronze raftsman looking out over it. Great for picnics, walks and sunsets.",
+      history: "Hinterbrühl lies in Thalkirchen, in the south of Munich, on the green belt along the Isar. For centuries, rafts carried timber, goods and people down the Isar to Munich, and Thalkirchen is still where the summer party rafts from Wolfratshausen land. The bronze figure with an axe on his shoulder looks like one of those raftsmen (Flößer).", // VERIFY: the statue's official name and sculptor
       funFacts: [
-        "Look for the statue overlooking the lake. Can you find it on your first try?", // VERIFY: add the statue's name and story
-        "It sits close to the Isar flood meadows, one of Munich's favourite places for walks and cycling.",
+        "The statue stands with his back to you, looking down the water towards the bridge, so the best photo is from behind him.",
+        "Isar raftsmen carried axes to cut and fix the logs their rafts were built from.",
         "Ducks, coots and swans live here all year round."
       ],
-      tip: "Combine it with a walk along the Isar towards Thalkirchen. Please don't feed the ducks bread.",
-      photos: []
+      tip: "Come about an hour before sunset when the water is still and the bridge reflects perfectly. Please don't feed the ducks bread.",
+      photos: [
+        { url: "images/hinterbruehl-1.jpg", credit: "Photo: Go Places community" },
+        { url: "images/hinterbruehl-2.jpg", credit: "Photo: Go Places community" }
+      ]
     },
     {
       id: "frauenkirche",

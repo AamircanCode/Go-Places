@@ -123,13 +123,13 @@ button { font: inherit; cursor: pointer; }
 
 /* Spot detail */
 .photo {
-  margin: 0 -16px 12px; height: 200px;
+  margin: 0 -16px 12px; height: 240px;
   background: linear-gradient(135deg, #0f766e, #14b8a6 60%, #fbbf24);
   display: flex; align-items: center; justify-content: center;
   font-size: 72px; position: relative; overflow: hidden;
   border-radius: 18px 18px 0 0;
 }
-.photo img { width: 100%; height: 100%; object-fit: cover; }
+.photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 40%; }
 .photo .credit {
   position: absolute; right: 8px; bottom: 6px;
   font-size: 11px; color: #fff; text-shadow: 0 1px 2px #000;
