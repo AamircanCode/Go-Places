@@ -15,5 +15,5 @@
  */
 window.GO_PLACES_CONFIG = {
   supabaseUrl: "",
-  supabaseKey: ""
+  supabaseKey: "sb_publishable_ZETvdGJviqG-XXTCbcgkSw_N70gVw8R"
 };
