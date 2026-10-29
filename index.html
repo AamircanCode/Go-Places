@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="description" content="Explore Munich for free: iconic spots, sunsets and side quests on one map.">
+  <title>Go Places · Munich</title>
+  <link rel="stylesheet" href="vendor/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">📍</span>
+      <div>
+        <h1>Go Places</h1>
+        <p id="city-label">Munich, for free</p>
+      </div>
+    </div>
+    <div class="explored" title="Spots you've marked as explored">
+      <span id="explored-count">0</span>/<span id="total-count">0</span> explored
+    </div>
+  </header>
+
+  <nav class="themes" id="themes" aria-label="Themes"></nav>
+
+  <main id="map" aria-label="Map of spots"></main>
+
+  <div class="map-buttons">
+    <button id="locate-btn" class="fab" aria-label="Show my location" title="Show my location">◎</button>
+    <button id="list-btn" class="fab" aria-label="Show list of spots" title="List">☰</button>
+  </div>
+
+  <section class="sheet" id="sheet" aria-hidden="true">
+    <button class="sheet-close" id="sheet-close" aria-label="Close">✕</button>
+    <div class="sheet-body" id="sheet-body"></div>
+  </section>
+
+  <script src="vendor/leaflet.js"></script>
+  <script src="data/spots.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
