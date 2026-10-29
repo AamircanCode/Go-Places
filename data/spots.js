@@ -36,7 +36,8 @@ window.GO_PLACES = {
     { id: "churches", name: "Oldest churches", emoji: "⛪", description: "Centuries of history, mostly free to walk into." },
     { id: "architecture", name: "Architecture in Munich", emoji: "🏛️", description: "From Gothic towers to 'Athens on the Isar'." },
     { id: "bavarian", name: "The Bavarian experience", emoji: "🥨", description: "Beer gardens, markets and local traditions." },
-    { id: "side-quests", name: "Side quests", emoji: "🦆", description: "Lesser-known and random things worth finding." }
+    { id: "side-quests", name: "Side quests", emoji: "🦆", description: "Lesser-known and random things worth finding." },
+    { id: "outdoors", name: "Green & active", emoji: "🌲", description: "Forests, fields and paths for running, cycling and riding." }
   ],
 
   spots: [
@@ -99,14 +100,14 @@ window.GO_PLACES = {
     },
     {
       id: "raftsman-statue",
-      name: "Raftsman statue at Hinterbrühl",
+      name: "Isarflößer statue at Hinterbrühl",
       emoji: "🪓",
       lat: 48.08321, lng: 11.54089, // from the photos' GPS data, at the statue
       themes: ["side-quests", "sunsets"],
       cost: "Free",
       when: "About an hour before sunset",
       summary: "A bronze raftsman with an axe on his shoulder, looking down the water towards an old arched bridge.",
-      history: "For centuries, rafts carried timber, goods and people down the Isar to Munich, and Thalkirchen is still where the summer party rafts from Wolfratshausen land. The bronze figure looks like one of those raftsmen (Flößer).", // VERIFY: the statue's official name and sculptor
+      history: "The statue is called 'Der Isarflößer' (the Isar raftsman). For centuries, rafts carried timber, goods and people down the Isar to Munich. The canal here, the Floßkanal, was built at the end of the 19th century so rafts could reach the Zentrallände landing in Thalkirchen, which is still where the summer party rafts from Wolfratshausen arrive.", // VERIFY: sculptor
       funFacts: [
         "He stands with his back to you, so the best photo is from behind him, with the bridge in the frame.",
         "Isar raftsmen carried axes to cut and fix the logs their rafts were built from."
@@ -275,18 +276,44 @@ window.GO_PLACES = {
       name: "Sunset over the open fields",
       emoji: "🌾",
       lat: 48.07546, lng: 11.50611, // from the photo's GPS data (accurate to about 11 m)
-      themes: ["sunsets", "side-quests"],
+      themes: ["sunsets", "side-quests", "outdoors"],
       cost: "Free",
       when: "Sunset; early summer when the wheat is green and gold",
-      summary: "One of the coolest sunset spots in the city: an open field on the south-western edge of Munich where the sun drops behind the treeline.",
+      summary: "One of the coolest sunset spots in the city: an open field between Forstenried and Forstenrieder Park, on the south-western edge of Munich, where the sun drops behind the treeline.",
       history: "A local tip rather than a landmark. Fields like this one are what is left of the farmland that surrounded Munich before the city grew outwards.",
       funFacts: [
         "The photo was taken here on 1 June at 20:40, looking north-west into the sunset.",
-        "No skyline, no crowds: just sky, wheat and birds."
+        "No skyline, no crowds: just sky, wheat and birds.",
+        "Forstenrieder Park starts about 800 m to the south, so you can make it a forest walk followed by sunset."
       ],
       tip: "Stay on the paths along the edge of the field so you don't trample the crops.",
       photos: [
         { url: "images/sunset-field-1.jpg", credit: "Photo: Go Places community" }
+      ]
+    },
+    {
+      id: "forstenrieder-park",
+      name: "Forstenrieder Park",
+      emoji: "🌲",
+      lat: 48.06810, lng: 11.50270, // from the photos' GPS data, at the northern entrance
+      themes: ["outdoors", "side-quests"],
+      cost: "Free",
+      when: "All year; early mornings for wildlife and quiet paths",
+      summary: "A huge forest on Munich's south-western edge, with over 43 km of paths for running, cycling and horse riding, and red deer, fallow deer and wild boar living inside.",
+      history: "For centuries this was a royal hunting forest of the Wittelsbach rulers. A hunting lodge was built here in 1734, and King Ludwig III shot his last stag here on 7 October 1918, only weeks before the revolution ended the Bavarian monarchy. Today it is open to everyone, for free.",
+      funFacts: [
+        "A Roman road, the Via Julia between Augsburg and Salzburg, runs straight through the forest.",
+        "Around 75 prehistoric burial mounds are hidden among the trees.",
+        "The 'Ludwigseichen' are oaks planted in 1858 in the shape of an L and an M, for Kings Ludwig I and Max II.",
+        "In the fenced Wildpark you can watch deer from observation points, and in winter there are feeding sessions.",
+        "With enough snow, people go cross-country skiing here."
+      ],
+      tip: "Horse riders have their own marked paths, so runners and cyclists should stick to the main tracks. Feeding the animals is not allowed.",
+      photos: [
+        { url: "images/forstenrieder-park-1.jpg", credit: "Photo: Go Places community" },
+        { url: "images/forstenrieder-park-2.jpg", credit: "Photo: Go Places community" },
+        { url: "images/forstenrieder-park-3.jpg", credit: "Photo: Go Places community" },
+        { url: "images/forstenrieder-park-4.jpg", credit: "Photo: Go Places community" }
       ]
     }
   ]
