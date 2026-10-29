@@ -247,6 +247,25 @@ window.GO_PLACES = {
         "The tent-like roof of the stadium was revolutionary in 1972."
       ],
       photos: []
+    },
+    {
+      id: "field-sunset",
+      name: "Sunset over the open fields",
+      emoji: "🌾",
+      lat: 48.07546, lng: 11.50611, // from the photo's GPS data (accurate to about 11 m)
+      themes: ["sunsets", "side-quests"],
+      cost: "Free",
+      when: "Sunset; early summer when the wheat is green and gold",
+      summary: "One of the coolest sunset spots in the city: an open field on the south-western edge of Munich where the sun drops behind the treeline.",
+      history: "A local tip rather than a landmark. Fields like this one are what is left of the farmland that surrounded Munich before the city grew outwards.",
+      funFacts: [
+        "The photo was taken here on 1 June at 20:40, looking north-west into the sunset.",
+        "No skyline, no crowds: just sky, wheat and birds."
+      ],
+      tip: "Stay on the paths along the edge of the field so you don't trample the crops.",
+      photos: [
+        { url: "images/sunset-field-1.jpg", credit: "Photo: Go Places community" }
+      ]
     }
   ]
 };
