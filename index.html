@@ -18,8 +18,11 @@
         <p id="city-label">Munich, for free</p>
       </div>
     </div>
-    <div class="explored" title="Spots you've marked as explored">
-      <span id="explored-count">0</span>/<span id="total-count">0</span> explored
+    <div class="topbar-right">
+      <div class="explored" title="Spots you've marked as explored">
+        <span id="explored-count">0</span>/<span id="total-count">0</span><span class="explored-word"> explored</span>
+      </div>
+      <button id="account-btn" class="account-btn" hidden>Sign in</button>
     </div>
   </header>
 
@@ -38,7 +41,10 @@
   </section>
 
   <script src="vendor/leaflet.js"></script>
+  <script src="vendor/supabase.js"></script>
+  <script src="config.js"></script>
   <script src="data/spots.js"></script>
+  <script src="account.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
