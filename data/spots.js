@@ -81,18 +81,37 @@ window.GO_PLACES = {
       id: "hinterbruehl",
       name: "Ducks at Hinterbrühl",
       emoji: "🦆",
+      lat: 48.08757, lng: 11.54471, // from the photo's GPS data, at the duck-spotting spot
+      themes: ["side-quests", "sunsets"],
+      cost: "Free",
+      when: "Late afternoon to sunset, all year",
+      summary: "A calm canal by the Isar where swans, mallards and even colourful mandarin ducks paddle right up to the path. Great for picnics, walks and sunsets.",
+      history: "Hinterbrühl lies in Thalkirchen, in the south of Munich, on the green belt along the Isar. Few tourists know it, which is exactly why locals like it: it feels like a village pond twenty minutes from the city centre.",
+      funFacts: [
+        "Look out for mandarin ducks: the males have orange 'sails' on their backs and look almost painted.",
+        "Mute swans, mallards and coots live here all year round.",
+        "A few hundred metres south, a bronze raftsman statue looks out over the water. Make it your next stop."
+      ],
+      tip: "Sit on the rocks by the water and wait: the birds come to you. Please don't feed them bread.",
+      photos: [
+        { url: "images/hinterbruehl-ducks.jpg", credit: "Photo: Go Places community" }
+      ]
+    },
+    {
+      id: "raftsman-statue",
+      name: "Raftsman statue at Hinterbrühl",
+      emoji: "🪓",
       lat: 48.08321, lng: 11.54089, // from the photos' GPS data, at the statue
       themes: ["side-quests", "sunsets"],
       cost: "Free",
-      when: "Late afternoon to sunset",
-      summary: "A quiet stretch of water near the Isar with ducks and swans, an old arched bridge and a bronze raftsman looking out over it. Great for picnics, walks and sunsets.",
-      history: "Hinterbrühl lies in Thalkirchen, in the south of Munich, on the green belt along the Isar. For centuries, rafts carried timber, goods and people down the Isar to Munich, and Thalkirchen is still where the summer party rafts from Wolfratshausen land. The bronze figure with an axe on his shoulder looks like one of those raftsmen (Flößer).", // VERIFY: the statue's official name and sculptor
+      when: "About an hour before sunset",
+      summary: "A bronze raftsman with an axe on his shoulder, looking down the water towards an old arched bridge.",
+      history: "For centuries, rafts carried timber, goods and people down the Isar to Munich, and Thalkirchen is still where the summer party rafts from Wolfratshausen land. The bronze figure looks like one of those raftsmen (Flößer).", // VERIFY: the statue's official name and sculptor
       funFacts: [
-        "The statue stands with his back to you, looking down the water towards the bridge, so the best photo is from behind him.",
-        "Isar raftsmen carried axes to cut and fix the logs their rafts were built from.",
-        "Ducks, coots and swans live here all year round."
+        "He stands with his back to you, so the best photo is from behind him, with the bridge in the frame.",
+        "Isar raftsmen carried axes to cut and fix the logs their rafts were built from."
       ],
-      tip: "Come about an hour before sunset when the water is still and the bridge reflects perfectly. Please don't feed the ducks bread.",
+      tip: "Come when the water is still and the bridge reflects perfectly. The ducks are a short walk north.",
       photos: [
         { url: "images/hinterbruehl-1.jpg", credit: "Photo: Go Places community" },
         { url: "images/hinterbruehl-2.jpg", credit: "Photo: Go Places community" }
