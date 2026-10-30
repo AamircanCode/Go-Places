@@ -419,6 +419,7 @@
   }
 
   function openFeed() {
+    if (!ready()) return notSetUp();
     if (!ACCT.user) { app.openSignIn("Sign in to see what the explorers you follow are discovering."); return; }
     show(openFeed, null, back() + '<h2 class="list-title">📰 Explorer feed</h2><p class="list-desc loading">Loading…</p>', "feed");
     var ids;
@@ -484,7 +485,7 @@
   }
 
   function openExplorers() {
-    if (!ready()) return false;
+    if (!ready()) { notSetUp(); return true; }
     show(openExplorers, null, back() + '<h2 class="list-title">👥 Discover explorers</h2><p class="list-desc loading">Loading…</p>', "explorers");
     loadExplorers().then(function (list) {
       if (!isCurrent(openExplorers)) return;
@@ -572,7 +573,7 @@
 
   function openPrivacy() {
     if (!ACCT.user || !ACCT.profile) { app.openSignIn(); return; }
-    if (!ready()) return;
+    if (!ready()) return notSetUp();
     var p = ACCT.profile;
     show(openPrivacy, null,
       '<button class="dz-back" data-s="profile">← Your profile</button>' +
@@ -783,8 +784,22 @@
     if (current && app.isOpen()) current.fn(current.arg);
   }
 
+  // Shown when the database doesn't have the social tables yet.
+  function notSetUp() {
+    show(notSetUp, null,
+      '<h2 class="list-title">👥 Explorers aren\'t switched on yet</h2>' +
+      '<p class="list-desc">The feed, Discover explorers, follows, ratings and privacy settings need the latest database setup. ' +
+      "Whoever runs this site: open Supabase → SQL Editor, paste the whole <b>supabase/schema.sql</b> and click Run, then reload this page.</p>");
+  }
+
+  // e.g. 'column profiles.profile_visibility does not exist'
+  function missingSchema(err) {
+    return /does not exist|schema cache|PGRST20[0-9]|42703|42P01/.test(((err && (err.message + " " + err.code)) || ""));
+  }
+
   function showError(err) {
     console.error(err);
+    if (missingSchema(err)) { unavailable = true; notSetUp(); return; }
     app.show('<h2 class="list-title">Couldn\'t load that</h2><p class="list-desc">' + esc((err && err.message) || "Something went wrong.") + "</p>");
   }
 
@@ -837,7 +852,7 @@
     fab.title = "Discover explorers";
     fab.setAttribute("aria-label", "Discover explorers");
     fab.textContent = "👥";
-    fab.addEventListener("click", function () { if (!openExplorers()) fab.remove(); });
+    fab.addEventListener("click", openExplorers);
     var buttons = document.querySelector(".map-buttons");
     if (buttons) buttons.insertBefore(fab, buttons.lastElementChild);
   }
