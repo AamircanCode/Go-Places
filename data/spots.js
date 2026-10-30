@@ -315,6 +315,57 @@ window.GO_PLACES = {
         { url: "images/forstenrieder-park-3.jpg", credit: "Photo: Go Places community" },
         { url: "images/forstenrieder-park-4.jpg", credit: "Photo: Go Places community" }
       ]
+    },
+    {
+      id: "westpark",
+      name: "Westpark lake",
+      emoji: "🪷",
+      lat: 48.12150, lng: 11.51380, // approximate, by the lake in the western half. VERIFY on the map
+      themes: ["side-quests", "outdoors"],
+      cost: "Free",
+      when: "Spring to autumn; summer evenings for the open-air stage",
+      summary: "A relaxed park in the south-west with a lake full of ducks, a rose garden and little gardens from Japan, China, Thailand and Nepal.",
+      history: "Westpark was laid out for the International Garden Exhibition (IGA) in 1983 on what used to be open land between Sendling and Laim. The Asian gardens and pavilions were built for the exhibition and stayed.", // VERIFY
+      funFacts: [
+        "In summer, films and concerts play on a stage by the lake, and the audience sits on the grass across the water.",
+        "Look for the golden Thai pavilion (sala) and the Nepalese pagoda between the trees."
+      ],
+      tip: "Walk the path around the lake slowly: mallards and coots hang out by the reeds near the stage.",
+      photos: []
+    },
+    {
+      id: "froettmaninger-berg",
+      name: "Fröttmaninger Berg",
+      emoji: "🌬️",
+      lat: 48.21150, lng: 11.61650, // approximate, at the top of the hill. VERIFY on the map
+      themes: ["sunsets", "side-quests", "outdoors"],
+      cost: "Free",
+      when: "Sunset, or clear days for the Alps",
+      summary: "A grassy hill in the north of Munich with a wind turbine on top, wide views over the city and the Allianz Arena glowing right next to it.",
+      history: "The hill is an old rubbish dump that was sealed, covered with soil and turned into a park. On its slope sits a strange sight: the top of a church sticking out of the ground. It is an artwork called 'Versunkenes Dorf' (Sunken Village) by Timm Ulrichs, a copy of the little Heilig-Kreuz church of Fröttmaning nearby, a reminder of the village that disappeared under the city's growth.", // VERIFY
+      funFacts: [
+        "On match nights the Allianz Arena next door lights up red, blue or white.",
+        "The real Heilig-Kreuz church at the foot of the hill is one of the oldest churches in Munich."
+      ],
+      tip: "The U6 to Fröttmaning stops right by the hill. Bring a jacket, it is windy at the top.",
+      photos: []
+    },
+    {
+      id: "nymphenburg-canal",
+      name: "Nymphenburg Palace canal",
+      emoji: "🦢",
+      lat: 48.15850, lng: 11.51100, // approximate, on the canal east of the palace. VERIFY on the map
+      themes: ["side-quests", "architecture"],
+      cost: "Free (the park is free, the palace costs extra)",
+      when: "All year; late afternoon light on the palace is the best",
+      summary: "A long, straight canal leading up to Nymphenburg Palace, with swans gliding past the baroque front and ducks along the banks.",
+      history: "Nymphenburg Palace was the summer home of Bavaria's rulers. Work started in 1664, after Elector Ferdinand Maria and his wife Henriette Adelaide celebrated the birth of their heir, Max Emanuel. The canal was dug to link the palace to the city in grand style.", // VERIFY
+      funFacts: [
+        "Swans have lived on the palace waters for centuries.",
+        "In very cold winters the canal freezes and people go ice skating and curling on it." // VERIFY: only when officially opened
+      ],
+      tip: "Walk along the canal towards the palace so the whole front slowly fills your view.",
+      photos: []
     }
   ]
 };
