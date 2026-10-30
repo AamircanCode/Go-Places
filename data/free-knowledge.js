@@ -220,7 +220,7 @@
       knowledge: ["public-bookshelves", "reading-spaces", "history"]
     }),
     // The two below come from community photos; the pins are the photos' GPS
-    // positions. The names are matched from AWM's list: VERIFY.
+    // positions. Names confirmed by the photographer.
     bookshelf({
       id: "bookshelf-herterichstrasse",
       name: "Bookshelf at Herterichstraße",
