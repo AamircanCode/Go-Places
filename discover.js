@@ -232,10 +232,15 @@
     return '<button class="dz-locate" data-d="locate">📍 Sort by distance from me</button>';
   }
 
-  function banner(images, emoji, extraClass) {
-    var img = (images || [])[0];
+  function banner(images, emoji, extraClass, title) {
+    images = images || [];
+    var img = images[0];
+    var zoom = img && window.GoLightbox ? window.GoLightbox.attrs(images.map(function (src) {
+      return { src: src, caption: title || "" };
+    }), 0) : "";
     return '<div class="photo dz-banner' + (extraClass ? " " + extraClass : "") + '">' + esc(emoji || "✨") +
-      (img ? '<img src="' + esc(img) + '" alt="" onerror="this.remove()">' : "") + "</div>";
+      (img ? '<img src="' + esc(img) + '" alt=""' + zoom + ' onerror="this.remove()">' : "") +
+      (images.length > 1 ? '<span class="credit">📷 1 / ' + images.length + "</span>" : "") + "</div>";
   }
 
   function activityRow(a) {
@@ -403,7 +408,7 @@
     }
 
     show(openActivity, id,
-      banner(a.images, a.emoji) +
+      banner(a.images, a.emoji, "", a.title) +
       back() +
       '<h2 class="spot-title">' + esc(a.title) + "</h2>" +
       '<div class="tags">' + tags + "</div>" +
@@ -434,7 +439,7 @@
     var c = g.coordinates || {};
     var directions = "https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=" + c.lat + "," + c.lng;
     show(openGem, id,
-      banner(g.images, g.emoji || "💎", "gem-photo") +
+      banner(g.images, g.emoji || "💎", "gem-photo", g.title) +
       back("Hidden gems", "gems") +
       '<h2 class="spot-title">' + esc(g.title) + "</h2>" +
       '<div class="tags"><span class="tag gem-tag">💎 Hidden gem</span>' + (g.category || []).map(function (cat) {
