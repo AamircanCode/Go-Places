@@ -385,5 +385,20 @@ window.GO_PLACES_LAYER.activities = [
     "season": ["spring", "summer", "autumn", "winter"],
     "placeIds": ["glockenspiel", "frauenkirche", "alter-peter", "asamkirche", "viktualienmarkt", "koenigsplatz"],
     "images": []
+  },
+  {
+    "id": "watch-deer",
+    "title": "Watch the deer",
+    "emoji": "🦌",
+    "description": "Stand at the fence of the Hirschgarten enclosure and watch the fallow deer and mouflon graze. Feed them only with the food from the machines and follow the signs. Then sit down in the beer garden next door.",
+    "category": "Family",
+    "duration": "About 1 hour",
+    "durationMinutes": 60,
+    "cost": 0,
+    "moodTags": ["relax", "nature"],
+    "bestTime": "Afternoon",
+    "season": ["spring", "summer", "autumn", "winter"],
+    "placeIds": ["hirschgarten"],
+    "images": []
   }
 ];
