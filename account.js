@@ -191,7 +191,7 @@
     return sb.rpc("username_available", { name: name }).then(check);
   };
 
-  // Someone else's public profile (or your own). Wishlists are never included.
+  // Someone else's profile (or your own), as far as their privacy settings allow.
   acct.loadPublicProfile = function (username) {
     return sb.from("profiles").select("*").eq("username", username).maybeSingle().then(check).then(function (p) {
       if (!p) return null;
@@ -200,9 +200,14 @@
         sb.from("spot_photos").select("*").eq("user_id", p.id).order("created_at", { ascending: false }).then(check)
           .then(withUrls),
         sb.from("user_badges").select("badge_id, earned_at").eq("user_id", p.id).then(check)
-          .then(function (rows) { return keyed(rows, "badge_id", "earned_at"); }, function () { return {}; })
+          .then(function (rows) { return keyed(rows, "badge_id", "earned_at"); }, function () { return {}; }),
+        sb.from("activity_completions").select("activity_id, place_id, completed_at").eq("user_id", p.id).then(check)
+          .then(doneMap, function () { return {}; }),
+        // only returns rows when their privacy settings share the wishlist with you
+        sb.from("wishlist").select("spot_id, added_at").eq("user_id", p.id).then(check)
+          .then(function (rows) { return toMap(rows, "added_at"); }, function () { return {}; })
       ]).then(function (r) {
-        return { profile: p, visits: toMap(r[0], "visited_at"), photos: r[1], badges: r[2] };
+        return { profile: p, visits: toMap(r[0], "visited_at"), photos: r[1], badges: r[2], done: r[3], wishlist: r[4] };
       });
     });
   };
@@ -322,10 +327,10 @@
   // Re-draws the photo on a canvas and saves it as a new JPEG. The new file
   // has no EXIF data at all, so the GPS location, camera serial number and
   // original timestamp are gone before anything leaves the phone.
-  function cleanPhoto(file) {
+  function cleanPhoto(file, maxSide) {
     return decode(file).then(function (img) {
       var w = img.width, h = img.height;
-      var scale = Math.min(1, MAX_SIDE / Math.max(w, h));
+      var scale = Math.min(1, (maxSide || MAX_SIDE) / Math.max(w, h));
       var canvas = document.createElement("canvas");
       canvas.width = Math.round(w * scale);
       canvas.height = Math.round(h * scale);
@@ -429,6 +434,13 @@
       return sb.auth.signOut({ scope: "local" });
     });
   };
+
+  // For social.js, which adds follows, ratings and privacy settings on top.
+  acct.client = sb;
+  acct.check = check;
+  acct.cleanPhoto = cleanPhoto;
+  acct.withUrls = withUrls;
+  acct.emit = emit;
 
   window.GoAccount = acct;
 })();

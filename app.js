@@ -4,6 +4,8 @@
   var DATA = window.GO_PLACES;
   var ACCT = window.GoAccount || { enabled: false };
   var DISCOVER = window.GoDiscover; // the "What can I do?" layer, optional
+  var KNOWLEDGE = window.GoKnowledge; // the Free Knowledge category, optional
+  var SOCIAL = window.GoSocial; // follows, explorers, feed, ratings, privacy; optional
   var STORAGE_KEY = "goplaces.explored";
 
   var state = {
@@ -43,8 +45,10 @@
     return DATA.spots.filter(function (s) { return s.id === id; })[0];
   }
 
+  // Free Knowledge places are kept apart from sightseeing: they only show
+  // under their own chip.
   function visibleSpots() {
-    if (state.theme === "all") return DATA.spots;
+    if (state.theme === "all") return DATA.spots.filter(function (s) { return s.category !== "free-knowledge"; });
     return DATA.spots.filter(function (s) { return s.themes.indexOf(state.theme) !== -1; });
   }
 
@@ -118,7 +122,8 @@
     renderThemes();
     renderMarkers();
     fitToVisible();
-    if (state.theme !== "all") openList();
+    if (state.theme === "free-knowledge" && KNOWLEDGE) KNOWLEDGE.openHome();
+    else if (state.theme !== "all") openList();
   });
 
   // ---------- bottom sheet ----------
@@ -139,6 +144,8 @@
     state.view = null;
     stopSpeaking();
     if (DISCOVER) DISCOVER.onClose();
+    if (KNOWLEDGE) KNOWLEDGE.onClose();
+    if (SOCIAL) SOCIAL.onClose();
     if (location.hash) history.replaceState(null, "", location.pathname + location.search);
   }
 
@@ -170,7 +177,7 @@
     var tags = spot.themes.map(function (tid) {
       var t = themeById(tid);
       return t ? '<span class="tag">' + esc(t.emoji) + " " + esc(t.name) + "</span>" : "";
-    }).join("");
+    }).join("") + (KNOWLEDGE ? KNOWLEDGE.spotTags(spot) : "");
 
     var facts = (spot.funFacts || []).map(function (f) { return "<li>" + esc(f) + "</li>"; }).join("");
     var done = !!exploredMap()[id];
@@ -184,6 +191,7 @@
       '<div class="tags">' + tags + "</div>" +
       '<p class="meta"><b>Cost:</b> ' + esc(spot.cost) + "</p>" +
       (spot.when ? '<p class="meta"><b>When:</b> ' + esc(spot.when) + "</p>" : "") +
+      (KNOWLEDGE ? KNOWLEDGE.spotFacts(spot) : "") +
       (dist ? '<p class="meta"><b>Distance:</b> ' + esc(dist) + "</p>" : "") +
       '<div class="actions">' +
         '<a class="btn primary" target="_blank" rel="noopener" href="' + directions + '">🧭 Directions</a>' +
@@ -195,14 +203,17 @@
       "</div>" +
       myPhotosBlock(spot) +
       '<p class="summary">' + esc(spot.summary) + "</p>" +
+      (KNOWLEDGE ? KNOWLEDGE.spotSections(spot) : "") +
       (DISCOVER ? DISCOVER.spotSection(spot) : "") +
       (spot.history ? '<div class="spot-section"><h3>📜 History</h3><p>' + esc(spot.history) + "</p></div>" : "") +
       (facts ? '<div class="spot-section"><h3>💡 Fun facts</h3><ul>' + facts + "</ul></div>" : "") +
-      (spot.tip ? '<div class="tip">👉 ' + esc(spot.tip) + "</div>" : "")
+      (spot.tip ? '<div class="tip">👉 ' + esc(spot.tip) + "</div>" : "") +
+      (SOCIAL ? SOCIAL.ratingSection(spot) : "")
     );
 
     map.panTo([spot.lat, spot.lng]);
     wireSpotButtons(spot);
+    if (SOCIAL) SOCIAL.afterSpot(spot);
   }
 
   function wireSpotButtons(spot) {
@@ -379,7 +390,8 @@
     if (!ACCT.enabled) return;
     btn.hidden = false;
     if (ACCT.profile) {
-      btn.innerHTML = '<span class="avatar small">' + esc(ACCT.profile.avatar_emoji) + "</span>";
+      btn.innerHTML = SOCIAL ? SOCIAL.avatar(ACCT.profile, "small") : '<span class="avatar small">' + esc(ACCT.profile.avatar_emoji) + "</span>";
+      if (SOCIAL) SOCIAL.fillAvatars(btn);
       btn.setAttribute("aria-label", "Your profile");
       btn.title = "Your profile";
     } else {
@@ -521,7 +533,7 @@
   // ---------- profile ----------
   function profileHeader(p) {
     return '<div class="profile-head" style="--accent:' + esc(p.accent_color) + '">' +
-      '<span class="avatar">' + esc(p.avatar_emoji) + "</span>" +
+      (SOCIAL ? SOCIAL.avatar(p) : '<span class="avatar">' + esc(p.avatar_emoji) + "</span>") +
       '<div><h2 class="profile-name">' + esc(p.display_name || p.username) + "</h2>" +
       '<p class="profile-user">@' + esc(p.username) + (p.home_city ? " · " + esc(p.home_city) : "") + "</p></div>" +
     "</div>" +
@@ -558,7 +570,7 @@
     var wishIds = Object.keys(ACCT.wishlist);
     showSheet(
       profileHeader(p) +
-      '<p class="privacy-badge">' + (p.is_public
+      '<p class="privacy-badge">' + (SOCIAL && SOCIAL.ready() ? SOCIAL.privacyLine(p) : p.is_public
         ? '🌍 Public profile · <a href="#" id="copy-profile">copy link</a>'
         : "🔒 Private profile · only you can see this") + "</p>" +
       '<div class="stats">' +
@@ -568,6 +580,7 @@
       "</div>" +
       '<div class="actions"><button class="btn" data-go="edit">✏️ Edit profile</button>' +
         '<button class="btn" id="signout-btn">Sign out</button></div>' +
+      (SOCIAL ? SOCIAL.ownProfileSection() : "") +
       (DISCOVER ? DISCOVER.profileSection(null) : "") +
       '<div class="spot-section"><h3>📷 My photos</h3>' + photoGrid(ACCT.photos, "Open a spot and tap “Add photo” to post your first one.") + "</div>" +
       '<div class="spot-section"><h3>💚 Wishlist</h3>' + spotList(wishIds, "Tap “Wishlist” on any spot to save it for later.") + "</div>" +
@@ -575,6 +588,7 @@
     );
     wireLinks();
     wirePhotoGrid(ACCT.photos, true, openProfile);
+    if (SOCIAL) SOCIAL.fillAvatars(sheetBody);
     document.getElementById("signout-btn").addEventListener("click", function () {
       ACCT.signOut().catch(function (err) { alert(errText(err)); });
     });
@@ -590,10 +604,14 @@
   function openPublicProfile(username) {
     if (ACCT.profile && ACCT.profile.username === username) { openProfile(); return; }
     state.view = "public";
+    state.publicUser = username;
     showSheet('<p class="list-desc loading">Loading profile…</p>');
-    ACCT.loadPublicProfile(username).then(function (r) {
+    (SOCIAL ? SOCIAL.refreshFollows() : Promise.resolve()).then(function () {
+      return ACCT.loadPublicProfile(username);
+    }).then(function (r) {
       if (state.view !== "public") return;
       if (!r) {
+        if (SOCIAL && SOCIAL.ready()) { SOCIAL.openLocked(username); return; }
         showSheet('<h2 class="list-title">Profile not found</h2><p class="list-desc">This profile doesn\'t exist or is private.</p>');
         return;
       }
@@ -602,17 +620,25 @@
       showSheet(
         profileHeader(r.profile) +
         '<div class="stats">' +
-          stat(ids.filter(spotById).length + "/" + DATA.spots.length, "explored") +
-          stat(r.photos.length, r.photos.length === 1 ? "photo" : "photos") +
+          (hidden(r.profile, "visits_visibility", "") ? "" : stat(ids.filter(spotById).length + "/" + DATA.spots.length, "explored")) +
+          (hidden(r.profile, "photos_visibility", "") ? "" : stat(r.photos.length, r.photos.length === 1 ? "photo" : "photos")) +
         "</div>" +
+        (SOCIAL ? SOCIAL.publicProfileSection(r) : "") +
         (DISCOVER ? DISCOVER.profileSection(r.badges || {}) : "") +
-        '<div class="spot-section"><h3>📷 Photos</h3>' + photoGrid(r.photos, "No photos yet.") + "</div>" +
-        '<div class="spot-section"><h3>✅ Explored</h3>' + spotList(ids, "Nothing explored yet.", r.visits) + "</div>"
+        '<div class="spot-section"><h3>📷 Photos</h3>' + (hidden(r.profile, "photos_visibility", "photos") || photoGrid(r.photos, "No photos yet.")) + "</div>" +
+        '<div class="spot-section"><h3>✅ Explored</h3>' + (hidden(r.profile, "visits_visibility", "explored places") || spotList(ids, "Nothing explored yet.", r.visits)) + "</div>" +
+        (r.profile.wishlist_visibility && !hidden(r.profile, "wishlist_visibility", "wishlist") && r.profile.wishlist_visibility !== "only_me"
+          ? '<div class="spot-section"><h3>💚 Wishlist</h3>' + spotList(Object.keys(r.wishlist || {}), "Nothing on the wishlist yet.") + "</div>" : "")
       );
       wirePhotoGrid(r.photos, false, function () { openPublicProfile(username); });
+      if (SOCIAL) SOCIAL.afterPublicProfile(r);
     }).catch(function (err) {
       showSheet('<h2 class="list-title">Couldn\'t load profile</h2><p class="list-desc">' + esc(errText(err)) + "</p>");
     });
+  }
+
+  function hidden(p, setting, what) {
+    return SOCIAL && SOCIAL.ready() ? SOCIAL.hiddenNote(p, setting, what) : "";
   }
 
   function openEditProfile() {
@@ -633,8 +659,9 @@
         '<label>Username<input name="username" required pattern="[a-zA-Z0-9_]{3,20}" maxlength="20" autocapitalize="off" value="' + esc(p.username) + '"></label>' +
         '<label>Home city<input name="city" maxlength="40" value="' + esc(p.home_city || "") + '"></label>' +
         '<label>About you<textarea name="bio" maxlength="160" rows="3" placeholder="What do you love exploring?">' + esc(p.bio || "") + "</textarea></label>" +
+        (SOCIAL && SOCIAL.ready() ? SOCIAL.editFields(p) :
         '<label class="toggle"><input type="checkbox" name="public"' + (p.is_public ? " checked" : "") + '>' +
-          "<span><b>Public profile</b><br>Anyone with your link can see your name, explored spots and photos. Your wishlist and email always stay private.</span></label>" +
+          "<span><b>Public profile</b><br>Anyone with your link can see your name, explored spots and photos. Your wishlist and email always stay private.</span></label>") +
         '<p class="form-msg" role="alert"></p>' +
         '<div class="actions"><button class="btn primary" type="submit">Save</button><button class="btn" type="button" data-go="profile">Cancel</button></div>' +
       "</form>" +
@@ -649,15 +676,18 @@
       var check = username === p.username ? Promise.resolve(true) : ACCT.usernameAvailable(username);
       return check.then(function (ok) {
         if (!ok) throw new Error("That username is taken or not allowed.");
-        return ACCT.updateProfile({
+        var fields = {
           username: username,
           display_name: f.name.value.trim() || null,
           home_city: f.city.value.trim(),
           bio: f.bio.value.trim() || null,
           avatar_emoji: f.avatar.value || p.avatar_emoji,
-          accent_color: f.color.value || p.accent_color,
-          is_public: f.public.checked
-        });
+          accent_color: f.color.value || p.accent_color
+        };
+        // with the social settings, visibility lives on the Privacy screen
+        if (f.public) fields.is_public = f.public.checked;
+        if (SOCIAL && SOCIAL.ready()) Object.assign(fields, SOCIAL.readEditFields(form));
+        return ACCT.updateProfile(fields);
       }).then(openProfile);
     });
 
@@ -758,8 +788,11 @@
   function rerender() {
     if (state.view === "spot" && state.openSpotId) openSpot(state.openSpotId);
     else if (state.view === "profile") openProfile();
+    else if (state.view === "public" && state.publicUser) openPublicProfile(state.publicUser);
     else if (state.view === "list") openList();
     else if (state.view === "discover" && DISCOVER) DISCOVER.rerender();
+    else if (state.view === "knowledge" && KNOWLEDGE) KNOWLEDGE.rerender();
+    else if (state.view === "social" && SOCIAL) SOCIAL.rerender();
   }
 
   ACCT.on && ACCT.on(function (event) {
@@ -785,6 +818,8 @@
     } else if (event === "profile") {
       applyAccent();
       renderAccountBtn();
+    } else if (event === "follows") {
+      if (state.view === "profile") openProfile();
     } else if (event === "visits" || event === "wishlist" || event === "photos") {
       refreshExplored();
       if (state.view === "spot" || state.view === "profile") rerender();
@@ -807,6 +842,8 @@
     var hash = decodeURIComponent(location.hash.slice(1));
     if (hash && spotById(hash)) openSpot(hash);
     else if (DISCOVER && DISCOVER.route(hash)) { /* handled by the discovery layer */ }
+    else if (KNOWLEDGE && KNOWLEDGE.route(hash)) { /* handled by Free Knowledge */ }
+    else if (SOCIAL && SOCIAL.route(hash)) { /* handled by the social layer */ }
     else if (ACCT.enabled && hash === "me") { if (ACCT.user) openProfile(); else openSignIn(); }
     else if (ACCT.enabled && hash.charAt(0) === "@") openPublicProfile(hash.slice(1).toLowerCase());
   }
@@ -826,27 +863,39 @@
     refreshExplored();
   }
 
-  if (DISCOVER) DISCOVER.init({
-    map: map,
-    esc: esc,
-    spotById: spotById,
-    distanceKm: distanceKm,
-    formatDate: formatDate,
-    exploredMap: exploredMap,
-    markExplored: markExplored,
-    openSpot: openSpot,
-    openSignIn: openSignIn,
-    me: function () { return state.me; },
-    sheetBody: sheetBody,
-    show: function (html, hash) {
-      state.view = "discover";
-      state.openSpotId = null;
-      stopSpeaking();
-      history.replaceState(null, "", hash ? "#" + hash : location.pathname + location.search);
-      showSheet(html);
-    },
-    isOpen: function () { return state.view === "discover"; }
-  });
+  // The same helpers for each layer; `view` names its screens in state.view.
+  function layerApi(view) {
+    return {
+      map: map,
+      esc: esc,
+      spotById: spotById,
+      distanceKm: distanceKm,
+      formatDate: formatDate,
+      exploredMap: exploredMap,
+      markExplored: markExplored,
+      openSpot: openSpot,
+      openSignIn: openSignIn,
+      openProfile: openProfile,
+      openEditProfile: openEditProfile,
+      rerender: rerender,
+      close: closeSheet,
+      view: function () { return state.view; },
+      me: function () { return state.me; },
+      sheetBody: sheetBody,
+      show: function (html, hash) {
+        state.view = view;
+        state.openSpotId = null;
+        stopSpeaking();
+        history.replaceState(null, "", hash ? "#" + hash : location.pathname + location.search);
+        showSheet(html);
+      },
+      isOpen: function () { return state.view === view; }
+    };
+  }
+
+  if (DISCOVER) DISCOVER.init(layerApi("discover"));
+  if (KNOWLEDGE) KNOWLEDGE.init(layerApi("knowledge"));
+  if (SOCIAL) SOCIAL.init(layerApi("social"));
 
   // ---------- start ----------
   document.getElementById("city-label").textContent = DATA.city + ", for free";
