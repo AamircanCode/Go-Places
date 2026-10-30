@@ -366,6 +366,24 @@ window.GO_PLACES = {
       ],
       tip: "Walk along the canal towards the palace so the whole front slowly fills your view.",
       photos: []
+    },
+    {
+      id: "hirschgarten",
+      name: "Deer at the Hirschgarten",
+      emoji: "🦌",
+      lat: 48.14900, lng: 11.51350, // approximate, between the beer garden and the deer enclosure. VERIFY on the map
+      themes: ["side-quests", "bavarian", "outdoors"],
+      cost: "Free (deer feed from the machines costs a little)",
+      when: "All year; the beer garden is best on warm afternoons",
+      summary: "A big park south of Nymphenburg Palace with a fenced deer enclosure in the middle and Munich's largest beer garden right next to it.",
+      history: "The Königlicher Hirschgarten (Royal Deer Garden) started in 1780, when Elector Carl Theodor had a fenced game park laid out here and stocked it with around a hundred fallow and red deer. It opened to the public a few years later and quickly became a popular outing, with a hunters' lodge (Jägerhaus) that was the forerunner of today's beer garden.",
+      funFacts: [
+        "The enclosure is about two hectares and today holds fallow deer and mouflon (wild sheep).",
+        "The beer garden has about 8,000 seats, the most of any beer garden in Munich.",
+        "Kids get an elephant slide, a water playground and a climbing tower, and the hills are used for sledding in winter."
+      ],
+      tip: "Take any S-Bahn to Hirschgarten station, right at the south edge of the park; it is closer than Laim. If you want to feed the deer, use the feed from the machines by the fence and follow the signs on what they may eat.",
+      photos: []
     }
   ]
 };
