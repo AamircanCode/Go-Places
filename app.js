@@ -6,6 +6,7 @@
   var DISCOVER = window.GoDiscover; // the "What can I do?" layer, optional
   var KNOWLEDGE = window.GoKnowledge; // the Free Knowledge category, optional
   var SOCIAL = window.GoSocial; // follows, explorers, feed, ratings, privacy; optional
+  var LIGHTBOX = window.GoLightbox; // full-size photo viewer, optional
   var STORAGE_KEY = "goplaces.explored";
 
   var state = {
@@ -154,15 +155,23 @@
     if (!photos.length) {
       return '<div class="photo">' + esc(spot.emoji || "📍") + "</div>";
     }
-    var first = photos[0];
-    var html = '<div class="photo" id="main-photo"><img src="' + esc(first.url) + '" alt="' + esc(spot.name) +
-      '" onerror="this.remove()">' + (first.credit ? '<span class="credit">' + esc(first.credit) + "</span>" : "") + "</div>";
+    var html = '<div class="photo" id="main-photo">' + mainPhoto(spot, 0, ' onerror="this.remove()"') + "</div>";
     if (photos.length > 1) {
       html += '<div class="photo-strip">' + photos.map(function (p, i) {
         return '<img src="' + esc(p.url) + '" alt="" data-photo="' + i + '" onerror="this.remove()">';
       }).join("") + "</div>";
     }
     return html;
+  }
+
+  // The big photo on a spot page; tapping it opens the full-size viewer.
+  function mainPhoto(spot, i, extra) {
+    var p = spot.photos[i];
+    var zoom = LIGHTBOX ? LIGHTBOX.attrs(spot.photos.map(function (ph) {
+      return { src: ph.url, caption: [spot.name, ph.credit].filter(Boolean).join(" · ") };
+    }), i) : "";
+    return '<img src="' + esc(p.url) + '" alt="' + esc(spot.name) + '"' + zoom + (extra || "") + ">" +
+      (p.credit ? '<span class="credit">' + esc(p.credit) + "</span>" : "");
   }
 
   function openSpot(id) {
@@ -270,10 +279,7 @@
     if (strip) strip.addEventListener("click", function (e) {
       var i = e.target.getAttribute("data-photo");
       if (i == null) return;
-      var p = spot.photos[+i];
-      var main = document.getElementById("main-photo");
-      main.innerHTML = '<img src="' + esc(p.url) + '" alt="' + esc(spot.name) + '">' +
-        (p.credit ? '<span class="credit">' + esc(p.credit) + "</span>" : "");
+      document.getElementById("main-photo").innerHTML = mainPhoto(spot, +i);
     });
   }
 
@@ -764,7 +770,8 @@
     var spot = spotById(photo.spot_id);
     state.view = "photo";
     showSheet(
-      '<div class="photo-full"><img src="' + esc(photo.url) + '" alt="' + esc(spot ? spot.name : "") + '"></div>' +
+      '<div class="photo-full"><img src="' + esc(photo.url) + '" alt="' + esc(spot ? spot.name : "") + '"' +
+        (LIGHTBOX ? LIGHTBOX.attrs([{ src: photo.url, caption: photo.caption || (spot ? spot.name : "") }], 0) : "") + "></div>" +
       (photo.caption ? '<p class="summary">' + esc(photo.caption) + "</p>" : "") +
       '<p class="meta">' + (spot ? esc(spot.emoji + " " + spot.name) + " · " : "") + esc(formatDate(photo.created_at)) + "</p>" +
       '<div class="actions">' +

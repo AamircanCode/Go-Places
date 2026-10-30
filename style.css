@@ -424,3 +424,43 @@ a.list-item { text-decoration: none; }
 .rate-row .star { font-size: 22px; }
 .star.on { color: #f59e0b; }
 .rate-clear { border: none; background: none; color: var(--muted); font-size: 14px; }
+
+/* Full-size photo viewer (lightbox.js) */
+img[data-gallery] { cursor: zoom-in; }
+img[data-gallery]:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.lb-open, .lb-open body { overflow: hidden; }
+.lightbox {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0, 0, 0, 0.97); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  touch-action: none; overscroll-behavior: contain; user-select: none; -webkit-user-select: none;
+}
+.lightbox[hidden] { display: none; }
+.lb-stage { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.lb-img {
+  max-width: 100%; max-height: 100%; object-fit: contain;
+  padding: calc(56px + env(safe-area-inset-top)) 0 calc(64px + env(safe-area-inset-bottom));
+  box-sizing: border-box; transition: transform 0.2s ease; -webkit-user-drag: none;
+}
+.lb-status { position: absolute; margin: 0; font-size: 15px; color: #ddd; }
+.lb-close, .lb-nav {
+  position: absolute; border: none; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16); color: #fff; line-height: 1; z-index: 1;
+}
+.lb-close { top: calc(10px + env(safe-area-inset-top)); right: 12px; width: 44px; height: 44px; font-size: 20px; }
+.lb-nav { top: 50%; transform: translateY(-50%); width: 48px; height: 48px; font-size: 34px; padding-bottom: 4px; }
+.lb-nav[hidden] { display: none; }
+.lb-prev { left: 12px; }
+.lb-next { right: 12px; }
+.lb-close:hover, .lb-nav:hover, .lb-close:focus-visible, .lb-nav:focus-visible { background: rgba(255, 255, 255, 0.3); }
+.lb-counter { position: absolute; top: calc(22px + env(safe-area-inset-top)); left: 16px; font-size: 14px; color: #ddd; }
+.lb-caption {
+  position: absolute; left: 16px; right: 16px; bottom: calc(14px + env(safe-area-inset-bottom));
+  margin: 0; text-align: center; font-size: 14px; color: #eee;
+}
+@media (max-width: 600px) {
+  /* On phones swiping is the main way to move; keep the arrows small and out of the way. */
+  .lb-nav { width: 38px; height: 38px; font-size: 28px; background: rgba(0, 0, 0, 0.35); }
+  .lb-prev { left: 6px; }
+  .lb-next { right: 6px; }
+}

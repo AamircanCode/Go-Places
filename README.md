@@ -110,6 +110,7 @@ AR camera view, monthly challenges, side-quest submissions from users, a communi
 - `discover.js`: the "What can I do?" layer (moods, activities, hidden gems, quests)
 - `knowledge.js`: the Free Knowledge screens; `data/free-knowledge.js`: its places
 - `social.js`: profiles, follows, explorers, feed, ratings and privacy; `data/social.js`: interests and explorer groups
+- `lightbox.js`: the full-size photo viewer (tap any photo; swipe or arrow keys to move, Esc or tap to close)
 - `data/spots.js`: all spots and themes
 - `data/activities.js`, `data/hidden-gems.js`, `data/quests.js`, `data/discover.js`: content for the "What can I do?" layer
 - `vendor/`: Leaflet 1.9.4 map library and supabase-js 2.118.0 (bundled so the app has no outside dependencies apart from map tiles and your Supabase project)
