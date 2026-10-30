@@ -15,6 +15,29 @@ Everything you see comes from one file: **[`data/spots.js`](data/spots.js)**. Th
 
 Photos: put image files into `images/` and list them in the spot's `photos`, e.g. `{ url: "images/hackerbruecke-1.jpg", credit: "Photo: Aamir" }`. Spots without photos show a coloured card with their emoji.
 
+## What can I do? (activities, moods, hidden gems, quests)
+
+A second layer on top of the map. The map answers "Where can I go?"; this layer answers "What can I do?".
+
+- **How do you feel today?** The app opens on eight mood cards (Relax, Explore, Learn, …). Tap one to see matching activities.
+- **What can I do right now?** Pick how much time you have (30 minutes to a full day) and get activities that fit and are in season, nearest first if location is on.
+- **Activities** like "Watch the ducks" or "Watch the sunset", each linked to one or more spots. Save them, and tick "Did it here" at a spot (that also marks the spot as explored). Spot pages show "Things to do here".
+- **Hidden gems**: small discoveries shown separately from the main spots, with a "Found it" tick.
+- **Quests and badges**: e.g. watch the sunset from three viewpoints to earn the Sunset Hunter badge. Badges show on your profile, and on public profiles.
+
+Progress is saved on the device, and in the account when signed in (anything done before signing in is moved into the account).
+
+All of it comes from four files, so new content needs no code changes:
+
+- [`data/activities.js`](data/activities.js): activities and the spots they link to
+- [`data/hidden-gems.js`](data/hidden-gems.js): hidden gems
+- [`data/quests.js`](data/quests.js): quests and badges
+- [`data/discover.js`](data/discover.js): moods, categories and the time choices
+
+The top of each file explains every field. The lists are plain JSON, so they can be moved into a database later. If an activity or quest points at an id that doesn't exist, the browser console says so.
+
+Links open straight to a screen, e.g. `…/#do/watch-ducks`, `…/#gem/residenz-lions`, `…/#mood/relax`, `…/#now`, `…/#quests`.
+
 ## Accounts (optional, free)
 
 With accounts switched on, people can:
@@ -34,7 +57,7 @@ Data lives in [Supabase](https://supabase.com), which has a free plan that works
 You need to do this yourself, because it creates an account in your name.
 
 1. **Create a free Supabase account and project** at [supabase.com](https://supabase.com). Pick the region **Central EU (Frankfurt)** so data stays in Germany/the EU. Save the database password somewhere safe (the app doesn't need it).
-2. **Create the tables:** in the project, open **SQL Editor → New query**, paste the whole of [`supabase/schema.sql`](supabase/schema.sql) and click **Run**. It creates the tables, the privacy rules and a private photo bucket.
+2. **Create the tables:** in the project, open **SQL Editor → New query**, paste the whole of [`supabase/schema.sql`](supabase/schema.sql) and click **Run**. It creates the tables, the privacy rules and a private photo bucket. It's safe to run again: whenever `schema.sql` changes (for example the discovery tables for saved activities and badges), paste and run the whole file again. Until then, accounts keep working and discovery progress just stays on the device.
 3. **Tell Supabase where the site lives:** **Authentication → URL Configuration**. Set **Site URL** to `https://aamircancode.github.io/Go-Places/` and add the same address under **Redirect URLs** (add `http://localhost:8000/` too if you test locally). Email links (confirm, reset password) only go to these addresses.
 4. **Connect the site:** open **Project Settings → API Keys** (or the **Connect** button), copy the **Project URL** and the **publishable** key (older projects: "anon public"), and paste them into [`config.js`](config.js). Commit and push. These two values are meant to be public; never paste the *secret* / *service_role* key.
 
@@ -61,5 +84,7 @@ AR camera view, a Strava-like social feed, monthly challenges, side-quest submis
 - `account.js`: sign-in, profiles, wishlist and photo uploads (talks to Supabase)
 - `config.js`: your Supabase project address and publishable key
 - `supabase/schema.sql`: database tables and privacy rules, run once in Supabase
-- `data/spots.js`: all content
+- `discover.js`: the "What can I do?" layer (moods, activities, hidden gems, quests)
+- `data/spots.js`: all spots and themes
+- `data/activities.js`, `data/hidden-gems.js`, `data/quests.js`, `data/discover.js`: content for the "What can I do?" layer
 - `vendor/`: Leaflet 1.9.4 map library and supabase-js 2.118.0 (bundled so the app has no outside dependencies apart from map tiles and your Supabase project)

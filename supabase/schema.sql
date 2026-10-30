@@ -11,6 +11,16 @@
 --   spot_photos   photos users took of spots (files live in the storage bucket)
 --   spot-photos   a private storage bucket for those photos
 --
+-- Discovery layer (activities, hidden gems, quests, badges):
+--   activity_saves        activities a user saved for later (always private)
+--   activity_completions  activities a user has done, and at which spot
+--   gem_finds             hidden gems a user has found
+--   user_badges           badges a user has earned from quests
+--
+-- The activities, hidden gems, quests and badges themselves live in the
+-- data/ folder of the site (activities.js, hidden-gems.js, quests.js), so
+-- adding new ones needs no database change. Their ids are stored as text.
+--
 -- Spot ids are the `id` values from data/spots.js. They are stored as text so
 -- new spots need no database change.
 --
@@ -67,6 +77,39 @@ create table if not exists public.spot_photos (
 );
 create index if not exists spot_photos_user_idx on public.spot_photos (user_id, created_at desc);
 create index if not exists spot_photos_spot_idx on public.spot_photos (spot_id, created_at desc);
+
+-- ---------- discovery layer ----------
+create table if not exists public.activity_saves (
+  user_id      uuid not null references public.profiles (id) on delete cascade,
+  activity_id  text not null check (activity_id ~ '^[a-z0-9-]{1,60}$'),
+  saved_at     timestamptz not null default now(),
+  primary key (user_id, activity_id)
+);
+
+-- place_id is the spot where it was done, or '' for activities without one.
+create table if not exists public.activity_completions (
+  user_id       uuid not null references public.profiles (id) on delete cascade,
+  activity_id   text not null check (activity_id ~ '^[a-z0-9-]{1,60}$'),
+  place_id      text not null default '' check (place_id ~ '^[a-z0-9-]{0,60}$'),
+  completed_at  timestamptz not null default now(),
+  primary key (user_id, activity_id, place_id)
+);
+
+create table if not exists public.gem_finds (
+  user_id   uuid not null references public.profiles (id) on delete cascade,
+  gem_id    text not null check (gem_id ~ '^[a-z0-9-]{1,60}$'),
+  found_at  timestamptz not null default now(),
+  primary key (user_id, gem_id)
+);
+
+-- Badges are worked out in the app from the quests in data/quests.js and
+-- recorded here the first time they're earned.
+create table if not exists public.user_badges (
+  user_id    uuid not null references public.profiles (id) on delete cascade,
+  badge_id   text not null check (badge_id ~ '^[a-z0-9-]{1,60}$'),
+  earned_at  timestamptz not null default now(),
+  primary key (user_id, badge_id)
+);
 
 -- ---------- helpers ----------
 -- Is this user's profile public? Used by the policies below.
@@ -138,9 +181,15 @@ alter table public.profiles    enable row level security;
 alter table public.spot_visits enable row level security;
 alter table public.wishlist    enable row level security;
 alter table public.spot_photos enable row level security;
+alter table public.activity_saves       enable row level security;
+alter table public.activity_completions enable row level security;
+alter table public.gem_finds            enable row level security;
+alter table public.user_badges          enable row level security;
 
 grant select on public.profiles, public.spot_visits, public.spot_photos to anon;
 grant select, insert, update, delete on public.profiles, public.spot_visits, public.wishlist, public.spot_photos to authenticated;
+grant select on public.activity_completions, public.gem_finds, public.user_badges to anon;
+grant select, insert, update, delete on public.activity_saves, public.activity_completions, public.gem_finds, public.user_badges to authenticated;
 
 drop policy if exists "profiles: read own or public" on public.profiles;
 create policy "profiles: read own or public" on public.profiles
@@ -175,6 +224,37 @@ create policy "photos: edit own" on public.spot_photos
 drop policy if exists "photos: remove own" on public.spot_photos;
 create policy "photos: remove own" on public.spot_photos
   for delete to authenticated using (user_id = (select auth.uid()));
+
+drop policy if exists "activity saves: own only" on public.activity_saves;
+create policy "activity saves: own only" on public.activity_saves
+  for all to authenticated using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
+
+drop policy if exists "completions: read own or public" on public.activity_completions;
+create policy "completions: read own or public" on public.activity_completions
+  for select using (user_id = (select auth.uid()) or public.is_public_profile(user_id));
+drop policy if exists "completions: add own" on public.activity_completions;
+create policy "completions: add own" on public.activity_completions
+  for insert to authenticated with check (user_id = (select auth.uid()));
+drop policy if exists "completions: remove own" on public.activity_completions;
+create policy "completions: remove own" on public.activity_completions
+  for delete to authenticated using (user_id = (select auth.uid()));
+
+drop policy if exists "gem finds: read own or public" on public.gem_finds;
+create policy "gem finds: read own or public" on public.gem_finds
+  for select using (user_id = (select auth.uid()) or public.is_public_profile(user_id));
+drop policy if exists "gem finds: add own" on public.gem_finds;
+create policy "gem finds: add own" on public.gem_finds
+  for insert to authenticated with check (user_id = (select auth.uid()));
+drop policy if exists "gem finds: remove own" on public.gem_finds;
+create policy "gem finds: remove own" on public.gem_finds
+  for delete to authenticated using (user_id = (select auth.uid()));
+
+drop policy if exists "badges: read own or public" on public.user_badges;
+create policy "badges: read own or public" on public.user_badges
+  for select using (user_id = (select auth.uid()) or public.is_public_profile(user_id));
+drop policy if exists "badges: add own" on public.user_badges;
+create policy "badges: add own" on public.user_badges
+  for insert to authenticated with check (user_id = (select auth.uid()));
 
 -- ---------- photo storage ----------
 -- Private bucket: files are only reachable through short-lived signed links,

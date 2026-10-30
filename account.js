@@ -2,8 +2,9 @@
  * GO PLACES — accounts
  * ====================
  * Everything that talks to Supabase lives here: sign-in, the profile,
- * explored spots, the wishlist and photo uploads. app.js draws the screens
- * and calls `window.GoAccount`. If config.js has no Supabase details,
+ * explored spots, the wishlist, photo uploads, and the progress of the
+ * discovery layer (saved and done activities, hidden gems found, badges).
+ * app.js and discover.js draw the screens and call `window.GoAccount`. If config.js has no Supabase details,
  * `GoAccount.enabled` is false and the app runs without accounts.
  */
 (function () {
@@ -28,7 +29,15 @@
     visits: {},     // spotId -> ISO date
     wishlist: {},   // spotId -> ISO date
     photos: [],     // newest first: { id, spot_id, path, caption, created_at, url }
-    recovering: false
+    recovering: false,
+    // discovery layer. Only filled when the tables from the "discovery layer"
+    // part of supabase/schema.sql exist; until then progressSynced stays false
+    // and discover.js keeps progress on the device instead.
+    progressSynced: false,
+    saved: {},      // activityId -> ISO date
+    done: {},       // "activityId@placeId" -> ISO date (placeId may be empty)
+    gems: {},       // hiddenGemId -> ISO date
+    badges: {}      // badgeId -> ISO date
   };
 
   function check(res) {
@@ -63,7 +72,40 @@
       return withUrls(r[3]);
     }).then(function (photos) {
       acct.photos = photos;
+      return loadProgress(id);
     });
+  }
+
+  // Kept separate so accounts still work if the discovery tables haven't
+  // been created yet.
+  function loadProgress(id) {
+    return Promise.all([
+      sb.from("activity_saves").select("activity_id, saved_at").eq("user_id", id).then(check),
+      sb.from("activity_completions").select("activity_id, place_id, completed_at").eq("user_id", id).then(check),
+      sb.from("gem_finds").select("gem_id, found_at").eq("user_id", id).then(check),
+      sb.from("user_badges").select("badge_id, earned_at").eq("user_id", id).then(check)
+    ]).then(function (r) {
+      acct.saved = keyed(r[0], "activity_id", "saved_at");
+      acct.done = doneMap(r[1]);
+      acct.gems = keyed(r[2], "gem_id", "found_at");
+      acct.badges = keyed(r[3], "badge_id", "earned_at");
+      acct.progressSynced = true;
+    }, function (err) {
+      console.warn("Discovery progress isn't synced yet. Run the latest supabase/schema.sql to turn it on.", err);
+      acct.progressSynced = false;
+    });
+  }
+
+  function keyed(rows, key, dateKey) {
+    var m = {};
+    rows.forEach(function (r) { m[r[key]] = r[dateKey]; });
+    return m;
+  }
+
+  function doneMap(rows) {
+    var m = {};
+    rows.forEach(function (r) { m[r.activity_id + "@" + (r.place_id || "")] = r.completed_at; });
+    return m;
   }
 
   function withUrls(photos) {
@@ -84,6 +126,7 @@
     if (!changed) return Promise.resolve();
     if (!user) {
       acct.profile = null; acct.visits = {}; acct.wishlist = {}; acct.photos = [];
+      acct.saved = {}; acct.done = {}; acct.gems = {}; acct.badges = {}; acct.progressSynced = false;
       emit("signed-out");
       return Promise.resolve();
     }
@@ -155,9 +198,11 @@
       return Promise.all([
         sb.from("spot_visits").select("spot_id, visited_at").eq("user_id", p.id).then(check),
         sb.from("spot_photos").select("*").eq("user_id", p.id).order("created_at", { ascending: false }).then(check)
-          .then(withUrls)
+          .then(withUrls),
+        sb.from("user_badges").select("badge_id, earned_at").eq("user_id", p.id).then(check)
+          .then(function (rows) { return keyed(rows, "badge_id", "earned_at"); }, function () { return {}; })
       ]).then(function (r) {
-        return { profile: p, visits: toMap(r[0], "visited_at"), photos: r[1] };
+        return { profile: p, visits: toMap(r[0], "visited_at"), photos: r[1], badges: r[2] };
       });
     });
   };
@@ -197,6 +242,80 @@
       emit("visits");
       return rows.length;
     });
+  };
+
+  // ---------- discovery progress ----------
+  // Same optimistic pattern as toggle() above, for the discovery tables.
+  function toggleProgress(table, mapName, key, match, dateKey, on) {
+    var map = acct[mapName];
+    var before = map[key];
+    if (on) map[key] = new Date().toISOString(); else delete map[key];
+    emit("progress");
+    var q;
+    if (on) {
+      var row = { user_id: uid() };
+      Object.keys(match).forEach(function (k) { row[k] = match[k]; });
+      row[dateKey] = map[key];
+      q = sb.from(table).upsert(row, { ignoreDuplicates: true });
+    } else {
+      q = sb.from(table).delete().eq("user_id", uid());
+      Object.keys(match).forEach(function (k) { q = q.eq(k, match[k]); });
+    }
+    return q.then(check).catch(function (err) {
+      if (before) map[key] = before; else delete map[key];
+      emit("progress");
+      throw err;
+    });
+  }
+
+  acct.setSaved = function (activityId, on) {
+    return toggleProgress("activity_saves", "saved", activityId, { activity_id: activityId }, "saved_at", on);
+  };
+  acct.setDone = function (activityId, placeId, on) {
+    placeId = placeId || "";
+    return toggleProgress("activity_completions", "done", activityId + "@" + placeId,
+      { activity_id: activityId, place_id: placeId }, "completed_at", on);
+  };
+  acct.setGemFound = function (gemId, on) {
+    return toggleProgress("gem_finds", "gems", gemId, { gem_id: gemId }, "found_at", on);
+  };
+
+  // Badges are only ever added. `ids` are badge ids that were just earned.
+  acct.awardBadges = function (ids) {
+    var now = new Date().toISOString();
+    var rows = ids.filter(function (id) { return !acct.badges[id]; }).map(function (id) {
+      acct.badges[id] = now;
+      return { user_id: uid(), badge_id: id, earned_at: now };
+    });
+    if (!rows.length) return Promise.resolve();
+    emit("progress");
+    return sb.from("user_badges").upsert(rows, { ignoreDuplicates: true }).then(check);
+  };
+
+  // Progress made before signing in is copied into the account.
+  // `local` has the same shape: { saved, done, gems, badges }.
+  acct.importProgress = function (local) {
+    var jobs = [];
+    function add(table, mapName, local, toRow) {
+      var rows = Object.keys(local || {}).filter(function (k) { return !acct[mapName][k]; }).map(function (k) {
+        acct[mapName][k] = local[k];
+        var row = toRow(k, local[k]);
+        row.user_id = uid();
+        return row;
+      });
+      if (rows.length) jobs.push(sb.from(table).upsert(rows, { ignoreDuplicates: true }).then(check));
+      return rows.length;
+    }
+    var n = add("activity_saves", "saved", local.saved, function (k, d) { return { activity_id: k, saved_at: d }; }) +
+      add("activity_completions", "done", local.done, function (k, d) {
+        var i = k.indexOf("@");
+        return { activity_id: k.slice(0, i), place_id: k.slice(i + 1), completed_at: d };
+      }) +
+      add("gem_finds", "gems", local.gems, function (k, d) { return { gem_id: k, found_at: d }; }) +
+      add("user_badges", "badges", local.badges, function (k, d) { return { badge_id: k, earned_at: d }; });
+    if (!n) return Promise.resolve(0);
+    emit("progress");
+    return Promise.all(jobs).then(function () { return n; });
   };
 
   // ---------- photos ----------
@@ -291,6 +410,10 @@
       profile: acct.profile,
       explored: acct.visits,
       wishlist: acct.wishlist,
+      savedActivities: acct.saved,
+      doneActivities: acct.done,
+      hiddenGemsFound: acct.gems,
+      badges: acct.badges,
       photos: acct.photos.map(function (p) {
         return { spot: p.spot_id, caption: p.caption, uploadedAt: p.created_at, file: p.path };
       })

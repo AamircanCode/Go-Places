@@ -3,6 +3,7 @@
 
   var DATA = window.GO_PLACES;
   var ACCT = window.GoAccount || { enabled: false };
+  var DISCOVER = window.GoDiscover; // the "What can I do?" layer, optional
   var STORAGE_KEY = "goplaces.explored";
 
   var state = {
@@ -137,6 +138,7 @@
     state.openSpotId = null;
     state.view = null;
     stopSpeaking();
+    if (DISCOVER) DISCOVER.onClose();
     if (location.hash) history.replaceState(null, "", location.pathname + location.search);
   }
 
@@ -193,6 +195,7 @@
       "</div>" +
       myPhotosBlock(spot) +
       '<p class="summary">' + esc(spot.summary) + "</p>" +
+      (DISCOVER ? DISCOVER.spotSection(spot) : "") +
       (spot.history ? '<div class="spot-section"><h3>📜 History</h3><p>' + esc(spot.history) + "</p></div>" : "") +
       (facts ? '<div class="spot-section"><h3>💡 Fun facts</h3><ul>' + facts + "</ul></div>" : "") +
       (spot.tip ? '<div class="tip">👉 ' + esc(spot.tip) + "</div>" : "")
@@ -332,7 +335,7 @@
       } else {
         meMarker.setLatLng(state.me);
       }
-      if (first) { map.setView(state.me, 15); first = false; }
+      if (first) { map.setView(state.me, 15); first = false; if (DISCOVER) DISCOVER.onLocation(); }
     }, function () {
       watching = false;
       alert("Couldn't get your location. Check that location access is allowed for this site.");
@@ -565,6 +568,7 @@
       "</div>" +
       '<div class="actions"><button class="btn" data-go="edit">✏️ Edit profile</button>' +
         '<button class="btn" id="signout-btn">Sign out</button></div>' +
+      (DISCOVER ? DISCOVER.profileSection(null) : "") +
       '<div class="spot-section"><h3>📷 My photos</h3>' + photoGrid(ACCT.photos, "Open a spot and tap “Add photo” to post your first one.") + "</div>" +
       '<div class="spot-section"><h3>💚 Wishlist</h3>' + spotList(wishIds, "Tap “Wishlist” on any spot to save it for later.") + "</div>" +
       '<div class="spot-section"><h3>✅ Explored</h3>' + spotList(visitedIds, "Spots you mark as explored show up here.", ACCT.visits) + "</div>"
@@ -601,6 +605,7 @@
           stat(ids.filter(spotById).length + "/" + DATA.spots.length, "explored") +
           stat(r.photos.length, r.photos.length === 1 ? "photo" : "photos") +
         "</div>" +
+        (DISCOVER ? DISCOVER.profileSection(r.badges || {}) : "") +
         '<div class="spot-section"><h3>📷 Photos</h3>' + photoGrid(r.photos, "No photos yet.") + "</div>" +
         '<div class="spot-section"><h3>✅ Explored</h3>' + spotList(ids, "Nothing explored yet.", r.visits) + "</div>"
       );
@@ -754,6 +759,7 @@
     if (state.view === "spot" && state.openSpotId) openSpot(state.openSpotId);
     else if (state.view === "profile") openProfile();
     else if (state.view === "list") openList();
+    else if (state.view === "discover" && DISCOVER) DISCOVER.rerender();
   }
 
   ACCT.on && ACCT.on(function (event) {
@@ -800,11 +806,47 @@
   function route() {
     var hash = decodeURIComponent(location.hash.slice(1));
     if (hash && spotById(hash)) openSpot(hash);
+    else if (DISCOVER && DISCOVER.route(hash)) { /* handled by the discovery layer */ }
     else if (ACCT.enabled && hash === "me") { if (ACCT.user) openProfile(); else openSignIn(); }
     else if (ACCT.enabled && hash.charAt(0) === "@") openPublicProfile(hash.slice(1).toLowerCase());
   }
 
   window.addEventListener("hashchange", route);
+
+  // ---------- discovery layer ----------
+  // The few things discover.js needs from the map app.
+  function markExplored(spotId) {
+    if (!spotById(spotId) || exploredMap()[spotId]) return;
+    if (ACCT.user) {
+      ACCT.setVisited(spotId, true).catch(function (err) { console.error("Couldn't mark explored", err); });
+    } else {
+      state.explored[spotId] = new Date().toISOString();
+      saveExplored();
+    }
+    refreshExplored();
+  }
+
+  if (DISCOVER) DISCOVER.init({
+    map: map,
+    esc: esc,
+    spotById: spotById,
+    distanceKm: distanceKm,
+    formatDate: formatDate,
+    exploredMap: exploredMap,
+    markExplored: markExplored,
+    openSpot: openSpot,
+    openSignIn: openSignIn,
+    me: function () { return state.me; },
+    sheetBody: sheetBody,
+    show: function (html, hash) {
+      state.view = "discover";
+      state.openSpotId = null;
+      stopSpeaking();
+      history.replaceState(null, "", hash ? "#" + hash : location.pathname + location.search);
+      showSheet(html);
+    },
+    isOpen: function () { return state.view === "discover"; }
+  });
 
   // ---------- start ----------
   document.getElementById("city-label").textContent = DATA.city + ", for free";
@@ -812,14 +854,20 @@
   renderMarkers();
   updateCounter();
 
+  // With nothing in the link, open on "How do you feel today?".
+  function start() {
+    if (!location.hash && DISCOVER) DISCOVER.openHome();
+    else route();
+  }
+
   var initialError = linkError();
   if (!ACCT.enabled) {
-    route();
+    start();
   } else {
     renderAccountBtn();
     ACCT.init().catch(function (err) { console.error("Account setup failed", err); }).then(function () {
       if (initialError && !ACCT.user) openSignIn(initialError + ". If you already confirmed your email, just sign in.");
-      else if (!ACCT.recovering) route();
+      else if (!ACCT.recovering) start();
     });
   }
 })();
