@@ -38,6 +38,29 @@ The top of each file explains every field. The lists are plain JSON, so they can
 
 Links open straight to a screen, e.g. `…/#do/watch-ducks`, `…/#gem/residenz-lions`, `…/#mood/relax`, `…/#now`, `…/#quests`.
 
+## Free Knowledge
+
+A top-level category for learning in the city that costs nothing, kept apart from sightseeing: its places don't show under "All spots", only under the **📚 Free Knowledge** chip (or `…/#knowledge`).
+
+- Ten subcategories (Free Museums, Public Bookshelves, Reading Spaces, Libraries, Educational Exhibitions, History, Science, Literature, Public Art, Learning Experiences)
+- **Public Bookshelves of Munich** (`…/#bookshelves`): 17 open bookshelves, with where they are, why to go, opening info, tags and visit time
+- 8 free museums (Paläontologisches Museum, NS-Dokumentationszentrum, Museum für Abgüsse, Monacensia, Rathausgalerie, Kunstarkaden, Lothringer 13, MaximiliansForum) with history, fun facts and visitor information
+
+They're normal spots, so explored, wishlist, photos and ratings all work. Everything is in [`data/free-knowledge.js`](data/free-knowledge.js); the top of the file explains every field. Opening hours and most pins are marked VERIFY.
+
+## Explorers (social discovery, privacy first)
+
+Go Places is not a social network: there are **no follower counts, likes, rankings or leaderboards** anywhere.
+
+- **Profiles** get a profile photo, interests, quests completed and activities completed, on top of name, bio, badges, explored places and photos.
+- **Follow / unfollow.** Following a public profile is instant; a followers-only profile gets a request it can accept or decline. "People you follow" and "People following you" are plain lists that only you can see. You can remove a follower; they aren't told.
+- **Discover explorers** (`…/#explorers`, or the 👥 button on the map): public explorers grouped by interests and what they explore (Nature Enthusiasts, Knowledge Hunters, Museum Explorers, …), in random order. Groups and interests live in [`data/social.js`](data/social.js).
+- **Explorer feed** (`…/#feed`): places explored, photos added, activities done, quests completed and new categories explored, from you and the people you follow.
+- **Ratings** on every place: an overall score plus optional learning value, scenic value, accessibility, family friendly and uniqueness. Only averages are shown; there are no comments.
+- **Privacy** (`…/#privacy`): profile Public / Followers only / Private, and Everyone / Followers only / Only me for visited places, wishlist, activity feed and uploaded photos. The database enforces these rules, not just the app.
+
+These need the "social discovery & privacy" part of [`supabase/schema.sql`](supabase/schema.sql): paste the whole file into the SQL Editor and run it again. Until then they stay hidden and everything else works as before. Existing public profiles stay public; private ones stay private.
+
 ## Accounts (optional, free)
 
 With accounts switched on, people can:
@@ -47,7 +70,7 @@ With accounts switched on, people can:
 - keep a wishlist of spots they want to visit
 - take or pick photos of a spot and upload them; the photo is resized and its hidden GPS location and camera data are removed **on the phone, before upload**
 - customise their profile: name, username, avatar, colour (it re-colours the whole app), home city and a short bio
-- choose a private profile (default) or a public one with a shareable link like `…/#@aamir`; wishlists and emails are never public
+- choose a private profile (default), a followers-only one, or a public one with a shareable link like `…/#@aamir`, and decide separately who sees their places, wishlist, feed and photos; emails are never shown
 - download all their data or delete their account and photos
 
 Data lives in [Supabase](https://supabase.com), which has a free plan that works with a static GitHub Pages site. Visits and photos are stored with dates, so future challenges ("explore 3 sunset spots this month", "post a photo from every church") can be checked against them.
@@ -61,7 +84,7 @@ You need to do this yourself, because it creates an account in your name.
 3. **Tell Supabase where the site lives:** **Authentication → URL Configuration**. Set **Site URL** to `https://aamircancode.github.io/Go-Places/` and add the same address under **Redirect URLs** (add `http://localhost:8000/` too if you test locally). Email links (confirm, reset password) only go to these addresses.
 4. **Connect the site:** open **Project Settings → API Keys** (or the **Connect** button), copy the **Project URL** and the **publishable** key (older projects: "anon public"), and paste them into [`config.js`](config.js). Commit and push. These two values are meant to be public; never paste the *secret* / *service_role* key.
 
-That's it. A **Sign in** button appears in the top bar.
+That's it. A **Sign in** button appears in the top bar. Whenever `schema.sql` changes, run the whole file again.
 
 **Things to know about the free plan** (check [supabase.com/pricing](https://supabase.com/pricing) for current numbers): about 500 MB of database, 1 GB of photo storage (photos are shrunk to roughly 200–400 KB each, so a few thousand photos) and 50,000 monthly users. A free project is **paused after a week with no visits**; you can wake it up from the dashboard. The built-in email sender only sends a few emails per hour, which is fine for testing. Before a real launch, connect a free email service under **Authentication → Emails → SMTP Settings** (e.g. Resend or Brevo), or new sign-ups may not get their confirmation email.
 
@@ -76,7 +99,7 @@ That's it. A **Sign in** button appears in the top bar.
 
 ## Later phases
 
-AR camera view, a Strava-like social feed, monthly challenges, side-quest submissions from users, a community forum, and local business partner deals.
+AR camera view, monthly challenges, side-quest submissions from users, a community forum, and local business partner deals.
 
 ## Files
 
@@ -85,6 +108,8 @@ AR camera view, a Strava-like social feed, monthly challenges, side-quest submis
 - `config.js`: your Supabase project address and publishable key
 - `supabase/schema.sql`: database tables and privacy rules, run once in Supabase
 - `discover.js`: the "What can I do?" layer (moods, activities, hidden gems, quests)
+- `knowledge.js`: the Free Knowledge screens; `data/free-knowledge.js`: its places
+- `social.js`: profiles, follows, explorers, feed, ratings and privacy; `data/social.js`: interests and explorer groups
 - `data/spots.js`: all spots and themes
 - `data/activities.js`, `data/hidden-gems.js`, `data/quests.js`, `data/discover.js`: content for the "What can I do?" layer
 - `vendor/`: Leaflet 1.9.4 map library and supabase-js 2.118.0 (bundled so the app has no outside dependencies apart from map tiles and your Supabase project)
