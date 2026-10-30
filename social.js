@@ -501,8 +501,10 @@
         back() +
         '<h2 class="list-title">👥 Discover explorers</h2>' +
         '<p class="list-desc">Find people who love the same things you do. Shown in a random order: nobody is ranked here.</p>' +
+        (ACCT.user ? privateNudge() : "") +
         (ACCT.user && !(ACCT.profile.interests || []).length ? '<p class="privacy-note">💡 <a href="#" data-s="edit">Add your interests</a> so others with the same ones can find you.</p>' : "") +
-        (html || '<p class="empty">No public explorers yet. Make your profile public in Privacy settings to be the first.</p>'),
+        (html || '<p class="empty">No public explorers yet. Profiles start private, so explorers only show up here once they make theirs public. ' +
+          "Share your profile link with friends and ask them to do the same.</p>"),
         "explorers");
       fillAvatars(app.sheetBody);
     }).catch(showError);
@@ -621,10 +623,25 @@
     return '<div class="tags interests">' + list.map(function (i) { return '<span class="tag">' + esc(interestLabel(i)) + "</span>"; }).join("") + "</div>";
   }
 
+  // Profiles start private, so nobody can find or follow you until you
+  // choose otherwise. This says so, with a one-tap way to change it.
+  function privateNudge() {
+    if (!ACCT.profile || ACCT.profile.profile_visibility !== "private") return "";
+    return '<div class="nudge"><p>🔒 <b>Your profile is private</b>, so other explorers can\'t find or follow you.</p>' +
+      '<div class="actions">' +
+        '<button class="btn small primary" data-s="go-visible" data-id="public">🌍 Make it public</button>' +
+        '<button class="btn small" data-s="go-visible" data-id="followers">👥 Followers only</button>' +
+        '<button class="btn small" data-s="privacy">More settings</button>' +
+      "</div></div>";
+  }
+
   function ownProfileSection() {
-    if (!ready()) return "";
+    if (!ready()) {
+      return '<p class="privacy-note">👥 Following, the explorer feed and ratings aren\'t switched on yet: ' +
+        "run the latest <b>supabase/schema.sql</b> in Supabase's SQL Editor, then reload.</p>";
+    }
     var asks = Object.keys(follows.in).some(function (id) { return follows.in[id] === "pending"; });
-    return interestChips(ACCT.profile.interests) +
+    return privateNudge() + interestChips(ACCT.profile.interests) +
       '<div class="actions social-actions">' +
         '<button class="btn" data-s="feed">📰 Feed</button>' +
         '<button class="btn" data-s="explorers">👥 Discover explorers</button>' +
@@ -659,7 +676,8 @@
     var quests = (LAYER.quests || []).filter(function (q) { return q.rewardBadgeId && (r.badges || {})[q.rewardBadgeId]; });
     var followsYou = follows.in[p.id] === "accepted";
     return interestChips(p.interests) +
-      (ready() ? '<div class="actions">' + followButton(p) + (followsYou ? '<span class="follows-you">Follows you</span>' : "") + "</div>" : "") +
+      (ready() ? '<div class="actions">' + followButton(p) + (followsYou ? '<span class="follows-you">Follows you</span>' : "") + "</div>"
+        : ACCT.enabled ? '<p class="privacy-note">👥 Following isn\'t switched on yet: the site\'s database needs the latest <b>supabase/schema.sql</b>.</p>' : "") +
       (quests.length ? '<div class="spot-section"><h3>🗺️ Quests completed</h3>' + quests.map(function (q) {
         var b = byId(LAYER.badges, q.rewardBadgeId) || {};
         return '<a class="list-item" href="#quest/' + esc(q.id) + '"><span class="emoji">' + esc(b.emoji || "🏅") + '</span><span class="name">' + esc(q.title) + "</span></a>";
@@ -832,6 +850,13 @@
     else if (s === "group") openGroup(id);
     else if (s === "following" || s === "followers") openPeople(s);
     else if (s === "privacy") openPrivacy();
+    else if (s === "go-visible") {
+      el.disabled = true;
+      act(ACCT.updateProfile({ profile_visibility: id }).then(function () {
+        explorerCache = null;
+        if (current && app.isOpen()) rerender(); else app.openProfile();
+      }));
+    }
     else if (s === "profile") app.openProfile();
     else if (s === "profile-or-home") { if (ACCT.user) app.openProfile(); else app.close(); }
     else if (s === "edit") app.openEditProfile();
