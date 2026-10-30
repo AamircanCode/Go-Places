@@ -45,10 +45,8 @@
     return DATA.spots.filter(function (s) { return s.id === id; })[0];
   }
 
-  // Free Knowledge places are kept apart from sightseeing: they only show
-  // under their own chip.
   function visibleSpots() {
-    if (state.theme === "all") return DATA.spots.filter(function (s) { return s.category !== "free-knowledge"; });
+    if (state.theme === "all") return DATA.spots;
     return DATA.spots.filter(function (s) { return s.themes.indexOf(state.theme) !== -1; });
   }
 

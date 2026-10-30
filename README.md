@@ -40,7 +40,7 @@ Links open straight to a screen, e.g. `…/#do/watch-ducks`, `…/#gem/residenz-
 
 ## Free Knowledge
 
-A top-level category for learning in the city that costs nothing, kept apart from sightseeing: its places don't show under "All spots", only under the **📚 Free Knowledge** chip (or `…/#knowledge`).
+A top-level category for learning in the city that costs nothing. Its places show under "All spots" with everything else, and on their own under the **📚 Free Knowledge** chip (or `…/#knowledge`).
 
 - Ten subcategories (Free Museums, Public Bookshelves, Reading Spaces, Libraries, Educational Exhibitions, History, Science, Literature, Public Art, Learning Experiences)
 - **Public Bookshelves of Munich** (`…/#bookshelves`): 17 open bookshelves, with where they are, why to go, opening info, tags and visit time

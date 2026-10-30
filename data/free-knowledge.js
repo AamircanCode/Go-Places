@@ -2,9 +2,9 @@
  * GO PLACES — Free Knowledge
  * ==========================
  * A top-level category for free learning in the city: museums, public
- * bookshelves, libraries and exhibitions. It is kept apart from general
- * sightseeing: these places don't show under "All spots", only under the
- * 📚 Free Knowledge chip and its own screens (#knowledge).
+ * bookshelves, libraries and exhibitions. These places show under "All spots"
+ * like every other spot, and on their own under the 📚 Free Knowledge chip and
+ * its own screens (#knowledge).
  *
  * The places below are added to the normal list of spots, so they get the
  * usual spot page, "Mark as explored", wishlist, photo uploads and ratings.
