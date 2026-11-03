@@ -452,6 +452,26 @@
       tip: "Walk on along Maximilianstraße to the Maximilianeum and the Isar."
     }),
     museum({
+      id: "geological-museum",
+      name: "Geologisches Museum München",
+      emoji: "🪨",
+      lat: 48.14800, lng: 11.56480, // approximate
+      address: "Luisenstraße 37, Maxvorstadt (near Königsplatz)",
+      knowledge: ["free-museums", "science", "educational-exhibitions", "learning-experiences"],
+      tags: ["Science", "Nature", "Knowledge"],
+      opening: "Mon–Thu 8:00–16:00, Fri 8:00–14:00, and the first Sunday of the month 10:00–16:00. Closed on weekends and public holidays.", // VERIFY
+      duration: "45 minutes – 1 hour",
+      summary: "Rocks, minerals, volcanoes and mountain building, with drawers you can pull out and stones you're allowed to touch. Free, and connected to the Paläontologisches Museum next door.",
+      whyVisit: "'Bayerns steinige Geschichte' takes you through about 500 million years of Bavaria's geology, from ancient seas to the Alps.",
+      history: "The collection goes back to the natural history cabinet of the Bavarian Academy of Sciences and became the state's geological collection in 1843. Much of it was destroyed in 1944, though important pieces were saved by moving them away. The current exhibition, in the university's geosciences building, has been open since 1975.",
+      funFacts: [
+        "A passage leads straight into the Paläontologisches Museum, so you can see the rocks and then the fossils in them.",
+        "On the first Sunday of the month there's a free tour, and a rock course for children aged 5 and up, at 13:00."
+      ],
+      visitorInfo: "U2 to Königsplatz or Theresienstraße. Free; only school programmes cost money.",
+      tip: "Do it together with the Paläontologisches Museum on the first Sunday of the month."
+    }),
+    museum({
       id: "amerikahaus",
       name: "Amerikahaus",
       emoji: "📷",

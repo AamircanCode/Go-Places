@@ -218,7 +218,8 @@ window.GO_PLACES = {
       history: "Leo von Klenze designed it in 1836 for King Ludwig I. The hill under it is artificial.",
       funFacts: [
         "From the top you can see the towers of the Frauenkirche and the Theatinerkirche.",
-        "On summer evenings the hill fills up with people, music and picnics."
+        "On summer evenings the hill fills up with people, music and picnics.",
+        "On weekend afternoons, groups of drummers often play on the meadow below the temple."
       ],
       photos: []
     },
@@ -375,6 +376,24 @@ window.GO_PLACES = {
         "It closes when there's snow or ice."
       ],
       tip: "Address: Sachsenstraße 2. Combine it with a walk along the Isar towards the Flaucher.",
+      photos: []
+    },
+    {
+      id: "walderlebniszentrum-gruenwald",
+      name: "Walderlebniszentrum Grünwald (forest centre and wild boar)",
+      emoji: "🐗",
+      lat: 48.04500, lng: 11.54800, // approximate, Sauschütt in the Grünwalder Forst. VERIFY on the map
+      themes: ["outdoors", "side-quests"],
+      cost: "Free",
+      when: "All year; the wild boar are fed every day at 16:00",
+      summary: "A free forest centre in the woods south of Munich, with a wild boar enclosure, an interactive exhibition about the forest and easy trails for walking, strollers and wheelchairs.",
+      history: "Run by the Bavarian forestry administration, the centre sits at the Sauschütt in the Grünwalder Forst. Its historic pavilion holds an exhibition on forest types and the creatures living above and below ground.",
+      funFacts: [
+        "The forest, the boar enclosure and the trails are open all the time; only the café keeps hours (weekends and holidays, 11:00–16:30).",
+        "The longest trail is 2.8 km and step-free; a sensory trail of under 1 km starts right by the centre.",
+        "Free guided events run on Sunday afternoons at 14:00: the first Sunday of the month from May to August, and every Sunday in September and October." // VERIFY
+      ],
+      tip: "Time your visit for the 16:00 boar feeding. Combine it with Grünwald castle and the Isar, a short walk away.",
       photos: []
     },
     {
