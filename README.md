@@ -43,8 +43,8 @@ Links open straight to a screen, e.g. `…/#do/watch-ducks`, `…/#gem/residenz-
 A top-level category for learning in the city that costs nothing. Its places show under "All spots" with everything else, and on their own under the **📚 Free Knowledge** chip (or `…/#knowledge`).
 
 - Ten subcategories (Free Museums, Public Bookshelves, Reading Spaces, Libraries, Educational Exhibitions, History, Science, Literature, Public Art, Learning Experiences)
-- **Public Bookshelves of Munich** (`…/#bookshelves`): 17 open bookshelves, with where they are, why to go, opening info, tags and visit time
-- 8 free museums (Paläontologisches Museum, NS-Dokumentationszentrum, Museum für Abgüsse, Monacensia, Rathausgalerie, Kunstarkaden, Lothringer 13, MaximiliansForum) with history, fun facts and visitor information
+- **Public Bookshelves of Munich** (`…/#bookshelves`): 19 open bookshelves, with where they are, why to go, opening info, tags and visit time
+- 11 free museums (Paläontologisches Museum, Geologisches Museum, NS-Dokumentationszentrum, Museum für Abgüsse, Monacensia, Rathausgalerie, Kunstarkaden, Lothringer 13, MaximiliansForum, Amerikahaus, ESO Supernova) with history, fun facts and visitor information, plus the city library at Gasteig HP8
 
 They're normal spots, so explored, wishlist, photos and ratings all work. Everything is in [`data/free-knowledge.js`](data/free-knowledge.js); the top of the file explains every field. Opening hours and most pins are marked VERIFY.
 

@@ -245,6 +245,33 @@
       photos: [
         { url: "images/bookshelf-herzog-ernst-platz-1.jpg", credit: "Photo: Go Places community" }
       ]
+    }),
+    bookshelf({
+      id: "bookshelf-laimer-anger",
+      name: "Bookshelf at Laimer Anger",
+      lat: 48.14599, lng: 11.50249, // from the photos' GPS data
+      address: "Laimer Anger, by Laim S-Bahn station, Laim",
+      summary: "A brightly painted bookshelf with a little garden growing on its roof, on the open square next to Laim station.",
+      whyVisit: "Three shelves packed with novels, cookbooks, dictionaries and children's books, and long benches right beside it. Perfect for grabbing a book before you get on the S-Bahn.",
+      history: "Two local residents campaigned for almost two years to get a bookshelf on the Laimer Anger, and it opened in July 2018 with readings and a marching band. Volunteers look after it and keep it tidy.", // VERIFY: that this painted cabinet is the 2018 one
+      tags: ["Reading", "Literature", "Community", "Sustainability", "Hidden Gem"],
+      photos: [
+        { url: "images/bookshelf-laimer-anger-2.jpg", credit: "Photo: Go Places community" },
+        { url: "images/bookshelf-laimer-anger-3.jpg", credit: "Photo: Go Places community" },
+        { url: "images/bookshelf-laimer-anger-1.jpg", credit: "Photo: Go Places community" }
+      ]
+    }),
+    bookshelf({
+      id: "bookshelf-oberschleissheim",
+      name: "Bookshelf in Oberschleißheim",
+      lat: 48.25802, lng: 11.55698, // approximate: a few metres from where the photo was taken. VERIFY on the map
+      address: "Mittenheimer Straße, by the fountain opposite the HIT supermarket, Oberschleißheim",
+      summary: "A brown wooden bookshelf next to a round fountain in the middle of Oberschleißheim, just north of Munich.",
+      whyVisit: "Pick up a book on your way to the Schleißheim palaces and read it by the canal.",
+      tags: ["Reading", "Community", "Sustainability", "Hidden Gem"],
+      photos: [
+        { url: "images/bookshelf-oberschleissheim-1.jpg", credit: "Photo: Go Places community" }
+      ]
     })
   ];
 
@@ -423,6 +450,87 @@
       ],
       visitorInfo: "Tram 16/19 to Maxmonument or U4/U5 to Lehel. Some events take place inside the space, with their own times.",
       tip: "Walk on along Maximilianstraße to the Maximilianeum and the Isar."
+    }),
+    museum({
+      id: "geological-museum",
+      name: "Geologisches Museum München",
+      emoji: "🪨",
+      lat: 48.14800, lng: 11.56480, // approximate
+      address: "Luisenstraße 37, Maxvorstadt (near Königsplatz)",
+      knowledge: ["free-museums", "science", "educational-exhibitions", "learning-experiences"],
+      tags: ["Science", "Nature", "Knowledge"],
+      opening: "Mon–Thu 8:00–16:00, Fri 8:00–14:00, and the first Sunday of the month 10:00–16:00. Closed on weekends and public holidays.", // VERIFY
+      duration: "45 minutes – 1 hour",
+      summary: "Rocks, minerals, volcanoes and mountain building, with drawers you can pull out and stones you're allowed to touch. Free, and connected to the Paläontologisches Museum next door.",
+      whyVisit: "'Bayerns steinige Geschichte' takes you through about 500 million years of Bavaria's geology, from ancient seas to the Alps.",
+      history: "The collection goes back to the natural history cabinet of the Bavarian Academy of Sciences and became the state's geological collection in 1843. Much of it was destroyed in 1944, though important pieces were saved by moving them away. The current exhibition, in the university's geosciences building, has been open since 1975.",
+      funFacts: [
+        "A passage leads straight into the Paläontologisches Museum, so you can see the rocks and then the fossils in them.",
+        "On the first Sunday of the month there's a free tour, and a rock course for children aged 5 and up, at 13:00."
+      ],
+      visitorInfo: "U2 to Königsplatz or Theresienstraße. Free; only school programmes cost money.",
+      tip: "Do it together with the Paläontologisches Museum on the first Sunday of the month."
+    }),
+    museum({
+      id: "amerikahaus",
+      name: "Amerikahaus",
+      emoji: "📷",
+      lat: 48.14480, lng: 11.57010, // approximate
+      address: "Karolinenplatz 3, Maxvorstadt",
+      knowledge: ["free-museums", "educational-exhibitions", "history", "public-art"],
+      tags: ["Photography", "Culture", "History"],
+      opening: "Mon–Thu 10:00–17:00, Fri 14:00–18:00, Sat 10:00–18:00. Closed on Sundays and public holidays.", // VERIFY
+      duration: "30–45 minutes",
+      summary: "A 1950s building on Karolinenplatz with free photo exhibitions and events about the USA, Canada and Latin America.",
+      whyVisit: "Changing photography shows, free and rarely crowded, a few steps from Königsplatz and its museums.",
+      history: "After the Second World War, America Houses were opened all over Germany to help Germans build a democracy; the Munich one drew around 80,000 visitors a month. Today's building was designed by Karl Fischer and Franz Simm and built in 1955–57. The US government ran it until 1997; since then it has been a Bavarian institution. It was renovated from 2016 to 2020.",
+      funFacts: [
+        "Its old theatre is now a multi-purpose hall for talks, films and concerts.",
+        "It is one of the few post-war buildings in the classical Kunstareal around Königsplatz."
+      ],
+      visitorInfo: "U2 to Königsplatz or tram 27/28 to Karolinenplatz. Opening hours can change during events, so check before you go.",
+      tip: "Pair it with the NS-Dokumentationszentrum and the cast museum, both a short walk away."
+    }),
+    museum({
+      id: "eso-supernova",
+      name: "ESO Supernova Planetarium & Visitor Centre",
+      emoji: "🔭",
+      lat: 48.26040, lng: 11.67130, // approximate
+      address: "Karl-Schwarzschild-Straße 2, Garching bei München",
+      knowledge: ["free-museums", "science", "educational-exhibitions", "learning-experiences"],
+      tags: ["Science", "Astronomy", "Knowledge"],
+      opening: "Wed–Thu 9:00–17:00, Fri 9:00–20:00, Sat–Sun 12:00–17:00. Closed Mon–Tue and on the last full weekend of each month.", // VERIFY
+      duration: "1.5–2 hours",
+      summary: "The European Southern Observatory's visitor centre: a free interactive exhibition about stars, planets and the universe, plus a planetarium.",
+      whyVisit: "One of the best free science experiences around Munich, run by the people who build some of the world's largest telescopes.",
+      history: "The European Southern Observatory (ESO) has its headquarters in Garching, on the university's research campus north of Munich. The Supernova visitor centre opened next to it in 2018, in a building shaped like two stars orbiting each other.", // VERIFY
+      funFacts: [
+        "The exhibition is free; check the programme for planetarium shows.",
+        "ESO runs telescopes in the Atacama Desert in Chile, where the sky is among the clearest on Earth."
+      ],
+      visitorInfo: "U6 to Garching-Forschungszentrum, then a short walk. Closed on the last full weekend of the month, so check before you go.",
+      tip: "Go on a Friday: it stays open until 20:00."
+    }),
+    museum({
+      id: "hp8-library",
+      name: "Gasteig HP8 and its city library",
+      emoji: "🎹",
+      lat: 48.11139, lng: 11.55361,
+      address: "Hans-Preißinger-Straße 8, Sendling",
+      knowledge: ["libraries", "reading-spaces", "learning-experiences"],
+      tags: ["Library", "Music", "Community", "Culture"],
+      opening: "Library open daily 7:00–23:00 (staffed Mon–Fri 10:00–19:00, Sat 10:00–15:00).", // VERIFY
+      duration: "1 hour or more",
+      summary: "Munich's temporary cultural centre in an old industrial site: the main city library in a listed 1920s hall, a café, and free space to hang out, read or work.",
+      whyVisit: "It's free to walk in and stay. A Munich local says there's a piano you can play, and the library card is free too.", // VERIFY: public piano
+      history: "When the Gasteig in Haidhausen closed for renovation, the city library, the Philharmonic and the adult education centre moved here. Gasteig HP8 opened on 8 October 2021, with the library in Halle E, a listed former transformer hall. The wooden Isarphilharmonie concert hall stands next to it.",
+      funFacts: [
+        "The Isarphilharmonie next door seats around 1,800 people and is the Munich Philharmonic's home while the Gasteig is rebuilt.",
+        "The library's 'Open Library' hours mean you can borrow books late in the evening with no staff on duty.",
+        "Many events here are paid, but you don't need a ticket just to come in and hang out."
+      ],
+      visitorInfo: "U3 to Brudermühlstraße, or a walk along the Isar from Thalkirchen or the Flaucher.",
+      tip: "Walk here along the Isar from the Flaucher, then warm up in the library café."
     })
   ];
 
