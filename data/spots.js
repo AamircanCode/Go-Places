@@ -259,7 +259,7 @@ window.GO_PLACES = {
       id: "olympiaberg",
       name: "Olympiaberg",
       emoji: "⛰️",
-      lat: 48.16950, lng: 11.55200,
+      lat: 48.16987, lng: 11.55152, // from the photos' GPS data, at the summit benches
       themes: ["sunsets", "side-quests"],
       cost: "Free",
       when: "Sunset, or clear days for the Alps",
@@ -269,6 +269,165 @@ window.GO_PLACES = {
         "You are standing on the remains of the old city.",
         "The tent-like roof of the stadium was revolutionary in 1972."
       ],
+      tip: "Take the cobbled path up: it winds round the hill, and the geese on the slopes don't mind company. The benches at the top face the city towers.",
+      photos: [
+        { url: "images/olympiaberg-4.jpg", credit: "Photo: Go Places community" },
+        { url: "images/olympiaberg-3.jpg", credit: "Photo: Go Places community" },
+        { url: "images/olympiaberg-1.jpg", credit: "Photo: Go Places community" },
+        { url: "images/olympiaberg-2.jpg", credit: "Photo: Go Places community" }
+      ]
+    },
+    {
+      id: "olympiapark-sports",
+      name: "Open-air gym, court and playground at Olympiapark",
+      emoji: "🏀",
+      lat: 48.17285, lng: 11.55488, // from the photos' GPS data, on the court
+      themes: ["outdoors", "side-quests"],
+      cost: "Free",
+      when: "Daylight, all year; busiest on sunny weekend afternoons",
+      summary: "A free public sports corner at the foot of the Olympic hills: a basketball court, a calisthenics gym with pull-up bars and ladders, and a playground under big old trees.",
+      history: "The Olympic Park was built for the 1972 Summer Olympics and was meant from the start to stay a park for everyone afterwards. Today it is one of Munich's favourite places to run, play and train, and corners like this one are part of that idea.",
+      funFacts: [
+        "Munich has free outdoor gyms all over the city; this is one of the liveliest, with people training here even in autumn.",
+        "There's no booking and no fee: bring a ball and join a pick-up game.",
+        "Olympiaberg, the rubble hill with the city view, is a five-minute walk away."
+      ],
+      tip: "Do a workout here, then run up Olympiaberg as your cool-down.",
+      photos: [
+        { url: "images/olympiapark-sports-1.jpg", credit: "Photo: Go Places community" },
+        { url: "images/olympiapark-sports-2.jpg", credit: "Photo: Go Places community" },
+        { url: "images/olympiapark-sports-3.jpg", credit: "Photo: Go Places community" }
+      ]
+    },
+    {
+      id: "nymphenburg-monopteros",
+      name: "Monopteros at Badenburger See (Nymphenburg)",
+      emoji: "🏛️",
+      lat: 48.15409, lng: 11.49241, // from the photos' GPS data: the lakeside viewpoint looking across to the temple
+      themes: ["side-quests", "architecture", "sunsets"],
+      cost: "Free",
+      when: "All year; late afternoon and sunset are the most beautiful. The park closes at dusk (18:00 from November to March).",
+      summary: "A round Greek-style temple on the shore of the big lake in Nymphenburg Palace Park, with geese on the lawns, swans on the water and old beech trees all around.",
+      history: "The first round temple here was a wooden one, put up in 1805 for the Electress's birthday. It was replaced in 1818 and again in 1862–65 by today's sandstone Monopteros, built to a plan by Leo von Klenze. Its ten Corinthian columns surround a stele with a dedication from King Ludwig I. It is also called the Apollo Temple.",
+      funFacts: [
+        "Munich has two Monopteros temples: this one, and the better-known one on the hill in the English Garden. Both go back to Klenze.",
+        "Locals rate the two big lakes in the palace park as some of the best bird-watching in the city: geese, swans and ducks, and herons in the reeds.",
+        "The Badenburg, a little bathing palace from the 1720s with one of Europe's first heated indoor pools, stands on the other side of the lake.",
+        "Entry to the park is free; only the palace and its pavilions cost money."
+      ],
+      tip: "Stand on the opposite shore for the classic reflection shot, and stay for the sunset over the lake. Watch the gate times: the side gates close half an hour before the main one.",
+      photos: [
+        { url: "images/nymphenburg-monopteros-1.jpg", credit: "Photo: Go Places community" },
+        { url: "images/nymphenburg-monopteros-3.jpg", credit: "Photo: Go Places community" },
+        { url: "images/nymphenburg-monopteros-2.jpg", credit: "Photo: Go Places community" }
+      ]
+    },
+    {
+      id: "wittelsbacherplatz",
+      name: "Wittelsbacherplatz and the Maximilian statue",
+      emoji: "🐎",
+      lat: 48.14325, lng: 11.57605, // at the statue; the photo was taken a few metres south of it
+      themes: ["architecture", "side-quests"],
+      cost: "Free",
+      when: "Any time; lovely at night when the statue and palaces are lit",
+      summary: "A wide, quiet square just off Odeonsplatz, with a bronze horseman in the middle, elegant palaces around it and plenty of benches to sit on.",
+      history: "The statue shows Maximilian I (1573–1651), Duke and later Prince-Elector of Bavaria, who led the Catholic side in the Thirty Years' War. King Ludwig I had it put up: the Danish sculptor Bertel Thorvaldsen made the model, and Munich's royal foundry under Johann Baptist Stiglmaier cast it. It was unveiled on 12 October 1839. The square itself was laid out under Ludwig I as part of the grand new Brienner Straße.",
+      funFacts: [
+        "The inscription on the front reads 'Maximilian Churfuerst von Bayern'; the back says it was built by Ludwig I, King of Bavaria, on 12 October 1839.",
+        "The stone base alone is over 5 metres high; the horse and rider add about 5 more.",
+        "Maximilian points his outstretched hand as if giving an order, which makes him easy to recognise from across the square."
+      ],
+      tip: "Bring a takeaway coffee from Odeonsplatz and sit on one of the benches. It's far calmer than the squares around it.",
+      photos: [
+        { url: "images/wittelsbacherplatz-1.jpg", credit: "Photo: Go Places community" }
+      ]
+    },
+    {
+      id: "botanischer-garten",
+      name: "Botanical Garden (outdoor area free in winter)",
+      emoji: "🌿",
+      lat: 48.16350, lng: 11.50100, // approximate, at the main entrance on Menzinger Straße. VERIFY on the map
+      themes: ["outdoors", "side-quests"],
+      cost: "Outdoor garden free in winter (late October to late March); otherwise €5.50, free for under-18s. Greenhouses always cost extra.",
+      when: "Winter for free entry (9:00–16:30, last entry 16:00); autumn for the golden ginkgos",
+      summary: "Munich's Botanical Garden next to Nymphenburg Palace Park: rock gardens, alpine plants, ponds and quiet benches under huge trees. In the winter months the outdoor part costs nothing.",
+      history: "The garden was laid out from 1909 to 1914 as the new home of the university's botanical collections, which had outgrown the old garden near the main station. Today it holds around 14,000 kinds of plants.", // VERIFY
+      funFacts: [
+        "Last season the outdoor area was free from 26 October to 28 March; a Munich local reports it is free again since 25 October.", // VERIFY current dates
+        "It sits right next to Nymphenburg Palace Park, so you can combine both in one walk.",
+        "In autumn the ginkgo trees turn bright yellow, with a bench underneath one by the rock garden."
+      ],
+      tip: "Address: Menzinger Straße 65. Tram 17 to Botanischer Garten.",
+      photos: []
+    },
+    {
+      id: "rosengarten-untergiesing",
+      name: "Rose garden in Untergiesing",
+      emoji: "🌹",
+      lat: 48.11550, lng: 11.56900, // approximate, Sachsenstraße by the Isar. VERIFY on the map
+      themes: ["outdoors", "side-quests"],
+      cost: "Free",
+      when: "June and July when thousands of roses bloom. Open daily: April to September until 21:00, October to March until 18:00 (weekends from 9:00).",
+      summary: "The city's rose garden and tree nursery by the Isar in Untergiesing: rose beds, perennials and grasses, and benches where few tourists ever find you.",
+      history: "The site was planned in 1901 as a city tree nursery (Baumschule Bischweiler) in the Isar green belt. Since 1955 the city has tested here which rose varieties cope with Munich's climate.",
+      funFacts: [
+        "The 'Staudental' mixes roses with perennials, grasses and summer flowers.",
+        "It closes when there's snow or ice."
+      ],
+      tip: "Address: Sachsenstraße 2. Combine it with a walk along the Isar towards the Flaucher.",
+      photos: []
+    },
+    {
+      id: "motorworld",
+      name: "Motorworld München",
+      emoji: "🏎️",
+      lat: 48.19200, lng: 11.60450, // approximate, Freimann. VERIFY on the map
+      themes: ["side-quests", "architecture"],
+      cost: "Free entry, every day of the year",
+      when: "Mon–Sat 7:30–22:00, Sun and holidays 10:00–22:00",
+      summary: "Rare and luxury cars from more than 30 brands on show in a huge listed railway hall in Freimann. Window-shopping for car lovers, at no cost.",
+      history: "The centre of the site is a listed former Deutsche Bahn locomotive repair hall (the Ausbesserungswerk Freimann), restored and turned into a showroom, workshops, restaurants and event halls, including the Zenith concert hall.",
+      funFacts: [
+        "The site covers 75,000 m².",
+        "There are racing simulators and Carrera tracks inside (these cost extra)."
+      ],
+      tip: "Address: Am Ausbesserungswerk 8. Take the U6 to Freimann rather than driving: parking costs after 30 minutes.",
+      photos: []
+    },
+    {
+      id: "schleissheim",
+      name: "Schleißheim palaces and canal",
+      emoji: "🏰",
+      lat: 48.24930, lng: 11.57000, // approximate, in the garden behind the New Palace. VERIFY on the map
+      themes: ["architecture", "side-quests", "outdoors"],
+      cost: "Park free; the palaces cost extra",
+      when: "Spring to autumn; a half-day trip just north of Munich (S1 to Oberschleißheim)",
+      summary: "Three palaces linked by a huge Baroque garden and a long canal with ducks and swans, in Oberschleißheim. Grand like Nymphenburg, but usually much quieter.",
+      history: "Duke Wilhelm V started with a country house here around 1600. Elector Max Emanuel added the little Lustheim Palace at the far end of the garden in the 1680s and then the vast New Palace from 1701, meant to rival Versailles. The canals and the formal garden between them are among the best-kept Baroque gardens in Germany.", // VERIFY
+      funFacts: [
+        "Lustheim sits on a round island at the end of the canal, about a kilometre from the New Palace.",
+        "A Munich local recommends it as 'less crowded than Nymphenburg', and it is.",
+        "The Oberschleißheim bookshelf is a short ride away, if you want something to read on the canal."
+      ],
+      tip: "Walk the whole canal to Lustheim and back: it's the best part.",
+      photos: []
+    },
+    {
+      id: "dachau-schloss",
+      name: "Dachau Palace garden and view",
+      emoji: "🔭",
+      lat: 48.25800, lng: 11.43400, // approximate, at the palace above the old town. VERIFY on the map
+      themes: ["sunsets", "side-quests", "architecture"],
+      cost: "Garden free (VERIFY); palace hall costs extra",
+      when: "Clear days for the Alps; a half-day trip by S2 to Dachau",
+      summary: "A palace on the hill above Dachau's old town, with a court garden and one of the best views over Munich towards the Alps.",
+      history: "A small summer palace was built here in 1578 and became a favourite country seat of the Munich court. Elector Max Emanuel had the hall wing redone in Baroque style in 1715. Under Napoleonic occupation three of its four wings were badly damaged and pulled down; only the south-west wing with its Renaissance wooden ceiling survives.",
+      funFacts: [
+        "From the terrace you look across the whole plain to Munich and, on Föhn days, the Alps.",
+        "The palace hall is used for concerts today.",
+        "The old town below has a pretty main street with cafés; the Concentration Camp Memorial Site is elsewhere in Dachau."
+      ],
+      tip: "Walk up through the old town from the S-Bahn and come back down along the river Amper.",
       photos: []
     },
     {

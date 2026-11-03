@@ -38,7 +38,7 @@ window.GO_PLACES_LAYER.activities = [
     "moodTags": ["relax", "take-photos", "date", "nature"],
     "bestTime": "Arrive 30–45 minutes before sunset",
     "season": ["spring", "summer", "autumn", "winter"],
-    "placeIds": ["hackerbruecke", "olympiaberg", "froettmaninger-berg", "monopteros", "field-sunset", "raftsman-statue"],
+    "placeIds": ["hackerbruecke", "olympiaberg", "froettmaninger-berg", "monopteros", "field-sunset", "raftsman-statue", "nymphenburg-monopteros"],
     "images": ["images/sunset-field-1.jpg"]
   },
   {
@@ -53,7 +53,7 @@ window.GO_PLACES_LAYER.activities = [
     "moodTags": ["relax", "nature"],
     "bestTime": "Late afternoon",
     "season": ["spring", "summer", "autumn", "winter"],
-    "placeIds": ["hinterbruehl", "westpark", "nymphenburg-canal"],
+    "placeIds": ["hinterbruehl", "westpark", "nymphenburg-canal", "nymphenburg-monopteros", "schleissheim"],
     "images": ["images/hinterbruehl-ducks.jpg"]
   },
   {
@@ -143,7 +143,7 @@ window.GO_PLACES_LAYER.activities = [
     "moodTags": ["learn", "take-photos"],
     "bestTime": "Morning or late afternoon light",
     "season": ["spring", "summer", "autumn", "winter"],
-    "placeIds": ["koenigsplatz", "monopteros", "frauenkirche"],
+    "placeIds": ["koenigsplatz", "monopteros", "frauenkirche", "wittelsbacherplatz"],
     "images": []
   },
   {
@@ -263,7 +263,7 @@ window.GO_PLACES_LAYER.activities = [
     "moodTags": ["take-photos", "explore", "nature"],
     "bestTime": "Clear Föhn days, often in autumn",
     "season": ["spring", "summer", "autumn", "winter"],
-    "placeIds": ["olympiaberg", "alter-peter", "froettmaninger-berg"],
+    "placeIds": ["olympiaberg", "alter-peter", "froettmaninger-berg", "dachau-schloss"],
     "images": []
   },
   {
@@ -370,6 +370,21 @@ window.GO_PLACES_LAYER.activities = [
     "season": ["spring", "summer", "autumn"],
     "placeIds": ["forstenrieder-park", "field-sunset"],
     "images": ["images/forstenrieder-park-3.jpg"]
+  },
+  {
+    "id": "outdoor-workout",
+    "title": "Work out at an open-air gym",
+    "emoji": "💪",
+    "description": "Munich has free outdoor gyms dotted all over the city, with pull-up bars, ladders and parallel bars. No membership, no booking: just turn up and train, then shoot some hoops on the court next door.",
+    "category": "Adventure",
+    "duration": "About 1 hour",
+    "durationMinutes": 60,
+    "cost": 0,
+    "moodTags": ["be-active", "socialize"],
+    "bestTime": "Daylight; sunny weekend afternoons are the liveliest",
+    "season": ["spring", "summer", "autumn", "winter"],
+    "placeIds": ["olympiapark-sports"],
+    "images": ["images/olympiapark-sports-1.jpg"]
   },
   {
     "id": "old-town-in-a-day",
