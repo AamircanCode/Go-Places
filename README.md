@@ -56,6 +56,18 @@ A top-level category for learning in the city that costs nothing. Its places sho
 
 They're normal spots, so explored, wishlist, photos and ratings all work. Everything is in [`data/free-knowledge.js`](data/free-knowledge.js); the top of the file explains every field. Opening hours and most pins are marked VERIFY.
 
+## Place metadata, collections and Plan My Day
+
+Three things that help answer "What should I do right now in my city?".
+
+- **At a glance** on every spot page: how long it takes, budget, best time of day and season, which weather it works in, who it suits, how active it is, step-free access, and three 1–10 scores (hidden gem, knowledge, photo). It also says when right now is a good time to go. All of it is in [`data/place-meta.js`](data/place-meta.js), one entry per spot; a spot without an entry gets a guess from its cost and themes, marked as not checked. Accessibility is marked VERIFY everywhere.
+- **Collections** (`…/#collections`): lists of places, like playlists. Every theme is also a Go Places collection, plus starter ones in [`data/collections.js`](data/collections.js) (Rainy Day Munich, Best First Date Locations, Birdwatching In Munich, …). Anyone can make their own: tap **＋ Collection** on a spot, or start one and search for places. Collections can be Public, Followers only or Private, shared with a link like `…/#collection/<id>`, and other people's can be saved. Spot pages show "Included in collections". The wishlist shows at the top of your collections and stays the wishlist. Signed out, collections are kept on the device and move into the account at sign-in.
+- **Plan My Day** (`…/#plan`, also on the "What can I do?" screen): pick time, budget, interests, company and weather, and get a route through existing places with walking or public transport estimates between stops, a matching activity and nearby hidden gems for each stop, directions, "Show on map", "Try another" and "Save as collection". The weather is detected from [Open-Meteo](https://open-meteo.com) for the city centre (no key, nothing personal sent); otherwise you pick it. A signed-in explorer's profile interests are picked for them. Plans are links too, e.g. `…/#plan/t=2h&b=free&i=books,museums`.
+
+Plan My Day's choices and how interests match places are in [`data/plan.js`](data/plan.js). The planner in `plan.js` is made of swappable parts (filters, scorers, travel time, weather), so live opening hours, real walking or cycling times, public transport or seasonal events can be added later with `GoItinerary.addFilter`, `addScorer`, `setTravel` and `setWeatherProvider` without changing the rest.
+
+Collections in an account need the "collections" part of [`supabase/schema.sql`](supabase/schema.sql): paste the whole file into the SQL Editor and run it again. Until then they stay on the device.
+
 ## Explorers (social discovery, privacy first)
 
 Go Places is not a social network: there are **no follower counts, likes, rankings or leaderboards** anywhere.
@@ -118,6 +130,9 @@ AR camera view, monthly challenges, side-quest submissions from users, a communi
 - `discover.js`: the "What can I do?" layer (moods, activities, hidden gems, quests)
 - `knowledge.js`: the Free Knowledge screens; `data/free-knowledge.js`: its places
 - `social.js`: profiles, follows, explorers, feed, ratings and privacy; `data/social.js`: interests and explorer groups
+- `meta.js`: place metadata and "At a glance"; `data/place-meta.js`: the metadata of each place
+- `collections.js`: collections; `data/collections.js`: the Go Places starter collections
+- `plan.js`: Plan My Day and the route planner; `data/plan.js`: its choices, interests and weights
 - `lightbox.js`: the full-size photo viewer (tap any photo; swipe or arrow keys to move, Esc or tap to close)
 - `data/spots.js`: all spots and themes
 - `data/activities.js`, `data/hidden-gems.js`, `data/quests.js`, `data/discover.js`: content for the "What can I do?" layer

@@ -298,6 +298,9 @@
         '<h2 class="list-title">What can I do?</h2>' +
         '<p class="list-desc">Things to do in ' + esc((window.GO_PLACES || {}).city || "the city") + ", picked for your mood and your time.</p>" +
         '<button class="btn primary wide dz-now" data-d="now">⚡ What Can I Do Right Now?</button>' +
+        (window.GoPlan || window.GoCollections ? '<div class="dz-plan-row">' +
+          (window.GoPlan ? '<a class="btn wide" href="#plan">🗓️ Plan My Day</a>' : "") +
+          (window.GoCollections ? '<a class="btn wide" href="#collections">📚 Collections</a>' : "") + "</div>" : "") +
       "</div>" +
       '<h3 class="dz-h">How do you feel today?</h3>' +
       '<div class="mood-grid">' + moods.map(function (m) {
@@ -354,6 +357,7 @@
       '<p class="list-desc">' + fits.length + " thing" + (fits.length === 1 ? "" : "s") + " that fit, in " + esc(season()) +
         (app.me() ? ", nearest first." : ".") + "</p>" +
       locateHint() +
+      (window.GoPlan ? '<a class="dz-locate dz-plan-link" href="#plan/t=' + esc(t.id) + '&b=any">🗓️ Turn ' + esc(t.label.toLowerCase()) + " into a route with Plan My Day →</a>" : "") +
       (fits.length ? fits.map(activityRow).join("") : '<p class="empty">Nothing fits that yet. Try a bit more time.</p>'),
       "now/" + id);
     autoLocate();

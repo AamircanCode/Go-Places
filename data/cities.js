@@ -17,7 +17,8 @@
  *   emoji    shown in the city switcher
  *   tagline  one short line under the name in the city switcher
  *   files    the city's content files, loaded in this order. spots.js must
- *            come first, because the other files add to it.
+ *            come first, because the other files add to it. place-meta.js
+ *            and collections.js are optional (see data/place-meta.js).
  *
  * Which city opens: the one in the link (?city=berlin), otherwise the last
  * one this device picked, otherwise `defaultCity`.
@@ -36,7 +37,9 @@ window.GO_PLACES_CITIES = {
         "data/activities.js",
         "data/hidden-gems.js",
         "data/quests.js",
-        "data/free-knowledge.js"
+        "data/free-knowledge.js",
+        "data/place-meta.js",
+        "data/collections.js"
       ]
     },
     {

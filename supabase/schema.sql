@@ -633,3 +633,82 @@ create policy "avatars: remove own" on storage.objects
   for delete to authenticated using (
     bucket_id = 'avatars' and (storage.foldername(name))[1] = (select auth.uid())::text
   );
+
+
+-- =====================================================================
+-- COLLECTIONS
+-- =====================================================================
+-- Added with the place metadata / collections / Plan My Day update. Safe to
+-- run again, like the rest of this file. Needs the social part above
+-- (is_follower) to exist, so run the whole file.
+--
+--   collections        lists of places, like playlists. One row per list.
+--                      visibility: public | followers | private
+--                        public     anyone, also people who aren't signed in
+--                        followers  the owner's accepted followers
+--                        private    only the owner
+--   collection_saves   other people's collections (or Go Places ones, whose
+--                      ids start with "pick-" or "theme-") that someone saved
+--
+-- Place metadata and Plan My Day need no tables: they come from data/.
+
+create table if not exists public.collections (
+  id           uuid primary key default gen_random_uuid(),
+  owner_id     uuid not null default auth.uid() references public.profiles (id) on delete cascade,
+  city         text not null default 'munich' check (city ~ '^[a-z0-9-]{1,30}$'),
+  title        text not null check (char_length(btrim(title)) between 1 and 80),
+  description  text not null default '' check (char_length(description) <= 500),
+  cover_image  text not null default '' check (cover_image = '' or cover_image ~ '^images/([a-z0-9-]{1,30}/)?[A-Za-z0-9._-]{1,80}$'),
+  place_ids    text[] not null default '{}'
+               check (cardinality(place_ids) <= 100
+                  and array_to_string(place_ids, ',') ~ '^([a-z0-9-]{1,60}(,|$))*$'),
+  visibility   text not null default 'private' check (visibility in ('public', 'followers', 'private')),
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
+);
+create index if not exists collections_owner_idx on public.collections (owner_id, city);
+create index if not exists collections_public_idx on public.collections (city, visibility, updated_at desc);
+create index if not exists collections_places_idx on public.collections using gin (place_ids);
+
+drop trigger if exists collections_touch on public.collections;
+create trigger collections_touch before update on public.collections
+  for each row execute function public.touch_updated_at();
+
+create table if not exists public.collection_saves (
+  user_id        uuid not null default auth.uid() references public.profiles (id) on delete cascade,
+  collection_id  text not null check (collection_id ~ '^[a-z0-9-]{1,60}$'),
+  saved_at       timestamptz not null default now(),
+  primary key (user_id, collection_id)
+);
+
+-- May the signed-in user (or a visitor) see this collection?
+create or replace function public.can_see_collection(owner uuid, visibility text)
+returns boolean language sql stable security definer set search_path = '' as $$
+  select coalesce(owner = auth.uid(), false)
+      or visibility = 'public'
+      or (visibility = 'followers' and public.is_follower(owner));
+$$;
+grant execute on function public.can_see_collection(uuid, text) to anon, authenticated;
+
+alter table public.collections      enable row level security;
+alter table public.collection_saves enable row level security;
+
+grant select on public.collections to anon;
+grant select, insert, update, delete on public.collections, public.collection_saves to authenticated;
+
+drop policy if exists "collections: read if allowed" on public.collections;
+create policy "collections: read if allowed" on public.collections
+  for select using (public.can_see_collection(owner_id, visibility));
+drop policy if exists "collections: add own" on public.collections;
+create policy "collections: add own" on public.collections
+  for insert to authenticated with check (owner_id = (select auth.uid()));
+drop policy if exists "collections: edit own" on public.collections;
+create policy "collections: edit own" on public.collections
+  for update to authenticated using (owner_id = (select auth.uid())) with check (owner_id = (select auth.uid()));
+drop policy if exists "collections: remove own" on public.collections;
+create policy "collections: remove own" on public.collections
+  for delete to authenticated using (owner_id = (select auth.uid()));
+
+drop policy if exists "collection saves: own only" on public.collection_saves;
+create policy "collection saves: own only" on public.collection_saves
+  for all to authenticated using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
