@@ -121,7 +121,8 @@
   function spotFacts(spot) {
     return (spot.address ? '<p class="meta"><b>Where:</b> ' + esc(spot.address) + "</p>" : "") +
       (spot.opening ? '<p class="meta"><b>Open:</b> ' + esc(spot.opening) + "</p>" : "") +
-      (spot.duration ? '<p class="meta"><b>Time:</b> ' + esc(spot.duration) + "</p>" : "");
+      // With place metadata on, the visit time shows under "At a glance" instead.
+      (spot.duration && !window.GoMeta ? '<p class="meta"><b>Time:</b> ' + esc(spot.duration) + "</p>" : "");
   }
 
   function spotTags(spot) {

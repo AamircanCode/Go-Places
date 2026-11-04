@@ -7,6 +7,9 @@
   var KNOWLEDGE = window.GoKnowledge; // the Free Knowledge category, optional
   var SOCIAL = window.GoSocial; // follows, explorers, feed, ratings, privacy; optional
   var LIGHTBOX = window.GoLightbox; // full-size photo viewer, optional
+  var META = window.GoMeta; // place metadata ("At a glance"), optional
+  var COLLECTIONS = window.GoCollections; // collections of places, optional
+  var PLAN = window.GoPlan; // Plan My Day, optional
   var STORAGE_KEY = "goplaces.explored";
 
   var state = {
@@ -145,6 +148,8 @@
     if (DISCOVER) DISCOVER.onClose();
     if (KNOWLEDGE) KNOWLEDGE.onClose();
     if (SOCIAL) SOCIAL.onClose();
+    if (COLLECTIONS) COLLECTIONS.onClose();
+    if (PLAN) PLAN.onClose();
     if (location.hash) history.replaceState(null, "", location.pathname + location.search);
   }
 
@@ -206,21 +211,25 @@
         '<button class="btn' + (done ? " done" : "") + '" id="explored-btn">' + (done ? "✅ Explored" : "☐ Mark as explored") + "</button>" +
         (ACCT.enabled ? '<button class="btn' + (wished ? " wished" : "") + '" id="wish-btn">' + (wished ? "💚 On wishlist" : "♡ Wishlist") + "</button>" : "") +
         (ACCT.enabled ? '<button class="btn" id="add-photo-btn">📷 Add photo</button>' : "") +
+        (COLLECTIONS ? '<button class="btn" data-c="pick" data-id="' + esc(spot.id) + '">＋ Collection</button>' : "") +
         '<button class="btn" id="share-btn">↗ Share</button>' +
       "</div>" +
       myPhotosBlock(spot) +
       '<p class="summary">' + esc(spot.summary) + "</p>" +
+      (META ? META.glance(spot) : "") +
       (KNOWLEDGE ? KNOWLEDGE.spotSections(spot) : "") +
       (DISCOVER ? DISCOVER.spotSection(spot) : "") +
       (spot.history ? '<div class="spot-section"><h3>📜 History</h3><p>' + esc(spot.history) + "</p></div>" : "") +
       (facts ? '<div class="spot-section"><h3>💡 Fun facts</h3><ul>' + facts + "</ul></div>" : "") +
       (spot.tip ? '<div class="tip">👉 ' + esc(spot.tip) + "</div>" : "") +
+      (COLLECTIONS ? COLLECTIONS.spotSection(spot) : "") +
       (SOCIAL ? SOCIAL.ratingSection(spot) : "")
     );
 
     map.panTo([spot.lat, spot.lng]);
     wireSpotButtons(spot);
     if (SOCIAL) SOCIAL.afterSpot(spot);
+    if (COLLECTIONS) COLLECTIONS.afterSpot(spot);
   }
 
   function wireSpotButtons(spot) {
@@ -350,7 +359,7 @@
       } else {
         meMarker.setLatLng(state.me);
       }
-      if (first) { map.setView(state.me, 15); first = false; if (DISCOVER) DISCOVER.onLocation(); }
+      if (first) { map.setView(state.me, 15); first = false; if (DISCOVER) DISCOVER.onLocation(); if (PLAN) PLAN.onLocation(); }
     }, function () {
       watching = false;
       alert("Couldn't get your location. Check that location access is allowed for this site.");
@@ -587,6 +596,7 @@
       (SOCIAL ? SOCIAL.ownProfileSection() : "") +
       (DISCOVER ? DISCOVER.profileSection(null) : "") +
       '<div class="spot-section"><h3>📷 My photos</h3>' + photoGrid(ACCT.photos, "Open a spot and tap “Add photo” to post your first one.") + "</div>" +
+      (COLLECTIONS ? COLLECTIONS.profileSection() : "") +
       '<div class="spot-section"><h3>💚 Wishlist</h3>' + spotList(wishIds, "Tap “Wishlist” on any spot to save it for later.") + "</div>" +
       '<div class="spot-section"><h3>✅ Explored</h3>' + spotList(visitedIds, "Spots you mark as explored show up here.", ACCT.visits) + "</div>"
     );
@@ -629,6 +639,7 @@
         "</div>" +
         (SOCIAL ? SOCIAL.publicProfileSection(r) : "") +
         (DISCOVER ? DISCOVER.profileSection(r.badges || {}) : "") +
+        (COLLECTIONS ? COLLECTIONS.publicProfileSection(r.profile.id) : "") +
         '<div class="spot-section"><h3>📷 Photos</h3>' + (hidden(r.profile, "photos_visibility", "photos") || photoGrid(r.photos, "No photos yet.")) + "</div>" +
         '<div class="spot-section"><h3>✅ Explored</h3>' + (hidden(r.profile, "visits_visibility", "explored places") || spotList(ids, "Nothing explored yet.", r.visits)) + "</div>" +
         (r.profile.wishlist_visibility && !hidden(r.profile, "wishlist_visibility", "wishlist") && r.profile.wishlist_visibility !== "only_me"
@@ -696,7 +707,9 @@
     });
 
     document.getElementById("export-btn").addEventListener("click", function () {
-      var blob = new Blob([JSON.stringify(ACCT.exportData(), null, 2)], { type: "application/json" });
+      var data = ACCT.exportData();
+      if (COLLECTIONS) Object.assign(data, COLLECTIONS.exportData());
+      var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       var a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = "go-places-" + p.username + ".json";
@@ -798,6 +811,8 @@
     else if (state.view === "discover" && DISCOVER) DISCOVER.rerender();
     else if (state.view === "knowledge" && KNOWLEDGE) KNOWLEDGE.rerender();
     else if (state.view === "social" && SOCIAL) SOCIAL.rerender();
+    else if (state.view === "collections" && COLLECTIONS) COLLECTIONS.rerender();
+    else if (state.view === "plan" && PLAN) PLAN.rerender();
   }
 
   ACCT.on && ACCT.on(function (event) {
@@ -849,6 +864,8 @@
     else if (DISCOVER && DISCOVER.route(hash)) { /* handled by the discovery layer */ }
     else if (KNOWLEDGE && KNOWLEDGE.route(hash)) { /* handled by Free Knowledge */ }
     else if (SOCIAL && SOCIAL.route(hash)) { /* handled by the social layer */ }
+    else if (COLLECTIONS && COLLECTIONS.route(hash)) { /* handled by collections */ }
+    else if (PLAN && PLAN.route(hash)) { /* handled by Plan My Day */ }
     else if (ACCT.enabled && hash === "me") { if (ACCT.user) openProfile(); else openSignIn(); }
     else if (ACCT.enabled && hash.charAt(0) === "@") openPublicProfile(hash.slice(1).toLowerCase());
   }
@@ -894,13 +911,17 @@
         history.replaceState(null, "", hash ? "#" + hash : location.pathname + location.search);
         showSheet(html);
       },
-      isOpen: function () { return state.view === view; }
+      isOpen: function () { return state.view === view; },
+      isSpot: function (id) { return state.view === "spot" && state.openSpotId === id; }
     };
   }
 
   if (DISCOVER) DISCOVER.init(layerApi("discover"));
   if (KNOWLEDGE) KNOWLEDGE.init(layerApi("knowledge"));
   if (SOCIAL) SOCIAL.init(layerApi("social"));
+  if (COLLECTIONS) COLLECTIONS.init(layerApi("collections"));
+  if (PLAN) PLAN.init(layerApi("plan"));
+  if (META) META.check(DATA.spots);
 
   // ---------- start ----------
   document.getElementById("city-label").textContent = DATA.city + ", for free";
