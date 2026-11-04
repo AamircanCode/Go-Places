@@ -553,7 +553,7 @@ window.GO_PLACES = {
       emoji: "🗿",
       lat: 52.43780, lng: 13.25260, // approximate
       themes: ["side-quests", "outdoors"],
-      cost: "Free garden (exhibitions inside €9)", // VERIFY that the garden is free
+      cost: "Free sculpture garden and grounds (exhibitions inside the villa about €9)",
       when: "Summer afternoons, during opening hours",
       summary: "A villa on a small lake in Zehlendorf with a 10,000 square-metre sculpture garden. Sit among the art with a view of the water and read.",
       history: "The villa was built in the 1920s, and in 1946 it became one of West Berlin's first places to show contemporary art after the war. It still runs exhibitions of international contemporary artists.",
