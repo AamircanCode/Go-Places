@@ -7,6 +7,7 @@
   var KNOWLEDGE = window.GoKnowledge; // the Free Knowledge category, optional
   var SOCIAL = window.GoSocial; // follows, explorers, feed, ratings, privacy; optional
   var LIGHTBOX = window.GoLightbox; // full-size photo viewer, optional
+  var CITIES = window.GO_PLACES_CITIES || { cities: [] }; // data/cities.js
   var STORAGE_KEY = "goplaces.explored";
 
   var state = {
@@ -49,6 +50,12 @@
   function visibleSpots() {
     if (state.theme === "all") return DATA.spots;
     return DATA.spots.filter(function (s) { return s.themes.indexOf(state.theme) !== -1; });
+  }
+
+  // A link to this page that opens the current city, e.g. for sharing.
+  function cityUrl(hash) {
+    var id = DATA.cityId || CITIES.current;
+    return location.origin + location.pathname + (id ? "?city=" + encodeURIComponent(id) : "") + (hash ? "#" + hash : "");
   }
 
   function distanceKm(a, b) {
@@ -266,7 +273,7 @@
     });
 
     document.getElementById("share-btn").addEventListener("click", function () {
-      var url = location.origin + location.pathname + "#" + spot.id;
+      var url = cityUrl(spot.id);
       if (navigator.share) {
         navigator.share({ title: spot.name, text: spot.summary, url: url }).catch(function () {});
       } else if (navigator.clipboard) {
@@ -313,8 +320,35 @@
 
   sheetBody.addEventListener("click", function (e) {
     var item = e.target.closest(".list-item");
-    if (item) openSpot(item.getAttribute("data-spot"));
+    if (item && item.hasAttribute("data-spot")) openSpot(item.getAttribute("data-spot"));
   });
+
+  // ---------- city switcher ----------
+  // Each city is its own set of content files (data/cities.js), so switching
+  // reloads the page with ?city=… . Explored spots, wishlist and badges are
+  // kept per account or device, across all cities.
+  function openCities() {
+    state.view = "cities";
+    state.openSpotId = null;
+    stopSpeaking();
+    history.replaceState(null, "", "#cities");
+    var current = DATA.cityId || CITIES.current;
+    showSheet(
+      '<h2 class="list-title">🌍 Choose a city</h2>' +
+      '<p class="list-desc">Go Places is growing. Pick a city to explore; more are on the way.</p>' +
+      CITIES.cities.map(function (c) {
+        var here = c.id === current;
+        return '<a class="list-item city-item' + (here ? " current" : "") + '" href="?city=' + encodeURIComponent(c.id) + '">' +
+          '<span class="emoji">' + esc(c.emoji || "📍") + "</span>" +
+          '<span><span class="name">' + esc(c.name) + '</span><br><span class="sub">' + esc(c.tagline || "") + "</span></span>" +
+          '<span class="check">' + (here ? "✓ You're here" : "") + "</span>" +
+        "</a>";
+      }).join("")
+    );
+  }
+
+  document.getElementById("city-btn").addEventListener("click", openCities);
+  if (CITIES.cities.length < 2) document.getElementById("city-btn").disabled = true;
 
   function spotList(ids, emptyText, dates) {
     var spots = ids.map(spotById).filter(Boolean);
@@ -599,7 +633,7 @@
     var copy = document.getElementById("copy-profile");
     if (copy) copy.addEventListener("click", function (e) {
       e.preventDefault();
-      var url = location.origin + location.pathname + "#@" + p.username;
+      var url = cityUrl("@" + p.username);
       if (navigator.share) navigator.share({ title: "My Go Places profile", url: url }).catch(function () {});
       else if (navigator.clipboard) { navigator.clipboard.writeText(url); copy.textContent = "link copied ✓"; }
     });
@@ -846,6 +880,7 @@
   function route() {
     var hash = decodeURIComponent(location.hash.slice(1));
     if (hash && spotById(hash)) openSpot(hash);
+    else if (hash === "cities") openCities();
     else if (DISCOVER && DISCOVER.route(hash)) { /* handled by the discovery layer */ }
     else if (KNOWLEDGE && KNOWLEDGE.route(hash)) { /* handled by Free Knowledge */ }
     else if (SOCIAL && SOCIAL.route(hash)) { /* handled by the social layer */ }
@@ -904,6 +939,7 @@
 
   // ---------- start ----------
   document.getElementById("city-label").textContent = DATA.city + ", for free";
+  document.title = "Go Places · " + DATA.city;
   renderThemes();
   renderMarkers();
   updateCounter();
