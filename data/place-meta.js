@@ -7,7 +7,8 @@
  * data/free-knowledge.js). Plain JSON, so it can move into a database later.
  *
  * A spot without an entry still works: meta.js fills in a guess from its cost
- * and themes. Each city has its own copy of this file (e.g. data/berlin/).
+ * and themes. Each city has its own copy of this file (e.g. data/berlin/), listed in that
+ * city's `files` in data/cities.js.
  *
  *   estimatedDuration   "15 Minutes" | "30 Minutes" | "1 Hour" | "2 Hours" | "Half Day" | "Full Day"
  *   bestTimeOfDay       any of "Sunrise", "Morning", "Afternoon", "Sunset", "Evening", "Night"

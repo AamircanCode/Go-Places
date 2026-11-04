@@ -14,7 +14,8 @@
  *   coverImage   optional, a photo from images/
  *   placeIds     spot ids from data/spots.js and data/free-knowledge.js, in order
  *
- * Each city has its own copy of this file (e.g. data/berlin/). Plain JSON.
+ * Each city has its own copy of this file (e.g. data/berlin/), listed in that
+ * city's `files` in data/cities.js. Plain JSON.
  */
 window.GO_PLACES_LAYER = window.GO_PLACES_LAYER || {};
 window.GO_PLACES_LAYER.collections = [

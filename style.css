@@ -38,6 +38,15 @@ button { font: inherit; cursor: pointer; }
 .logo { font-size: 24px; }
 .brand h1 { margin: 0; font-size: 18px; line-height: 1.1; white-space: nowrap; }
 .brand p { margin: 0; font-size: 12px; opacity: 0.85; }
+.city-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin: 1px 0 0; padding: 1px 8px 1px 0;
+  border: 0; border-radius: 999px; background: none; color: #fff;
+  font-size: 12px; opacity: 0.9; white-space: nowrap;
+}
+.city-btn:hover, .city-btn:focus-visible { opacity: 1; text-decoration: underline; }
+.city-caret { font-size: 10px; }
+.city-item.current { outline: 2px solid var(--brand); outline-offset: -2px; }
 .topbar-right { display: flex; align-items: center; gap: 8px; }
 .explored {
   font-size: 13px; background: rgba(255,255,255,0.18);

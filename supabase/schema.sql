@@ -658,7 +658,7 @@ create table if not exists public.collections (
   city         text not null default 'munich' check (city ~ '^[a-z0-9-]{1,30}$'),
   title        text not null check (char_length(btrim(title)) between 1 and 80),
   description  text not null default '' check (char_length(description) <= 500),
-  cover_image  text not null default '' check (cover_image = '' or cover_image ~ '^images/[A-Za-z0-9._-]{1,80}$'),
+  cover_image  text not null default '' check (cover_image = '' or cover_image ~ '^images/([a-z0-9-]{1,30}/)?[A-Za-z0-9._-]{1,80}$'),
   place_ids    text[] not null default '{}'
                check (cardinality(place_ids) <= 100
                   and array_to_string(place_ids, ',') ~ '^([a-z0-9-]{1,60}(,|$))*$'),
