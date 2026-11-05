@@ -206,7 +206,7 @@
   function photoBlock(spot) {
     var photos = spot.photos || [];
     if (!photos.length) {
-      return '<div class="photo">' + esc(spot.emoji || "📍") + "</div>";
+      return '<div class="photo emoji-only">' + esc(spot.emoji || "📍") + "</div>";
     }
     var html = '<div class="photo" id="main-photo">' + mainPhoto(spot, 0, ' onerror="this.remove()"') + "</div>";
     if (photos.length > 1) {
@@ -274,32 +274,38 @@
     var dist = distanceLabel(spot);
     var directions = "https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=" + spot.lat + "," + spot.lng;
 
+    var saved = wished || (COLLECTIONS && COLLECTIONS.inAny(spot.id));
+    var canSave = COLLECTIONS || ACCT.enabled;
+    var canRate = SOCIAL && SOCIAL.ready();
+    var line = [spot.cost, spot.when, dist].filter(Boolean).map(esc).join(" · ");
+
     showSheet(
       photoBlock(spot) +
       '<h2 class="spot-title">' + esc(spot.name) + "</h2>" +
-      '<div class="tags">' + tags + "</div>" +
-      '<p class="meta"><b>Cost:</b> ' + esc(spot.cost) + "</p>" +
-      (spot.when ? '<p class="meta"><b>When:</b> ' + esc(spot.when) + "</p>" : "") +
+      '<p class="meta spot-line">' + line + "</p>" +
       (KNOWLEDGE ? KNOWLEDGE.spotFacts(spot) : "") +
-      (dist ? '<p class="meta"><b>Distance:</b> ' + esc(dist) + "</p>" : "") +
-      '<div class="actions">' +
+      '<div class="spot-main">' +
         '<a class="btn primary" target="_blank" rel="noopener" href="' + directions + '">🧭 Directions</a>' +
-        ('speechSynthesis' in window ? '<button class="btn" id="listen-btn">🔊 Listen</button>' : "") +
-        '<button class="btn' + (done ? " done" : "") + '" id="explored-btn">' + (done ? "✅ Explored" : "☐ Mark as explored") + "</button>" +
-        (ACCT.enabled ? '<button class="btn' + (wished ? " wished" : "") + '" id="wish-btn">' + (wished ? "💚 On wishlist" : "♡ Wishlist") + "</button>" : "") +
-        (ACCT.enabled ? '<button class="btn" id="add-photo-btn">📷 Add photo</button>' : "") +
-        (COLLECTIONS ? '<button class="btn" data-c="pick" data-id="' + esc(spot.id) + '">＋ Collection</button>' : "") +
-        '<button class="btn" id="share-btn">↗ Share</button>' +
+        '<button class="btn' + (done ? " done" : "") + '" id="explored-btn">' + (done ? "✅ Explored" : "☐ Explored") + "</button>" +
+        (canSave ? '<button class="btn' + (saved ? " wished" : "") + '" id="save-btn">' + (saved ? "💚 Saved" : "♡ Save") + "</button>" : "") +
+      "</div>" +
+      '<div class="spot-icons">' +
+        ('speechSynthesis' in window ? '<button id="listen-btn"><b>🔊</b><span>Listen</span></button>' : "") +
+        (ACCT.enabled ? '<button id="add-photo-btn"><b>📷</b><span>Add photo</span></button>' : "") +
+        (canRate ? '<button id="rate-btn"><b>☆</b><span>Rate</span></button>' : "") +
+        '<button id="share-btn"><b>↗</b><span>Share</span></button>' +
       "</div>" +
       myPhotosBlock(spot) +
       '<p class="summary">' + esc(spot.summary) + "</p>" +
+      (spot.tip ? '<div class="tip">👉 ' + esc(spot.tip) + "</div>" : "") +
       (SUBMIT ? SUBMIT.spotNote(spot) : "") +
       (META ? META.glance(spot) : "") +
+      '<div class="tags">' + tags + "</div>" +
       (KNOWLEDGE ? KNOWLEDGE.spotSections(spot) : "") +
       (DISCOVER ? DISCOVER.spotSection(spot) : "") +
-      (spot.history ? '<div class="spot-section"><h3>📜 History</h3><p>' + esc(spot.history) + "</p></div>" : "") +
-      (facts ? '<div class="spot-section"><h3>💡 Fun facts</h3><ul>' + facts + "</ul></div>" : "") +
-      (spot.tip ? '<div class="tip">👉 ' + esc(spot.tip) + "</div>" : "") +
+      (spot.history || facts ? '<details class="spot-section fold"><summary><h3>📜 History' + (facts ? " &amp; fun facts" : "") + "</h3></summary>" +
+        (spot.history ? "<p>" + esc(spot.history) + "</p>" : "") +
+        (facts ? '<h4 class="fold-sub">💡 Fun facts</h4><ul>' + facts + "</ul>" : "") + "</details>" : "") +
       aroundBlock(spot) +
       nearbyBlock(spot) +
       (COLLECTIONS ? COLLECTIONS.spotSection(spot) : "") +
@@ -327,12 +333,20 @@
       openSpot(spot.id);
     });
 
-    var wishBtn = document.getElementById("wish-btn");
-    if (wishBtn) wishBtn.addEventListener("click", function () {
+    // One Save button: the wishlist and your collections, in one picker.
+    var saveBtn = document.getElementById("save-btn");
+    if (saveBtn) saveBtn.addEventListener("click", function () {
+      if (COLLECTIONS) { COLLECTIONS.openPicker(spot.id); return; }
       if (!ACCT.user) { openSignIn("Sign in to keep a wishlist of spots you want to visit."); return; }
       ACCT.setWished(spot.id, !ACCT.wishlist[spot.id])
         .catch(function (err) { alert("Couldn't save that: " + err.message); });
       openSpot(spot.id);
+    });
+
+    var rateBtn = document.getElementById("rate-btn");
+    if (rateBtn) rateBtn.addEventListener("click", function () {
+      var box = document.getElementById("rating-box");
+      if (box) box.scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
     var addPhotoBtn = document.getElementById("add-photo-btn");
@@ -343,15 +357,16 @@
 
     var listenBtn = document.getElementById("listen-btn");
     if (listenBtn) listenBtn.addEventListener("click", function () {
-      if (speechSynthesis.speaking) { stopSpeaking(); listenBtn.textContent = "🔊 Listen"; return; }
+      var label = listenBtn.querySelector("span");
+      if (speechSynthesis.speaking) { stopSpeaking(); label.textContent = "Listen"; return; }
       var text = [spot.name + ".", spot.summary, spot.history || ""]
         .concat((spot.funFacts || []).length ? ["Fun facts."].concat(spot.funFacts) : [])
         .join(" ");
       var u = new SpeechSynthesisUtterance(text);
       u.lang = "en-GB";
-      u.onend = function () { listenBtn.textContent = "🔊 Listen"; };
+      u.onend = function () { label.textContent = "Listen"; };
       speechSynthesis.speak(u);
-      listenBtn.textContent = "⏹ Stop";
+      label.textContent = "Stop";
     });
 
     document.getElementById("share-btn").addEventListener("click", function () {
@@ -360,7 +375,7 @@
         navigator.share({ title: spot.name, text: spot.summary, url: url }).catch(function () {});
       } else if (navigator.clipboard) {
         navigator.clipboard.writeText(url);
-        this.textContent = "✓ Link copied";
+        this.querySelector("span").textContent = "Copied";
       }
     });
 
@@ -574,6 +589,7 @@
         else if (go === "reset") openReset();
         else if (go === "profile") openProfile();
         else if (go === "edit") openEditProfile();
+        else if (go === "settings") openSettings();
       });
     });
   }
@@ -666,11 +682,11 @@
   }
 
   // ---------- profile ----------
-  function profileHeader(p) {
+  function profileHeader(p, extra) {
     return '<div class="profile-head" style="--accent:' + esc(p.accent_color) + '">' +
       (SOCIAL ? SOCIAL.avatar(p) : '<span class="avatar">' + esc(p.avatar_emoji) + "</span>") +
       '<div><h2 class="profile-name">' + esc(p.display_name || p.username) + "</h2>" +
-      '<p class="profile-user">@' + esc(p.username) + (p.home_city ? " · " + esc(p.home_city) : "") + "</p></div>" +
+      '<p class="profile-user">@' + esc(p.username) + (p.home_city ? " · " + esc(p.home_city) : "") + (extra ? " · " + esc(extra) : "") + "</p></div>" +
     "</div>" +
     (p.bio ? '<p class="profile-bio">' + esc(p.bio) + "</p>" : "");
   }
@@ -696,47 +712,121 @@
     return '<div class="stat"><b>' + n + "</b><span>" + esc(label) + "</span></div>";
   }
 
+  var PROFILE_TABS = [
+    { id: "places", label: "Places" },
+    { id: "photos", label: "Photos" },
+    { id: "badges", label: "Badges" },
+    { id: "lists", label: "Lists" }
+  ];
+  var PLACE_LISTS = [
+    { id: "explored", label: "Explored" },
+    { id: "wishlist", label: "Wishlist" },
+    { id: "saved", label: "Saved activities" }
+  ];
+
+  function visibilityLabel(p) {
+    var v = p.profile_visibility || (p.is_public ? "public" : "private");
+    return v === "public" ? "🌍 Public" : v === "followers" ? "👥 Followers only" : "🔒 Private";
+  }
+
+  function profilePanel(tab, visitedIds, wishIds) {
+    if (tab === "photos") return photoGrid(ACCT.photos, "Open a spot and tap “Add photo” to post your first one.");
+    if (tab === "badges") return DISCOVER ? DISCOVER.profileSection(null, "badges") : "";
+    if (tab === "lists") return COLLECTIONS ? COLLECTIONS.profileSection() : "";
+    var list = state.profileList || "explored";
+    var lists = PLACE_LISTS.filter(function (l) { return l.id !== "saved" || DISCOVER; });
+    return '<div class="pf-sub">' + lists.map(function (l) {
+        return '<button class="pf-chip' + (l.id === list ? " on" : "") + '" data-pl="' + l.id + '">' + esc(l.label) + "</button>";
+      }).join("") + "</div>" +
+      (list === "wishlist" ? spotList(wishIds, "Tap “Save” on any spot to put it on your wishlist.")
+        : list === "saved" ? DISCOVER.profileSection(null, "saved")
+        : spotList(visitedIds, "Spots you mark as explored show up here.", ACCT.visits));
+  }
+
   function openProfile() {
     if (!ACCT.user || !ACCT.profile) { openSignIn(); return; }
     var p = ACCT.profile;
     state.view = "profile";
     history.replaceState(null, "", "#me");
+    var tab = state.profileTab || "places";
     var visitedIds = Object.keys(ACCT.visits).sort(function (a, b) { return ACCT.visits[b] < ACCT.visits[a] ? -1 : 1; });
     var wishIds = Object.keys(ACCT.wishlist);
     showSheet(
-      profileHeader(p) +
-      '<p class="privacy-badge">' + (SOCIAL && SOCIAL.ready() ? SOCIAL.privacyLine(p) : p.is_public
-        ? '🌍 Public profile · <a href="#" id="copy-profile">copy link</a>'
-        : "🔒 Private profile · only you can see this") + "</p>" +
+      '<button class="settings-btn" data-go="settings" aria-label="Settings" title="Settings">⚙️</button>' +
+      profileHeader(p, visibilityLabel(p)) +
       '<div class="stats">' +
         stat(visitedIds.filter(spotById).length + "/" + DATA.spots.length, "explored") +
-        stat(wishIds.filter(spotById).length, "on wishlist") +
+        (DISCOVER ? stat(DISCOVER.badgeCount(), DISCOVER.badgeCount() === 1 ? "badge" : "badges") : stat(wishIds.filter(spotById).length, "on wishlist")) +
         stat(ACCT.photos.length, ACCT.photos.length === 1 ? "photo" : "photos") +
       "</div>" +
-      '<div class="actions"><button class="btn" data-go="edit">✏️ Edit profile</button>' +
-        '<button class="btn" id="signout-btn">Sign out</button></div>' +
       (SOCIAL ? SOCIAL.ownProfileSection() : "") +
-      (DISCOVER ? DISCOVER.profileSection(null) : "") +
-      '<div class="spot-section"><h3>📷 My photos</h3>' + photoGrid(ACCT.photos, "Open a spot and tap “Add photo” to post your first one.") + "</div>" +
-      (SUBMIT ? SUBMIT.profileSection() : "") +
-      (COLLECTIONS ? COLLECTIONS.profileSection() : "") +
-      '<div class="spot-section"><h3>💚 Wishlist</h3>' + spotList(wishIds, "Tap “Wishlist” on any spot to save it for later.") + "</div>" +
-      '<div class="spot-section"><h3>✅ Explored</h3>' + spotList(visitedIds, "Spots you mark as explored show up here.", ACCT.visits) + "</div>"
+      '<div class="pf-tabs" role="tablist">' + PROFILE_TABS.filter(function (t) {
+        return (t.id !== "badges" || DISCOVER) && (t.id !== "lists" || COLLECTIONS);
+      }).map(function (t) {
+        return '<button role="tab" class="pf-tab' + (t.id === tab ? " on" : "") + '" aria-selected="' + (t.id === tab) + '" data-pt="' + t.id + '">' + esc(t.label) + "</button>";
+      }).join("") + "</div>" +
+      '<div class="pf-panel">' + profilePanel(tab, visitedIds, wishIds) + "</div>"
     );
     wireLinks();
-    wirePhotoGrid(ACCT.photos, true, openProfile);
+    if (tab === "photos") wirePhotoGrid(ACCT.photos, true, openProfile);
     if (SOCIAL) SOCIAL.fillAvatars(sheetBody);
+    Array.prototype.forEach.call(sheetBody.querySelectorAll("[data-pt]"), function (b) {
+      b.addEventListener("click", function () { state.profileTab = b.getAttribute("data-pt"); openProfile(); });
+    });
+    Array.prototype.forEach.call(sheetBody.querySelectorAll("[data-pl]"), function (b) {
+      b.addEventListener("click", function () { state.profileList = b.getAttribute("data-pl"); openProfile(); });
+    });
+  }
+
+  // Everything you change now and then: profile, privacy, suggestions, your data.
+  function openSettings() {
+    if (!ACCT.user || !ACCT.profile) { openSignIn(); return; }
+    var p = ACCT.profile;
+    state.view = "settings";
+    history.replaceState(null, "", "#settings");
+    var shareable = (p.profile_visibility || (p.is_public ? "public" : "private")) !== "private";
+    var social = SOCIAL && SOCIAL.ready();
+    var contribute = SUBMIT ? SUBMIT.settingsRows() : "";
+    var cityId = DATA.cityId || CITIES.current;
+    var city = CITIES.cities.filter(function (c) { return c.id === cityId; })[0] || {};
+    function row(id, icon, label, value, cls) {
+      return '<button class="set-row' + (cls ? " " + cls : "") + '" id="' + id + '"><span class="set-icon">' + icon + "</span>" +
+        '<span class="set-label">' + esc(label) + '</span><span class="set-val">' + esc(value || "") + "</span></button>";
+    }
+    showSheet(
+      '<button class="dz-back" data-go="profile">← Your profile</button>' +
+      '<h2 class="list-title">Settings</h2>' +
+      '<h3 class="set-h">Account</h3><div class="set-group">' +
+        row("set-edit", "✏️", "Edit profile") +
+        (social ? row("set-privacy", "🔒", "Privacy", visibilityLabel(p).replace(/^\S+ /, "")) : "") +
+        (shareable ? row("set-copy", "🔗", "Copy profile link", "", "no-arrow") : "") +
+      "</div>" +
+      (contribute ? '<h3 class="set-h">Contribute</h3><div class="set-group">' + contribute + "</div>" : "") +
+      '<h3 class="set-h">App</h3><div class="set-group">' +
+        row("set-city", "🏙️", "City", city.name || "") +
+      "</div>" +
+      '<h3 class="set-h">Your data</h3><div class="set-group">' +
+        row("export-btn", "⬇", "Download my data", "", "no-arrow") +
+        row("signout-btn", "🚪", "Sign out", "", "no-arrow") +
+        row("delete-btn", "🗑", "Delete account", "", "no-arrow danger") +
+      "</div>"
+    );
+    wireLinks();
     if (SUBMIT) SUBMIT.afterProfile();
+    document.getElementById("set-edit").addEventListener("click", openEditProfile);
+    var priv = document.getElementById("set-privacy");
+    if (priv) priv.addEventListener("click", function () { location.hash = "privacy"; });
+    document.getElementById("set-city").addEventListener("click", function () { openCities(false); });
+    var copy = document.getElementById("set-copy");
+    if (copy) copy.addEventListener("click", function () {
+      var url = cityUrl("@" + p.username);
+      if (navigator.share) navigator.share({ title: "My Go Places profile", url: url }).catch(function () {});
+      else if (navigator.clipboard) { navigator.clipboard.writeText(url); copy.querySelector(".set-val").textContent = "Copied ✓"; }
+    });
     document.getElementById("signout-btn").addEventListener("click", function () {
       ACCT.signOut().catch(function (err) { alert(errText(err)); });
     });
-    var copy = document.getElementById("copy-profile");
-    if (copy) copy.addEventListener("click", function (e) {
-      e.preventDefault();
-      var url = cityUrl("@" + p.username);
-      if (navigator.share) navigator.share({ title: "My Go Places profile", url: url }).catch(function () {});
-      else if (navigator.clipboard) { navigator.clipboard.writeText(url); copy.textContent = "link copied ✓"; }
-    });
+    wireDataButtons(p);
   }
 
   function openPublicProfile(username) {
@@ -784,6 +874,7 @@
     var p = ACCT.profile;
     state.view = "edit";
     showSheet(
+      '<button class="dz-back" data-go="settings">← Settings</button>' +
       '<h2 class="list-title">Edit profile</h2>' +
       '<form class="form" id="profile-form">' +
         '<fieldset><legend>Avatar</legend><div class="choice-row">' + AVATARS.map(function (a) {
@@ -802,12 +893,8 @@
         '<label class="toggle"><input type="checkbox" name="public"' + (p.is_public ? " checked" : "") + '>' +
           "<span><b>Public profile</b><br>Anyone with your link can see your name, explored spots and photos. Your wishlist and email always stay private.</span></label>") +
         '<p class="form-msg" role="alert"></p>' +
-        '<div class="actions"><button class="btn primary" type="submit">Save</button><button class="btn" type="button" data-go="profile">Cancel</button></div>' +
-      "</form>" +
-      '<div class="spot-section danger-zone"><h3>Your data</h3>' +
-        '<p class="list-desc">Download everything we store about you, or delete your account and all your photos for good.</p>' +
-        '<div class="actions"><button class="btn" id="export-btn">⬇ Download my data</button>' +
-        '<button class="btn danger" id="delete-btn">Delete account</button></div></div>'
+        '<div class="actions"><button class="btn primary" type="submit">Save</button><button class="btn" type="button" data-go="settings">Cancel</button></div>' +
+      "</form>"
     );
     wireLinks();
     onSubmit("profile-form", function (form, f) {
@@ -829,7 +916,10 @@
         return ACCT.updateProfile(fields);
       }).then(openProfile);
     });
+  }
 
+  // "Download my data" and "Delete account" on the Settings screen.
+  function wireDataButtons(p) {
     document.getElementById("export-btn").addEventListener("click", function () {
       var data = ACCT.exportData();
       if (COLLECTIONS) Object.assign(data, COLLECTIONS.exportData());
@@ -935,6 +1025,7 @@
   function rerender() {
     if (state.view === "spot" && state.openSpotId) openSpot(state.openSpotId);
     else if (state.view === "profile") openProfile();
+    else if (state.view === "settings") openSettings();
     else if (state.view === "public" && state.publicUser) openPublicProfile(state.publicUser);
     else if (state.view === "list") openList();
     else if (state.view === "discover" && DISCOVER) DISCOVER.rerender();
@@ -961,7 +1052,7 @@
       applyAccent();
       renderAccountBtn();
       refreshExplored();
-      if (state.view === "profile" || state.view === "edit" || state.view === "photo" || state.view === "upload") closeSheet();
+      if (state.view === "profile" || state.view === "settings" || state.view === "edit" || state.view === "photo" || state.view === "upload") closeSheet();
       else rerender();
     } else if (event === "recovery") {
       openNewPassword();
@@ -999,6 +1090,7 @@
     else if (PLAN && PLAN.route(hash)) { /* handled by Plan My Day */ }
     else if (SUBMIT && SUBMIT.route(hash)) { /* handled by suggestions and review */ }
     else if (ACCT.enabled && hash === "me") { if (ACCT.user) openProfile(); else openSignIn(); }
+    else if (ACCT.enabled && hash === "settings") { if (ACCT.user) openSettings(); else openSignIn(); }
     else if (ACCT.enabled && hash.charAt(0) === "@") openPublicProfile(hash.slice(1).toLowerCase());
   }
 
@@ -1035,6 +1127,7 @@
       openSignIn: openSignIn,
       openProfile: openProfile,
       openEditProfile: openEditProfile,
+      openSettings: openSettings,
       rerender: rerender,
       close: closeSheet,
       view: function () { return state.view; },

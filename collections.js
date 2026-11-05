@@ -469,23 +469,35 @@
   // ---------- the "＋ Collection" picker on a spot page ----------
   var pendingSpot = null;
 
+  // The Save sheet on a spot page: the wishlist first, then your collections.
   function openPicker(spotId) {
     var spot = app.spotById(spotId);
     if (!spot) return openHome();
     var list = mine();
+    var wished = ACCT.user && ACCT.wishlist && !!ACCT.wishlist[spotId];
     show(openPicker, spotId,
       '<button class="dz-back" data-c="spot" data-id="' + esc(spotId) + '">← ' + esc(spot.name) + "</button>" +
-      '<h2 class="list-title">＋ Add to a collection</h2>' +
-      '<p class="list-desc">Tap a collection to add or remove ' + esc(spot.name) + ".</p>" +
-      signInHint() +
-      (list.length ? list.map(function (c) {
+      '<h2 class="list-title">Save to…</h2>' +
+      '<p class="list-desc">Tap a list to add or remove ' + esc(spot.name) + ".</p>" +
+      (ACCT.enabled ? '<button class="col-row" data-c="wish" data-id="' + esc(spotId) + '"><span class="col-thumb">💚</span>' +
+        '<span class="col-text"><span class="name">Wishlist</span><span class="sub">' + (ACCT.user ? "Places you want to visit" : "Sign in to keep a wishlist") + "</span></span>" +
+        '<span class="check">' + (wished ? "✅" : "＋") + "</span></button>" : "") +
+      list.map(function (c) {
         var on = has(c.placeIds, spotId);
         return '<button class="col-row" data-c="toggle" data-id="' + esc(c.id) + '" data-spot-id="' + esc(spotId) + '">' + thumb(c) +
           '<span class="col-text"><span class="name">' + esc(c.title) + '</span><span class="sub">' + places(c).length + " places</span></span>" +
           '<span class="check">' + (on ? "✅" : "＋") + "</span></button>";
-      }).join("") : '<p class="empty">You have no collections yet.</p>') +
-      '<button class="btn wide" data-c="new-with" data-id="' + esc(spotId) + '">＋ New collection with this place</button>',
+      }).join("") +
+      '<button class="col-row col-new" data-c="new-with" data-id="' + esc(spotId) + '"><span class="col-thumb">＋</span>' +
+        '<span class="col-text"><span class="name">New collection</span><span class="sub">Start a list with this place</span></span></button>' +
+      signInHint() +
+      '<button class="btn primary wide" data-c="spot" data-id="' + esc(spotId) + '">Done</button>',
       "collection-add/" + spotId);
+  }
+
+  // Whether a place is in any of your own collections (for the Save button).
+  function inAny(spotId) {
+    return mine().some(function (c) { return has(c.placeIds, spotId); });
   }
 
   // ---------- pieces for other screens ----------
@@ -495,8 +507,7 @@
     var ours = goPlaces().filter(function (c) { return has(c.placeIds, spot.id); });
     var mineIn = mine().filter(function (c) { return has(c.placeIds, spot.id); });
     return '<div class="spot-section"><h3>📚 Included in collections</h3><div class="col-chips" id="col-included">' +
-      chips(mineIn.concat(ours)) + "</div>" +
-      '<button class="dz-more" data-c="pick" data-id="' + esc(spot.id) + '">＋ Add to a collection</button></div>';
+      chips(mineIn.concat(ours)) + "</div></div>";
   }
 
   function chips(list) {
@@ -524,9 +535,7 @@
 
   function profileSection() {
     var my = mine();
-    var wish = wishlistCollection();
     return '<div class="spot-section"><h3>📚 My collections</h3>' +
-      (wish ? row(wish) : "") +
       (my.length ? my.map(row).join("") : '<p class="empty">Make a list of places, like a playlist for the city.</p>') +
       '<button class="dz-more" data-c="home">All collections →</button></div>';
   }
@@ -601,6 +610,11 @@
     else if (k === "spot") app.openSpot(id);
     else if (k === "signin") app.openSignIn();
     else if (k === "new-with") { pendingSpot = id; createFrom("", "", [id]); }
+    else if (k === "wish") {
+      if (!ACCT.user) { app.openSignIn("Sign in to keep a wishlist of places you want to visit."); return; }
+      ACCT.setWished(id, !ACCT.wishlist[id]).catch(fail);
+      openPicker(id);
+    }
     else if (k === "toggle") {
       var c = byId(mine(), id), spotId = el.getAttribute("data-spot-id");
       if (c) togglePlace(c, spotId).then(function () { openPicker(spotId); }, fail);
@@ -670,6 +684,8 @@
     profileSection: profileSection,
     publicProfileSection: publicProfileSection,
     createFrom: createFrom,
-    exportData: exportData
+    exportData: exportData,
+    openPicker: openPicker,
+    inAny: inAny
   };
 })();

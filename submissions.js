@@ -119,7 +119,7 @@
       return reviewer ? countPending() : 0;
     }).then(function () {
       showDot();
-      if (app.view() === "profile") app.rerender();
+      if (app.view() === "profile" || app.view() === "settings") app.rerender();
     }, function (err) {
       console.warn("Couldn't load suggestions", err);
     });
@@ -751,6 +751,15 @@
           '<button class="btn" data-sub="suggest">＋ Suggest a place</button>' +
           (reviewer ? '<button class="btn primary" data-sub="review">🛡️ Review' + (pendingCount ? " (" + pendingCount + ")" : "") + "</button>" : "") +
         "</div></div>";
+    },
+    // Rows for the Contribute group on the Settings screen.
+    settingsRows: function () {
+      if (!ready) return "";
+      var waiting = mine.filter(function (s) { return s.status === "pending"; }).length;
+      return '<button class="set-row" data-sub="mine"><span class="set-icon">📮</span><span class="set-label">My suggestions</span>' +
+          '<span class="set-val">' + (waiting ? waiting + " waiting" : "") + "</span></button>" +
+        (reviewer ? '<button class="set-row" data-sub="review"><span class="set-icon">🛡️</span><span class="set-label">Review queue' +
+          (pendingCount ? ' <span class="count-dot">' + pendingCount + "</span>" : "") + '</span><span class="set-val"></span></button>' : "");
     },
     afterProfile: function () {
       Array.prototype.forEach.call(app.sheetBody.querySelectorAll("[data-sub]"), function (b) {

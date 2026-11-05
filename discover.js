@@ -542,17 +542,18 @@
 
   // Badges (and, on your own profile, saved activities) on a profile page.
   // `theirs` is someone else's earned badges, or null for your own profile.
-  function profileSection(theirs) {
+  // `part` ("badges" or "saved") picks one half for the tabs on your own profile.
+  function profileSection(theirs, part) {
     var earned = theirs || earnedBadges();
     var got = badges.filter(function (b) { return earned[b.id]; });
     var html = "";
-    if (got.length || !theirs) {
+    if ((got.length || !theirs) && part !== "saved") {
       html += '<div class="spot-section"><h3>🏅 Badges</h3>' +
         (got.length ? '<div class="badge-grid">' + got.map(function (b) { return badgeChip(b, true); }).join("") + "</div>"
           : '<p class="empty">Finish a quest to earn your first badge.</p>') +
         (theirs ? "" : '<button class="dz-more" data-d="quests">See quests →</button>') + "</div>";
     }
-    if (!theirs) {
+    if (!theirs && part !== "badges") {
       var saved = Object.keys(progress().saved).map(activityById).filter(Boolean);
       html += '<div class="spot-section"><h3>💚 Saved activities</h3>' +
         (saved.length ? saved.map(activityRow).join("") : '<p class="empty">Tap “Save” on an activity to keep it here.</p>') + "</div>";
@@ -719,6 +720,10 @@
     onClose: function () { current = null; clearGemMarker(); },
     onLocation: function () { rerender(); },
     spotSection: spotSection,
-    profileSection: profileSection
+    profileSection: profileSection,
+    badgeCount: function () {
+      var earned = earnedBadges();
+      return badges.filter(function (b) { return earned[b.id]; }).length;
+    }
   };
 })();
