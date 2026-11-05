@@ -25,7 +25,8 @@
  *             /images folder and use e.g. "images/hackerbruecke-1.jpg".
  *
  * To ADD A THEME/PLAYLIST: add a block to `themes`, then put its id in the
- * `themes` list of every spot that should show up in it.
+ * `themes` list of every spot that should show up in it. `short` is the
+ * optional shorter name shown on the theme chip above the map.
  *
  * Facts marked "VERIFY" are worth double-checking before launch.
  */
@@ -35,13 +36,13 @@ window.GO_PLACES = {
   zoom: 13,
 
   themes: [
-    { id: "free-classics", name: "Free Munich classics", emoji: "⭐", description: "The iconic spots every visitor should see, all free." },
-    { id: "sunsets", name: "Sunset spots", emoji: "🌅", description: "Where locals go to watch the sky turn orange." },
-    { id: "churches", name: "Oldest churches", emoji: "⛪", description: "Centuries of history, mostly free to walk into." },
-    { id: "architecture", name: "Architecture in Munich", emoji: "🏛️", description: "From Gothic towers to 'Athens on the Isar'." },
-    { id: "bavarian", name: "The Bavarian experience", emoji: "🥨", description: "Beer gardens, markets and local traditions." },
-    { id: "side-quests", name: "Side quests", emoji: "🦆", description: "Lesser-known and random things worth finding." },
-    { id: "outdoors", name: "Green & active", emoji: "🌲", description: "Forests, fields and paths for running, cycling and riding." }
+    { id: "free-classics", short: "Classics", name: "Free Munich classics", emoji: "⭐", description: "The iconic spots every visitor should see, all free." },
+    { id: "sunsets", short: "Sunsets", name: "Sunset spots", emoji: "🌅", description: "Where locals go to watch the sky turn orange." },
+    { id: "churches", short: "Churches", name: "Oldest churches", emoji: "⛪", description: "Centuries of history, mostly free to walk into." },
+    { id: "architecture", short: "Architecture", name: "Architecture in Munich", emoji: "🏛️", description: "From Gothic towers to 'Athens on the Isar'." },
+    { id: "bavarian", short: "Bavarian", name: "The Bavarian experience", emoji: "🥨", description: "Beer gardens, markets and local traditions." },
+    { id: "side-quests", short: "Side quests", name: "Side quests", emoji: "🦆", description: "Lesser-known and random things worth finding." },
+    { id: "outdoors", short: "Outdoors", name: "Green & active", emoji: "🌲", description: "Forests, fields and paths for running, cycling and riding." }
   ],
 
   spots: [

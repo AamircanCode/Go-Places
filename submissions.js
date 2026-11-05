@@ -143,8 +143,8 @@
       if (reviewer && pendingCount) {
         btn.insertAdjacentHTML("beforeend", '<span class="review-dot" title="' + pendingCount + ' waiting for review">' + pendingCount + "</span>");
       }
-      var fab = document.getElementById("suggest-btn");
-      if (fab) fab.hidden = !ready;
+      var tab = document.querySelector('[data-tab="suggest"]');
+      if (tab) tab.hidden = !ready;
     }, 0);
   }
 
@@ -183,6 +183,7 @@
     map.getContainer().appendChild(cross);
     picker.cross = cross;
     document.body.classList.add("picking");
+    if (app.updateTabs) app.updateTabs();
     picker.addEventListener("click", function (e) {
       var b = e.target.closest("[data-pin]");
       if (!b) return;
@@ -210,6 +211,7 @@
     if (picker) { picker.cross.remove(); picker.remove(); }
     picker = null;
     document.body.classList.remove("picking");
+    if (app.updateTabs) app.updateTabs();
   }
 
   // ---------- suggest a place: the form ----------
@@ -696,8 +698,7 @@
     init: function (layer) {
       app = layer;
       if (!ACCT.enabled) return;
-      var fab = document.getElementById("suggest-btn");
-      if (fab) fab.addEventListener("click", startSuggest);
+
       var first = loadApproved().catch(function (err) {
         console.warn("Suggestions are off until the \"submissions\" part of supabase/schema.sql has been run.", err);
       });
@@ -752,6 +753,7 @@
           (reviewer ? '<button class="btn primary" data-sub="review">🛡️ Review' + (pendingCount ? " (" + pendingCount + ")" : "") + "</button>" : "") +
         "</div></div>";
     },
+    startSuggest: startSuggest,
     // Rows for the Contribute group on the Settings screen.
     settingsRows: function () {
       if (!ready) return "";

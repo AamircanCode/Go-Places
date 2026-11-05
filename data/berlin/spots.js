@@ -15,13 +15,13 @@ window.GO_PLACES = {
   zoom: 12,
 
   themes: [
-    { id: "free-classics", name: "Free Berlin classics", emoji: "⭐", description: "The landmarks every visitor should see, all free." },
-    { id: "sunsets", name: "Sunsets & viewpoints", emoji: "🌅", description: "Flak towers, rubble hills, bridges and rooftops to watch the sky from." },
-    { id: "wall-history", name: "Wall & Cold War", emoji: "🧱", description: "Where the city was split, and how it came back together." },
-    { id: "side-quests", name: "Side quests", emoji: "🦆", description: "Quirky, lesser-known and random things worth finding." },
-    { id: "outdoors", name: "Green & active", emoji: "🌲", description: "Parks, lakes, forests and an old airport to run, skate and swim in." },
-    { id: "architecture", name: "Architecture in Berlin", emoji: "🏛️", description: "Palaces, monuments, memorials and modern icons, from the Brandenburg Gate to the TV tower." },
-    { id: "cheap-thrills", name: "Almost free", emoji: "🪙", description: "Not free, but cheap or free on special days. Each one says what it costs." }
+    { id: "free-classics", short: "Classics", name: "Free Berlin classics", emoji: "⭐", description: "The landmarks every visitor should see, all free." },
+    { id: "sunsets", short: "Sunsets", name: "Sunsets & viewpoints", emoji: "🌅", description: "Flak towers, rubble hills, bridges and rooftops to watch the sky from." },
+    { id: "wall-history", short: "The Wall", name: "Wall & Cold War", emoji: "🧱", description: "Where the city was split, and how it came back together." },
+    { id: "side-quests", short: "Side quests", name: "Side quests", emoji: "🦆", description: "Quirky, lesser-known and random things worth finding." },
+    { id: "outdoors", short: "Outdoors", name: "Green & active", emoji: "🌲", description: "Parks, lakes, forests and an old airport to run, skate and swim in." },
+    { id: "architecture", short: "Architecture", name: "Architecture in Berlin", emoji: "🏛️", description: "Palaces, monuments, memorials and modern icons, from the Brandenburg Gate to the TV tower." },
+    { id: "cheap-thrills", short: "Almost free", name: "Almost free", emoji: "🪙", description: "Not free, but cheap or free on special days. Each one says what it costs." }
   ],
 
   spots: [

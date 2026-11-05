@@ -850,15 +850,10 @@
     }
   }
 
-  function addMapButton() {
-    var fab = document.createElement("button");
-    fab.className = "fab";
-    fab.title = "Discover explorers";
-    fab.setAttribute("aria-label", "Discover explorers");
-    fab.textContent = "👥";
-    fab.addEventListener("click", function () { if (!openExplorers()) fab.remove(); });
-    var buttons = document.querySelector(".map-buttons");
-    if (buttons) buttons.insertBefore(fab, buttons.lastElementChild);
+  // The Explorers tab in the bottom bar (only when the social tables exist).
+  function showTab() {
+    var tab = document.querySelector('[data-tab="explorers"]');
+    if (tab) tab.hidden = !ready();
   }
 
   window.GoSocial = {
@@ -867,13 +862,15 @@
       if (!ACCT.enabled) return;
       app.sheetBody.addEventListener("click", onClick);
       wrapAccount();
-      addMapButton();
+      showTab();
       ACCT.on(function (event) {
         if (event === "signed-in") {
+          showTab();
           if (!ready()) { console.warn("Social features are off until the latest supabase/schema.sql has been run."); return; }
           loadFollows().then(function () { if (app.view() === "profile") app.rerender(); }).catch(function (err) {
             console.warn("Follows aren't available yet. Run the latest supabase/schema.sql.", err);
             unavailable = true;
+            showTab();
           });
           loadMyRatings();
         } else if (event === "signed-out") {
@@ -890,6 +887,7 @@
     refreshFollows: function () {
       return ready() && me() ? loadFollows().catch(function (err) { console.warn(err); }) : Promise.resolve();
     },
+    openExplorers: openExplorers,
     route: function (hash) {
       var parts = hash.split("/");
       if (!ACCT.enabled) return false;

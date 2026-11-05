@@ -10,6 +10,7 @@
   --shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
   --topbar-h: 56px;
   --themes-h: 52px;
+  --tabbar-h: calc(58px + env(safe-area-inset-bottom, 0px));
 }
 
 * { box-sizing: border-box; }
@@ -97,7 +98,7 @@ button { font: inherit; cursor: pointer; }
 #map {
   position: fixed;
   top: calc(var(--topbar-h) + var(--themes-h));
-  left: 0; right: 0; bottom: 0;
+  left: 0; right: 0; bottom: var(--tabbar-h);
 }
 
 .spot-marker {
@@ -114,7 +115,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 .map-buttons {
-  position: fixed; right: 16px; bottom: 24px;
+  position: fixed; right: 16px; bottom: calc(var(--tabbar-h) + 16px);
   display: flex; flex-direction: column; gap: 10px;
   z-index: 900;
 }
@@ -126,7 +127,7 @@ button { font: inherit; cursor: pointer; }
 
 /* Bottom sheet */
 .sheet {
-  position: fixed; left: 0; right: 0; bottom: 0;
+  position: fixed; left: 0; right: 0; bottom: var(--tabbar-h);
   max-height: 75vh; overflow-y: auto;
   background: var(--bg);
   border-radius: 18px 18px 0 0;
@@ -134,7 +135,6 @@ button { font: inherit; cursor: pointer; }
   transform: translateY(105%);
   transition: transform 0.25s ease;
   z-index: 1100;
-  padding-bottom: env(safe-area-inset-bottom);
 }
 .sheet.open { transform: translateY(0); }
 .sheet-close {
@@ -146,7 +146,7 @@ button { font: inherit; cursor: pointer; }
 
 @media (min-width: 768px) {
   .sheet {
-    left: auto; right: 16px; bottom: 16px; top: calc(var(--topbar-h) + var(--themes-h) + 16px);
+    left: auto; right: 16px; bottom: calc(var(--tabbar-h) + 16px); top: calc(var(--topbar-h) + var(--themes-h) + 16px);
     width: 400px; max-height: none;
     border-radius: 18px;
     transform: translateX(120%);
@@ -371,7 +371,7 @@ a.list-item { text-decoration: none; }
 .reward .badge { flex: 0 0 96px; }
 
 .now-pill {
-  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  position: fixed; left: 50%; bottom: calc(var(--tabbar-h) + 16px); transform: translateX(-50%);
   z-index: 900; border: none; border-radius: 999px;
   background: var(--brand); color: #fff; font-weight: 700; font-size: 14px;
   padding: 12px 18px; box-shadow: var(--shadow); white-space: nowrap;
@@ -600,7 +600,7 @@ body.picking .map-buttons { display: none; }
   pointer-events: none; z-index: 1000; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.35));
 }
 .pin-banner {
-  position: fixed; left: 16px; right: 16px; bottom: 24px; z-index: 1000;
+  position: fixed; left: 16px; right: 16px; bottom: calc(var(--tabbar-h) + 16px); z-index: 1000;
   background: var(--bg); border-radius: 14px; box-shadow: var(--shadow); padding: 12px 14px;
   display: flex; flex-direction: column; gap: 4px; max-width: 520px; margin: 0 auto;
 }
@@ -692,3 +692,35 @@ details.fold { border-bottom: 1px solid var(--line); padding-bottom: 6px; }
 .col-new .col-thumb { color: var(--brand); font-size: 22px; }
 .col-new .name { color: var(--brand); font-weight: 600; }
 .settings-btn + .profile-head { margin-right: 92px; }
+
+/* ---------- Bottom tab bar, grouped pins, Filters chip ---------- */
+.tabbar {
+  position: fixed; left: 0; right: 0; bottom: 0; height: var(--tabbar-h); z-index: 1150;
+  display: flex; background: var(--bg); border-top: 1px solid var(--line);
+  padding: 0 max(0px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(0px, env(safe-area-inset-left, 0px));
+}
+.tab {
+  flex: 1; min-width: 0; position: relative; border: none; background: none; color: var(--muted);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  font-size: 11px; padding: 6px 0 4px;
+}
+.tab[hidden] { display: none; }
+.tab b { font-size: 21px; font-weight: 400; line-height: 1.15; filter: grayscale(0.6); opacity: 0.85; }
+.tab.on { color: var(--brand); font-weight: 600; }
+.tab.on b { filter: none; opacity: 1; }
+.tab:focus-visible { outline: 2px solid var(--brand); outline-offset: -4px; border-radius: 10px; }
+.tab .review-dot { top: 2px; right: calc(50% - 22px); }
+.tab-me-label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.spot-cluster {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--brand); color: #fff; font-weight: 700; font-size: 15px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--brand) 25%, transparent), 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.filters-chip.on { border-color: var(--brand); color: var(--brand); background: var(--brand-soft); }
+@media (min-width: 768px) {
+  .tabbar { justify-content: center; }
+  .tab { flex: 0 1 120px; }
+}
