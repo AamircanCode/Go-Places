@@ -47,6 +47,8 @@ button { font: inherit; cursor: pointer; }
 .city-btn:hover, .city-btn:focus-visible { opacity: 1; text-decoration: underline; }
 .city-caret { font-size: 10px; }
 .city-item.current { outline: 2px solid var(--brand); outline-offset: -2px; }
+/* First visit: the city picker is a welcome step, so it has no close button. */
+.sheet.must-choose .sheet-close { display: none; }
 .topbar-right { display: flex; align-items: center; gap: 8px; }
 .explored {
   font-size: 13px; background: rgba(255,255,255,0.18);
