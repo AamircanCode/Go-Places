@@ -17,6 +17,10 @@
  *   history   a short paragraph of background
  *   funFacts  a list of short facts
  *   tip       optional insider tip
+ *   around    optional list of things to do around the spot ("Around here")
+ *   nearby    optional list of spot ids to link under "Nearby spots". The
+ *             closest spots within 1.5 km are added automatically, so only
+ *             list ones worth pointing out first (or further away).
  *   photos    optional list of { url, credit }. Put your own pictures in the
  *             /images folder and use e.g. "images/hackerbruecke-1.jpg".
  *
@@ -43,7 +47,7 @@ window.GO_PLACES = {
   spots: [
     {
       id: "glockenspiel",
-      name: "Glockenspiel at Marienplatz",
+      name: "Marienplatz: New Town Hall, Glockenspiel and Mariensäule",
       emoji: "🔔",
       lat: 48.13736, lng: 11.57589,
       themes: ["free-classics", "architecture"],
@@ -55,9 +59,18 @@ window.GO_PLACES = {
         "It has 43 bells and 32 life-size figures.",
         "In the joust, the Bavarian knight wins every single time.",
         "At the very end a small golden rooster chirps three times.",
-        "The column in the middle of the square, the Mariensäule, dates from 1638."
+        "The column in the middle of the square, the Mariensäule, dates from 1638. It was put up to give thanks that Munich survived the Swedish occupation in the Thirty Years' War.",
+        "At the foot of the Mariensäule, four armoured cherubs fight a lion, a dragon, a snake and a basilisk: war, hunger, heresy and plague.",
+        "The Fischbrunnen fountain was where butchers' apprentices were once thrown into the water at the end of their training. On Ash Wednesday, the mayor still washes the city's empty purse in it for luck.",
+        "Munich measures distances from the Mariensäule: it's the city's kilometre zero." // VERIFY
       ],
       tip: "Arrive 10 minutes early and stand near the Fischbrunnen fountain for a clear view of the tower.",
+      around: [
+        "Walk through the courtyard of the New Town Hall and take the lift up the tower for the view.",
+        "Find Juliet behind the Old Town Hall, then wander through the Viktualienmarkt.",
+        "Climb St. Peter's tower for a view down onto the Glockenspiel."
+      ],
+      nearby: ["altes-rathaus", "alter-peter", "frauenkirche", "viktualienmarkt"],
       photos: []
     },
     {
@@ -103,7 +116,7 @@ window.GO_PLACES = {
       name: "Isarflößer statue at Hinterbrühl",
       emoji: "🪓",
       lat: 48.08321, lng: 11.54089, // from the photos' GPS data, at the statue
-      themes: ["side-quests", "sunsets"],
+      themes: ["side-quests", "sunsets", "architecture"],
       cost: "Free",
       when: "About an hour before sunset",
       summary: "A bronze raftsman with an axe on his shoulder, looking down the water towards an old arched bridge.",
@@ -141,7 +154,7 @@ window.GO_PLACES = {
       name: "St. Peter's Church (Alter Peter)",
       emoji: "🗼",
       lat: 48.13650, lng: 11.57600,
-      themes: ["churches", "free-classics"],
+      themes: ["churches", "free-classics", "architecture"],
       cost: "Church free, tower about €5",
       when: "Daytime; clear days for the tower",
       summary: "The oldest parish church in Munich, with a tower that gives one of the best views of Marienplatz.",
@@ -193,7 +206,7 @@ window.GO_PLACES = {
       name: "Chinese Tower beer garden",
       emoji: "🍺",
       lat: 48.15270, lng: 11.59210,
-      themes: ["bavarian"],
+      themes: ["bavarian", "architecture"],
       cost: "Free to sit; bring your own food",
       when: "Spring to autumn, afternoons",
       summary: "A wooden pagoda in the English Garden surrounded by one of Munich's biggest beer gardens.",
@@ -530,7 +543,7 @@ window.GO_PLACES = {
     },
     {
       id: "nymphenburg-canal",
-      name: "Nymphenburg Palace canal",
+      name: "Nymphenburg Palace and canal",
       emoji: "🦢",
       lat: 48.15850, lng: 11.51100, // approximate, on the canal east of the palace. VERIFY on the map
       themes: ["side-quests", "architecture"],
@@ -540,9 +553,643 @@ window.GO_PLACES = {
       history: "Nymphenburg Palace was the summer home of Bavaria's rulers. Work started in 1664, after Elector Ferdinand Maria and his wife Henriette Adelaide celebrated the birth of their heir, Max Emanuel. The canal was dug to link the palace to the city in grand style.", // VERIFY
       funFacts: [
         "Swans have lived on the palace waters for centuries.",
+        "The palace front, with all its wings, stretches for more than 600 metres.", // VERIFY
+        "King Ludwig II was born in the palace in 1845.",
+        "The palace's Gallery of Beauties shows 36 portraits of women King Ludwig I admired.",
         "In very cold winters the canal freezes and people go ice skating and curling on it." // VERIFY: only when officially opened
       ],
       tip: "Walk along the canal towards the palace so the whole front slowly fills your view.",
+      around: [
+        "Walk around the palace park to the hunting lodge Amalienburg and the Badenburg.",
+        "See the royal coaches and sleighs in the Marstallmuseum.",
+        "Find the Monopteros on the Badenburger See in the park."
+      ],
+      nearby: ["nymphenburg-monopteros", "herz-jesu-kirche"],
+      photos: []
+    },
+    // ---------- famous architecture: gates, palaces, monuments ----------
+    {
+      id: "isartor",
+      name: "Isartor",
+      emoji: "🏰",
+      lat: 48.13530, lng: 11.58178, // approximate. VERIFY on the map
+      themes: ["architecture", "free-classics"],
+      cost: "Free to see. The Valentin-Karlstadt-Musäum in the tower costs a few euros.", // VERIFY price
+      when: "Any time. The fresco is best in afternoon sun.",
+      summary: "The eastern gate of Munich's medieval city wall, with two towers and a long painted frieze over the arch.",
+      history: "The Isartor was built in 1337 as part of Munich's second city wall, guarding the road from the Isar bridge and the salt route from Salzburg. It is the only one of the old gates that still has its main tower. King Ludwig I had it restored in the 1830s, when the fresco above the arch was added. It shows Emperor Ludwig the Bavarian returning in triumph after the Battle of Mühldorf in 1322.",
+      funFacts: [
+        "Of the medieval gates, only three survive: the Isartor, the Sendlinger Tor and the Karlstor.",
+        "The towers hold the Valentin-Karlstadt-Musäum, a museum about the comedian Karl Valentin, spelled 'Musäum' on purpose as a joke.",
+        "The road still runs straight through the gate, so cars and trams squeeze past a 700-year-old building."
+      ],
+      tip: "Stand on the town side of the gate to see the fresco, then walk ten minutes up Tal to Marienplatz.",
+      around: [
+        "Walk up Tal, one of Munich's oldest streets, to Marienplatz.",
+        "Cross to the Isar and the Deutsches Museum island in under ten minutes.",
+        "Pop into the quirky Valentin-Karlstadt-Musäum in the tower for a laugh."
+      ],
+      nearby: ["sendlinger-tor", "karlstor", "glockenspiel", "viktualienmarkt"],
+      photos: []
+    },
+    {
+      id: "sendlinger-tor",
+      name: "Sendlinger Tor",
+      emoji: "🏰",
+      lat: 48.13345, lng: 11.56725, // approximate. VERIFY on the map
+      themes: ["architecture"],
+      cost: "Free",
+      when: "Any time",
+      summary: "The southern gate of the old city: two six-sided brick towers joined by one wide arch, at the end of the Sendlinger Straße shopping street.",
+      history: "First mentioned in 1318, the Sendlinger Tor guarded the road south towards Sendling and Italy. Its tall middle tower was pulled down in 1808. In 1906 the three small passages were knocked into the single big arch you see today, to make room for traffic and trams.", // VERIFY: 1808
+      funFacts: [
+        "The two side towers are the oldest part, and are still medieval.",
+        "In 1705, Bavarian farmers rising against the Austrian occupation tried to take Munich and were crushed in Sendling, just south of here. It's remembered as the 'Sendlinger Mordweihnacht'."
+      ],
+      tip: "Walk through the gate and straight down Sendlinger Straße to find the Asamkirche on your left.",
+      around: [
+        "Two minutes down Sendlinger Straße: the tiny, over-the-top Asamkirche.",
+        "Head south-west to the Theresienwiese and the Bavaria statue in about 15 minutes.",
+        "The Glockenbachviertel's cafés and the Isar are a short walk south-east."
+      ],
+      nearby: ["asamkirche", "isartor", "karlstor"],
+      photos: []
+    },
+    {
+      id: "karlstor",
+      name: "Karlstor and Stachus",
+      emoji: "🏰",
+      lat: 48.13905, lng: 11.56620, // approximate. VERIFY on the map
+      themes: ["architecture", "free-classics"],
+      cost: "Free",
+      when: "Any time. In winter the square in front becomes an ice rink.",
+      summary: "The western city gate at Karlsplatz (Stachus), with a big fountain in front. Walk through it and you're on Munich's main shopping street.",
+      history: "The gate was first called the Neuhauser Tor, after the road to the village of Neuhausen. In 1791 it was renamed after Elector Karl Theodor, who was so unpopular that locals kept calling the square in front 'Stachus', after a pub run by one Eustachius Föderl. The gate's middle tower was badly damaged in a gunpowder explosion in 1857 and taken down.", // VERIFY: 1857
+      funFacts: [
+        "Even the city's own signs say 'Karlsplatz (Stachus)', because nobody calls it Karlsplatz.",
+        "In summer people cool their feet in the fountain; in winter the 'Stachus Eiszauber' ice rink takes its place.",
+        "Under the square is one of Europe's biggest underground shopping levels."
+      ],
+      tip: "Walk through the gate into Neuhauser Straße and keep going: St. Michael and the Frauenkirche are minutes away.",
+      around: [
+        "Walk through the gate and down the pedestrian zone to St. Michael and Marienplatz.",
+        "Cross to Lenbachplatz for the Wittelsbacher Brunnen fountain.",
+        "The Justizpalast is right across the square."
+      ],
+      nearby: ["st-michael", "justizpalast", "wittelsbacher-brunnen", "isartor", "sendlinger-tor"],
+      photos: []
+    },
+    {
+      id: "siegestor",
+      name: "Siegestor",
+      emoji: "🏛️",
+      lat: 48.15250, lng: 11.58210, // approximate. VERIFY on the map
+      themes: ["architecture", "free-classics"],
+      cost: "Free",
+      when: "Any time. Lit up at night.",
+      summary: "A Roman-style triumphal arch with a lion-drawn chariot on top, standing where the grand Ludwigstraße ends and Schwabing begins.",
+      history: "King Ludwig I ordered the arch, and Friedrich von Gärtner designed it after the Arch of Constantine in Rome. It was finished in 1852 and dedicated to the Bavarian army. It was badly damaged in the Second World War and only partly restored, on purpose. The new inscription on the south side reads: 'Dedicated to victory, destroyed by war, urging peace.'",
+      funFacts: [
+        "On top, the figure of Bavaria rides a chariot pulled by four lions.",
+        "The south side was left plainer after the war so the damage stays visible.",
+        "It marks the border between the university quarter (Maxvorstadt) and Schwabing."
+      ],
+      tip: "Look at both sides: the north side is the original, the south side carries the post-war inscription.",
+      around: [
+        "Walk the length of Ludwigstraße south to the Feldherrnhalle, past the university and the State Library.",
+        "Cut east into the Englischer Garten for the Monopteros and the Chinese Tower.",
+        "Explore Schwabing's cafés and side streets to the north."
+      ],
+      nearby: ["ludwigskirche", "staatsbibliothek", "feldherrnhalle", "monopteros"],
+      photos: []
+    },
+    {
+      id: "feldherrnhalle",
+      name: "Feldherrnhalle on Odeonsplatz",
+      emoji: "🦁",
+      lat: 48.14175, lng: 11.57735, // approximate. VERIFY on the map
+      themes: ["architecture", "free-classics"],
+      cost: "Free",
+      when: "Any time. Evening light on the yellow Theatinerkirche next door is lovely.",
+      summary: "An open, arched hall on Odeonsplatz guarded by two stone lions, built as a copy of the Loggia dei Lanzi in Florence.",
+      history: "King Ludwig I had Friedrich von Gärtner build the Feldherrnhalle ('Field Marshals' Hall') in 1841–44 to honour the Bavarian army, with statues of the generals Tilly and Wrede. On 9 November 1923 Hitler's failed coup ended here in a shootout with the police. The Nazis later turned the hall into a shrine that passers-by had to salute.",
+      funFacts: [
+        "People avoided the Nazi shrine by slipping down Viscardigasse behind it. Golden cobblestones now mark that 'shirkers' lane' (find it under hidden gems).",
+        "The two lions on the steps were added in 1906.",
+        "Odeonsplatz in front is where Ludwigstraße, Munich's grandest boulevard, begins."
+      ],
+      tip: "Sit on the steps between the lions and look straight up Ludwigstraße to the Siegestor.",
+      around: [
+        "Find the golden cobblestones of the 'Drückebergergasse' behind the hall.",
+        "Walk into the Hofgarten through the arches on the right, and touch the lucky lions at the Residenz.",
+        "Visit the Theatinerkirche next door for free."
+      ],
+      nearby: ["theatinerkirche", "residenz", "wittelsbacherplatz", "siegestor"],
+      photos: []
+    },
+    {
+      id: "theatinerkirche",
+      name: "Theatinerkirche",
+      emoji: "⛪",
+      lat: 48.14205, lng: 11.57665, // approximate. VERIFY on the map
+      themes: ["churches", "architecture", "free-classics"],
+      cost: "Free",
+      when: "Daytime. Sunny afternoons light up the yellow front.",
+      summary: "A bright yellow Italian Baroque church on Odeonsplatz, with two curling towers and a dazzling white stucco interior.",
+      history: "Elector Ferdinand Maria and his wife Henriette Adelaide of Savoy promised to build a church if they had an heir. Max Emanuel was born in 1662, and the church was started the next year by Italian architects. The rococo front was only finished in 1768 by François Cuvilliés. Many Wittelsbach rulers are buried in its crypt.",
+      funFacts: [
+        "The same royal baby, Max Emanuel, is also the reason Nymphenburg Palace was built.",
+        "Its warm yellow became so typical that Munich calls it 'Theatiner yellow'.",
+        "Inside, almost everything is white: the effect is all in the stucco, not in colour."
+      ],
+      tip: "Step inside even for two minutes: the bright white interior is a surprise after the yellow outside.",
+      around: [
+        "Cross to the Feldherrnhalle and the Hofgarten.",
+        "Walk down Theatinerstraße to the Fünf Höfe arcades and on to Marienplatz.",
+        "The Residenz and its courtyards are across the square."
+      ],
+      nearby: ["feldherrnhalle", "residenz", "frauenkirche", "nymphenburg-canal"],
+      photos: []
+    },
+    {
+      id: "residenz",
+      name: "Residenz and Hofgarten",
+      emoji: "👑",
+      lat: 48.14100, lng: 11.57950, // approximate, at the Residenzstraße entrance. VERIFY on the map
+      themes: ["architecture", "free-classics"],
+      cost: "Courtyards and Hofgarten free. Museum and Treasury tickets are extra.", // VERIFY prices
+      when: "Museum open daily; the Hofgarten any time",
+      summary: "The huge former palace of Bavaria's dukes, electors and kings, right in the city centre, with a free formal garden next to it.",
+      history: "The Wittelsbach family ruled Bavaria from here for over 400 years, until 1918. What began as a small castle in 1385 grew into Germany's largest city palace, with ten courtyards and more than 130 rooms open to visitors. Its highlights are the Antiquarium, a 66-metre Renaissance hall, the jewel-filled Treasury and the little rococo Cuvilliés Theatre.", // VERIFY: room count
+      funFacts: [
+        "Rub the noses of the bronze lions' shields on Residenzstraße for luck: they're shiny from centuries of hands.",
+        "Mozart's opera Idomeneo premiered in the Cuvilliés Theatre in 1781.",
+        "Much of the palace was destroyed in 1944 and rebuilt over decades after the war."
+      ],
+      tip: "Walk through the free courtyards from Max-Joseph-Platz to the Hofgarten, then sit by the little temple in the middle of the garden.",
+      around: [
+        "Touch the lucky lions on Residenzstraße (one of the hidden gems).",
+        "Listen to street musicians under the Hofgarten temple.",
+        "The Nationaltheater opera house is on the square in front."
+      ],
+      nearby: ["nationaltheater", "feldherrnhalle", "theatinerkirche", "hofbraeuhaus"],
+      photos: []
+    },
+    {
+      id: "nationaltheater",
+      name: "Nationaltheater (Bavarian State Opera)",
+      emoji: "🎭",
+      lat: 48.13960, lng: 11.57910, // approximate. VERIFY on the map
+      themes: ["architecture"],
+      cost: "Free to see. Standing-room opera tickets are cheap.", // VERIFY
+      when: "Evenings, when the opera goers arrive",
+      summary: "Munich's grand opera house, with a temple front of tall columns facing Max-Joseph-Platz.",
+      history: "The theatre first opened in 1818 and burned down only five years later. Leo von Klenze rebuilt it, and it reopened in 1825. Destroyed again in 1943, it was rebuilt faithfully and reopened in 1963. It is home to the Bavarian State Opera.",
+      funFacts: [
+        "Two of Wagner's operas, Tristan and Isolde and The Mastersingers of Nuremberg, premiered here.",
+        "The seated statue in the middle of the square is King Max I Joseph, Bavaria's first king.",
+        "During the opera festival in summer, some performances are shown free on a big screen outside." // VERIFY: 'Oper für alle'
+      ],
+      tip: "Come by at about 18:30 on an opera night to see the crowd in their best clothes on the steps.",
+      around: [
+        "Walk through the Residenz courtyards to the Hofgarten.",
+        "Window-shop down Maximilianstraße towards the Max II monument.",
+        "Marienplatz is five minutes south."
+      ],
+      nearby: ["residenz", "max-ii-monument", "glockenspiel"],
+      photos: []
+    },
+    {
+      id: "altes-rathaus",
+      name: "Old Town Hall and the Juliet statue",
+      emoji: "🧸",
+      lat: 48.13715, lng: 11.57705, // approximate. VERIFY on the map
+      themes: ["architecture", "side-quests"],
+      cost: "Free to see. The toy museum in the tower costs a few euros.", // VERIFY price
+      when: "Daytime",
+      summary: "A white Gothic town hall closing off the east side of Marienplatz, with a toy museum in its tower and a bronze Juliet tucked around the back.",
+      history: "The Old Town Hall was built in 1470–80 by Jörg von Halsbach, the same builder as the Frauenkirche. It was the seat of the city council until the New Town Hall opened across the square. In its hall on 9 November 1938, Joseph Goebbels gave the speech that started the November pogroms against Jewish people across Germany.",
+      funFacts: [
+        "The bronze Juliet at the back was a gift from Verona, Munich's twin city. Visitors leave flowers in her hands for luck in love.",
+        "The tower holds a small toy museum with old teddy bears, dolls and tin toys.",
+        "The tower was rebuilt after the war from old drawings."
+      ],
+      tip: "Walk under the tower arch to the back to find Juliet, then on to the Viktualienmarkt.",
+      around: [
+        "Watch the Glockenspiel across the square at 11:00 or 12:00.",
+        "Climb St. Peter's tower right behind for the best Old Town view.",
+        "Find Juliet on the south side and leave her a flower."
+      ],
+      nearby: ["glockenspiel", "alter-peter", "viktualienmarkt", "hofbraeuhaus"],
+      photos: []
+    },
+    {
+      id: "st-michael",
+      name: "St. Michael",
+      emoji: "⛪",
+      lat: 48.13880, lng: 11.57060, // approximate. VERIFY on the map
+      themes: ["churches", "architecture"],
+      cost: "Church free. The royal crypt costs a couple of euros.", // VERIFY
+      when: "Daytime",
+      summary: "A huge white Renaissance church in the middle of the shopping street, with a bronze archangel fighting the devil on its front and King Ludwig II buried in the crypt.",
+      history: "Duke Wilhelm V built St. Michael for the Jesuits between 1583 and 1597, as a statement of the Catholic Counter-Reformation. It is the largest Renaissance church north of the Alps. Its barrel vault was, when built, the widest in the world after St. Peter's in Rome.",
+      funFacts: [
+        "When the tower collapsed during building in 1590, the duke read it as a sign that the church was too small, and had it built bigger.", // VERIFY
+        "King Ludwig II, the 'fairy-tale king' of Neuschwanstein, lies in the crypt. His tomb often has fresh flowers.",
+        "The bronze Archangel Michael between the two doors is from 1588."
+      ],
+      tip: "Stand at the back and look up: the vault spans about 20 metres with no pillars at all.",
+      around: [
+        "Walk on to the Frauenkirche, two minutes away.",
+        "Head west through the Karlstor to the Stachus fountain.",
+        "The German Hunting and Fishing Museum is next door, in a former church."
+      ],
+      nearby: ["frauenkirche", "karlstor", "glockenspiel"],
+      photos: []
+    },
+    {
+      id: "ludwigskirche",
+      name: "Ludwigskirche",
+      emoji: "⛪",
+      lat: 48.14840, lng: 11.58050, // approximate. VERIFY on the map
+      themes: ["churches", "architecture"],
+      cost: "Free",
+      when: "Daytime",
+      summary: "A tall church on Ludwigstraße with a colourful tiled roof and one of the largest frescoes in the world behind the altar.",
+      history: "King Ludwig I had Friedrich von Gärtner build the church in 1829–44 as the parish church of his new boulevard, in a round-arched 'Rundbogenstil'. The painter Peter von Cornelius covered the wall behind the altar with a 'Last Judgement' about 18 by 11 metres.",
+      funFacts: [
+        "The Last Judgement fresco is one of the largest in the world, bigger than Michelangelo's in the Sistine Chapel.", // VERIFY
+        "The roof's coloured glazed tiles make a pattern that sparkles in the sun.",
+        "It's the university church, right next to the main building."
+      ],
+      tip: "Walk all the way to the altar: the fresco only really hits you up close.",
+      around: [
+        "Peek into the university's main hall across the road and the Geschwister-Scholl-Platz memorial.",
+        "Walk north to the Siegestor or south to the State Library.",
+        "Grab a cheap coffee among the students on Schellingstraße."
+      ],
+      nearby: ["staatsbibliothek", "siegestor", "feldherrnhalle"],
+      photos: []
+    },
+    {
+      id: "staatsbibliothek",
+      name: "Bavarian State Library",
+      emoji: "📚",
+      lat: 48.14740, lng: 11.58080, // approximate. VERIFY on the map
+      themes: ["architecture"],
+      cost: "Free to visit the stairway and exhibitions",
+      when: "Weekdays and Saturdays. Check opening hours.", // VERIFY
+      summary: "A long brick palace of books on Ludwigstraße, with four ancient Greek thinkers sitting on its front steps and a grand staircase inside.",
+      history: "Friedrich von Gärtner built the library in 1832–43 for King Ludwig I, inspired by Italian Renaissance palaces. It is one of the largest libraries in Europe, with more than 10 million books and a famous collection of old manuscripts.", // VERIFY: count
+      funFacts: [
+        "The four statues on the steps are Thucydides, Homer, Aristotle and Hippocrates.",
+        "The grand staircase inside is modelled on the one in the Scala Regia in the Vatican.", // VERIFY
+        "Anyone over 18 can get a free library card and work in the reading rooms."
+      ],
+      tip: "Walk up the main staircase: the hall at the top is one of the most impressive in Munich, and it's free.",
+      around: [
+        "Visit the free exhibitions in the treasury rooms when one is on.",
+        "Continue to the Ludwigskirche next door.",
+        "Walk east into the Englischer Garten in five minutes."
+      ],
+      nearby: ["ludwigskirche", "siegestor", "feldherrnhalle"],
+      photos: []
+    },
+    {
+      id: "maximilianeum",
+      name: "Maximilianeum",
+      emoji: "🏛️",
+      lat: 48.13640, lng: 11.59440, // approximate. VERIFY on the map
+      themes: ["architecture", "sunsets"],
+      cost: "Free to see from outside. Free guided visits of the parliament by booking.", // VERIFY
+      when: "Sunset, when the facade glows",
+      summary: "A long palace on a hill above the Isar, at the end of Maximilianstraße. It's the seat of the Bavarian parliament.",
+      history: "King Maximilian II had it built in 1857–74 by Friedrich Bürklein, as the crowning end of his new boulevard. It was meant as a home for a foundation for gifted students, which still lives there. Since 1949 the Bavarian parliament, the Landtag, has met inside too.",
+      funFacts: [
+        "Gifted students from Bavaria can still live here for free, alongside the parliament.",
+        "The facade faces west, so it catches the evening sun and lights up gold at sunset.",
+        "Its arches hold mosaics with gold backgrounds."
+      ],
+      tip: "Watch the sunset from the Maximiliansbrücke, then walk up the ramps for the view back down Maximilianstraße.",
+      around: [
+        "Walk along the Isar to the Friedensengel, about 15 minutes north.",
+        "Look back along Maximilianstraße to the Max II monument and the opera.",
+        "Go south along the river to the Müllersches Volksbad."
+      ],
+      nearby: ["max-ii-monument", "friedensengel", "muellersches-volksbad"],
+      photos: []
+    },
+    {
+      id: "max-ii-monument",
+      name: "Max II Monument on Maximilianstraße",
+      emoji: "🗽",
+      lat: 48.13710, lng: 11.58880, // approximate. VERIFY on the map
+      themes: ["architecture"],
+      cost: "Free",
+      when: "Any time",
+      summary: "A bronze King Maximilian II on a tall stone base in the middle of the boulevard he built, with the Maximilianeum glowing behind him.",
+      history: "Maximilian II wanted a new style for Bavaria, mixing Gothic and modern forms, and his Maximilianstraße was built to show it off. After his death, the monument by Kaspar von Zumbusch was unveiled here in 1875.",
+      funFacts: [
+        "Maximilianstraße is now Munich's luxury shopping street.",
+        "The boulevard was planned as one long view: from the opera, past this king, to the Maximilianeum.",
+        "Four seated figures around the base hold coats of arms."
+      ],
+      tip: "Stand behind the king for the photo, with the Maximilianeum lined up behind him.",
+      around: [
+        "Walk east over the bridge to the Maximilianeum.",
+        "Head west for the Nationaltheater and the Residenz.",
+        "Stroll the Isar banks just behind."
+      ],
+      nearby: ["maximilianeum", "nationaltheater", "residenz"],
+      photos: []
+    },
+    {
+      id: "hofbraeuhaus",
+      name: "Hofbräuhaus",
+      emoji: "🍺",
+      lat: 48.13760, lng: 11.57990, // approximate. VERIFY on the map
+      themes: ["architecture", "bavarian"],
+      cost: "Free to walk in. A beer costs around €10.", // VERIFY price
+      when: "Daily, from late morning. Livelier in the evening with the brass band.",
+      summary: "The world's most famous beer hall, with painted vaults, long wooden tables and a brass band playing most days.",
+      history: "Duke Wilhelm V founded the royal brewery in 1589 so his court didn't have to buy expensive beer from elsewhere. The public was allowed in from 1828. Today's building dates from 1896–97, when the brewery itself moved out.",
+      funFacts: [
+        "Regulars keep their personal beer mugs locked in a wall of small lockers.",
+        "Some tables are 'Stammtische', reserved for groups who have met there for decades.",
+        "The ceiling paintings in the main hall show Bavarian motifs and sayings."
+      ],
+      tip: "Just walk through the main hall and the courtyard to soak it up. You don't have to order.",
+      around: [
+        "Walk to Marienplatz in three minutes.",
+        "Head to Max-Joseph-Platz for the opera and the Residenz.",
+        "Find the quiet Alter Hof, the first home of the Wittelsbachs, nearby."
+      ],
+      nearby: ["glockenspiel", "residenz", "altes-rathaus"],
+      photos: []
+    },
+    {
+      id: "justizpalast",
+      name: "Justizpalast and the White Rose courtroom",
+      emoji: "⚖️",
+      lat: 48.13970, lng: 11.56450, // approximate. VERIFY on the map
+      themes: ["architecture"],
+      cost: "Free (memorial room open on weekdays)", // VERIFY hours
+      when: "Weekdays",
+      summary: "A huge neo-Baroque palace of justice by the Stachus, with a glass dome over its central hall. Inside is the courtroom where the White Rose students were sentenced.",
+      history: "Friedrich von Thiersch built the Justizpalast in 1891–97. In February 1943 Sophie and Hans Scholl and Christoph Probst of the White Rose resistance group were tried here by the Nazi People's Court and executed the same day. Room 253 is now a memorial with a small free exhibition.",
+      funFacts: [
+        "The central hall is roofed with a big glass and iron dome.",
+        "The building is still a working court.",
+        "Sophie Scholl was 21 when she was sentenced here."
+      ],
+      tip: "Bring an ID: you go through a security check to enter.",
+      around: [
+        "Cross to the Stachus fountain and the Karlstor.",
+        "Visit the Old Botanical Garden park right behind.",
+        "Lenbachplatz with the Wittelsbacher Brunnen is a few steps away."
+      ],
+      nearby: ["karlstor", "wittelsbacher-brunnen", "ns-victims-memorial"],
+      photos: []
+    },
+    {
+      id: "wittelsbacher-brunnen",
+      name: "Wittelsbacher Brunnen",
+      emoji: "⛲",
+      lat: 48.14105, lng: 11.56765, // approximate. VERIFY on the map
+      themes: ["architecture", "side-quests"],
+      cost: "Free",
+      when: "Spring to autumn, when the water is on",
+      summary: "Munich's grandest fountain, on Lenbachplatz: a man hurling a rock from a water horse and a woman on a water bull, splashing in a big basin.",
+      history: "Adolf von Hildebrand made the fountain in 1891–95 to celebrate Munich's new drinking water supply from the Mangfall valley. The two sides show the two faces of water: the man stands for its destructive power, the woman for its life-giving power.",
+      funFacts: [
+        "Munich's tap water still comes largely from the Mangfall valley, and is famously good.",
+        "The fountain is named after the Wittelsbach family, Bavaria's rulers."
+      ],
+      tip: "Sit on the rim on a hot day; it's much quieter than the Stachus fountain next door.",
+      around: [
+        "Walk to the Stachus and the Karlstor.",
+        "Visit the Memorial to the Victims of National Socialism a few minutes north.",
+        "Continue to Maximiliansplatz's park strip."
+      ],
+      nearby: ["karlstor", "ns-victims-memorial", "justizpalast"],
+      photos: []
+    },
+    {
+      id: "ns-victims-memorial",
+      name: "Memorial to the Victims of National Socialism",
+      emoji: "🕯️",
+      lat: 48.14300, lng: 11.57422, // from the photo's GPS data, beside the column
+      themes: ["architecture"],
+      cost: "Free",
+      when: "Any time. The flame shows best after dark.",
+      summary: "A dark basalt column with an eternal flame burning inside an iron cage, on a quiet square on Brienner Straße.",
+      history: "The memorial stands on the Platz der Opfer des Nationalsozialismus (Square of the Victims of National Socialism). It was made by Andreas Sobeck and unveiled in 1985. Close by, on Brienner Straße, stood the Wittelsbacher Palais, which the Gestapo used as its Munich headquarters and prison. The square was redesigned in the 2010s.", // VERIFY: date of redesign
+      funFacts: [
+        "The cage around the flame stands for imprisonment; the flame for remembrance.",
+        "The low wall behind carries the dedication 'to the victims of the National Socialist tyranny'.",
+        "Brienner Straße runs on to Königsplatz, which the Nazis used for their mass rallies."
+      ],
+      tip: "Come in the evening, when the flame glows behind the bars.",
+      around: [
+        "Walk west along Brienner Straße to Königsplatz and the NS Documentation Centre (free).",
+        "Wittelsbacherplatz with its horseman statue is two minutes east.",
+        "Odeonsplatz and the Feldherrnhalle are just beyond."
+      ],
+      nearby: ["wittelsbacherplatz", "koenigsplatz", "ns-dokuzentrum", "feldherrnhalle"],
+      photos: [
+        { url: "images/ns-victims-memorial-1.jpg", credit: "Photo: Go Places community" }
+      ]
+    },
+    {
+      id: "bavaria-statue",
+      name: "Bavaria statue and Ruhmeshalle",
+      emoji: "🗽",
+      lat: 48.13100, lng: 11.54540, // approximate. VERIFY on the map
+      themes: ["architecture", "free-classics", "sunsets"],
+      cost: "Free to see. Climbing up inside costs a few euros (April to mid-October).", // VERIFY
+      when: "Any time; climbs only in summer. Sunset from the steps.",
+      summary: "An 18-metre bronze woman with a lion, towering over the Oktoberfest meadow, with a hall of fame behind her. You can climb up inside her head.",
+      history: "King Ludwig I commissioned the statue as the symbol of Bavaria. Ludwig Schwanthaler designed it, and Ferdinand von Miller cast it in bronze in pieces between 1844 and 1850. It was the largest bronze statue cast since antiquity. Behind her, Leo von Klenze's Ruhmeshalle holds busts of famous Bavarians.",
+      funFacts: [
+        "A staircase inside leads up into her head, where small windows look out over the Theresienwiese.",
+        "Legend says the bronze came from melted-down Turkish cannons from the Battle of Navarino.", // VERIFY
+        "During Oktoberfest she looks straight down on the beer tents."
+      ],
+      tip: "Sit on the big steps below her at sunset with the whole Theresienwiese in front of you.",
+      around: [
+        "Walk the Theresienwiese, home of Oktoberfest, and the spring festival in April.",
+        "Relax in the Bavariapark behind the hall.",
+        "Walk on to Hackerbrücke for sunset, about 15 minutes north."
+      ],
+      nearby: ["hackerbruecke", "sendlinger-tor"],
+      photos: []
+    },
+    {
+      id: "friedensengel",
+      name: "Friedensengel",
+      emoji: "👼",
+      lat: 48.14400, lng: 11.59440, // approximate. VERIFY on the map
+      themes: ["architecture", "sunsets", "free-classics"],
+      cost: "Free",
+      when: "Any time; sunset from the terraces is lovely",
+      summary: "A golden angel of peace on top of a tall column, above fountain terraces on the steep bank of the Isar.",
+      history: "The 'Angel of Peace' was built in 1896–99 to celebrate 25 years of peace after the Franco-Prussian War of 1870–71. The gilded angel is modelled on the ancient Greek Nike of Paionios. It crowns Prinzregentenstraße, one of the city's great boulevards.",
+      funFacts: [
+        "The column with the angel is about 38 metres tall.",
+        "Below it, mosaics show allegories of war and peace.",
+        "In summer, locals gather on the terraces and steps with drinks after work."
+      ],
+      tip: "Come at sunset and sit on the steps facing the city, with the angel glowing above you.",
+      around: [
+        "Walk along the Isar south to the Maximilianeum.",
+        "Cross the river into the Englischer Garten.",
+        "The Villa Stuck and the Monacensia literature library are nearby."
+      ],
+      nearby: ["maximilianeum", "monacensia", "monopteros"],
+      photos: []
+    },
+    {
+      id: "muellersches-volksbad",
+      name: "Müllersches Volksbad",
+      emoji: "🏊",
+      lat: 48.13110, lng: 11.58650, // approximate. VERIFY on the map
+      themes: ["architecture", "side-quests"],
+      cost: "A swim costs about €6; the sauna is extra.", // VERIFY
+      when: "Daily; quiet in the mornings",
+      summary: "A palace for swimming: an Art Nouveau bath on the Isar from 1901, with vaulted halls, a dome and a Roman-style steam bath.",
+      history: "Engineer Karl Müller paid for the bath so that ordinary Munich people, many with no bathroom at home, could wash and swim. Carl Hocheder designed it, and it opened in 1901. Back then it was one of the most modern baths in Europe.",
+      funFacts: [
+        "It has two pools: the big men's hall and the smaller 'ladies' hall', today open to everyone.",
+        "The Roman-Irish bath has a steam room and cold plunge pools.",
+        "You can swim in a 120-year-old Art Nouveau hall for the price of a normal pool."
+      ],
+      tip: "Go for an early morning swim when the light comes through the high windows.",
+      around: [
+        "Walk the Isar banks or cross to the Deutsches Museum island.",
+        "Watch the sunset from the Ludwigsbrücke.",
+        "Climb up to the Gasteig HP8 cultural centre and library."
+      ],
+      nearby: ["maximilianeum", "isartor", "hp8-library"],
+      photos: []
+    },
+    {
+      id: "olympiastadion-muenchen",
+      name: "Olympic Stadium and the tent roof",
+      emoji: "🏟️",
+      lat: 48.17310, lng: 11.54680, // approximate. VERIFY on the map
+      themes: ["architecture", "free-classics"],
+      cost: "Park free. Small fee to enter the stadium; roof climbs and the zip line cost extra.", // VERIFY
+      when: "Daytime. Sunny days make the roof sparkle.",
+      summary: "The stadium of the 1972 Olympics, under a huge see-through tent roof that sweeps over the park like a spider's web.",
+      history: "Günter Behnisch and the engineer Frei Otto designed the Olympic Park for the 1972 Summer Olympics, meant to show a new, open, democratic Germany. The roof is a net of steel cables hung with acrylic panels. The Games were overshadowed by the attack on the Israeli team, remembered at a memorial in the park.",
+      funFacts: [
+        "The roof covers about 75,000 square metres of acrylic glass.",
+        "You can walk on top of the roof on a guided climb, or zip-line across the stadium.",
+        "The park was built on a wartime rubble mountain and an old airfield."
+      ],
+      tip: "Walk up the Olympiaberg first for the best view down onto the roof.",
+      around: [
+        "Climb the Olympiaberg for the view, or the Olympic Tower for a higher one.",
+        "Visit the free memorial to the 1972 Olympic attack, the 'Erinnerungsort'.",
+        "Cross the bridge to BMW Welt."
+      ],
+      nearby: ["olympiaberg", "olympiapark-sports", "bmw-welt"],
+      photos: []
+    },
+    {
+      id: "bmw-welt",
+      name: "BMW Welt and the BMW Tower",
+      emoji: "🚗",
+      lat: 48.17690, lng: 11.55640, // approximate. VERIFY on the map
+      themes: ["architecture", "side-quests"],
+      cost: "BMW Welt free. The BMW Museum costs extra.", // VERIFY
+      when: "Daily, daytime",
+      summary: "A swirling glass and steel showroom next to BMW's headquarters, a tower shaped like four engine cylinders.",
+      history: "BMW's headquarters, the 'Vierzylinder' (four-cylinder), was designed by Karl Schwanzer and finished in 1973, just after the Olympics. BMW Welt, by the Vienna architects Coop Himmelb(l)au, opened in 2007. Its roof seems to melt into a 'double cone' at one corner.",
+      funFacts: [
+        "The four towers of the HQ hang from a central core, instead of standing on the ground.",
+        "The bowl-shaped building next to the tower is the BMW Museum, nicknamed the 'salad bowl'.",
+        "Customers can collect their new car here and drive it down a ramp inside the building."
+      ],
+      tip: "Walk up to the bridge between BMW Welt and the museum for a photo of the tower.",
+      around: [
+        "Sit in the latest models in the showroom for free.",
+        "Cross to the Olympic Park and the stadium.",
+        "Climb the Olympiaberg for sunset."
+      ],
+      nearby: ["olympiastadion-muenchen", "olympiaberg"],
+      photos: []
+    },
+    {
+      id: "allianz-arena",
+      name: "Allianz Arena",
+      emoji: "⚽",
+      lat: 48.21880, lng: 11.62470, // approximate. VERIFY on the map
+      themes: ["architecture", "side-quests"],
+      cost: "Free to walk around. Stadium tours and the FC Bayern Museum cost extra.", // VERIFY
+      when: "Evenings, when the outside is lit up",
+      summary: "FC Bayern's stadium, wrapped in inflated diamond-shaped cushions that glow red, white or blue at night.",
+      history: "The Swiss architects Herzog & de Meuron designed the arena for the 2006 World Cup, and it opened in 2005. The skin is made of more than 2,800 ETFE plastic cushions that can each be lit separately.", // VERIFY: cushion count
+      funFacts: [
+        "Locals call it the 'Schlauchboot' (rubber dinghy) because of its shape.",
+        "It glows red when FC Bayern plays at home, and white for national team matches.",
+        "It holds about 75,000 people for football."
+      ],
+      tip: "Watch it light up from the Fröttmaninger Berg across the motorway.",
+      around: [
+        "Climb the Fröttmaninger Berg for a view of the arena and the wind turbine.",
+        "Visit the FC Bayern Museum inside.",
+        "Walk the esplanade all the way around."
+      ],
+      nearby: ["froettmaninger-berg"],
+      photos: []
+    },
+    {
+      id: "pinakothek-der-moderne",
+      name: "Pinakothek der Moderne",
+      emoji: "🖼️",
+      lat: 48.14710, lng: 11.57210, // approximate. VERIFY on the map
+      themes: ["architecture"],
+      cost: "€1 on Sundays. The rotunda inside the entrance is free.", // VERIFY
+      when: "Tuesday to Sunday; Sundays are cheap",
+      summary: "A big white concrete museum with a soaring glass-topped rotunda, home to modern art, design and architecture.",
+      history: "Stephan Braunfels designed the museum, which opened in 2002. It brings four museums together: modern art, design, architecture and works on paper. With the Alte and Neue Pinakothek nearby it forms Munich's 'Kunstareal', the art quarter.",
+      funFacts: [
+        "The rotunda is 25 metres high and filled with daylight from above.",
+        "The design collection has everything from cars to computers to chairs.",
+        "Stephan Braunfels also designed the parliament buildings on the Spree in Berlin."
+      ],
+      tip: "Even if you skip the art, step into the rotunda and look up.",
+      around: [
+        "Visit the Alte Pinakothek and the Museum Brandhorst with its colourful facade next door.",
+        "Lie on the lawns between the museums on a sunny day.",
+        "Walk to Königsplatz in ten minutes."
+      ],
+      nearby: ["koenigsplatz", "staatsbibliothek"],
+      photos: []
+    },
+    {
+      id: "herz-jesu-kirche",
+      name: "Herz-Jesu-Kirche",
+      emoji: "🔷",
+      lat: 48.15470, lng: 11.53720, // approximate. VERIFY on the map
+      themes: ["architecture", "churches", "side-quests"],
+      cost: "Free",
+      when: "Daytime; the light inside is best in the afternoon",
+      summary: "A modern church shaped like a glass box inside a glass box. Its front is a pair of huge blue glass doors.",
+      history: "The old church here burned down in 1994. The new one, by the architects Allmann Sattler Wappner, was consecrated in 2000. Its inner walls are made of wooden slats that let in more light the nearer you get to the altar.",
+      funFacts: [
+        "The front doors are about 14 metres tall and open fully on special church holidays.",
+        "The blue glass front is covered in a pattern of nails that spell out the Passion story in a code.", // VERIFY
+        "It has won several architecture prizes."
+      ],
+      tip: "Walk slowly from the back to the altar and watch the light change.",
+      around: [
+        "Walk to Rotkreuzplatz for gelato and the Neuhausen cafés.",
+        "Continue west to Nymphenburg Palace, about 20 minutes on foot.",
+        "Hirschgarten beer garden is a short bike ride away."
+      ],
+      nearby: ["nymphenburg-canal"],
       photos: []
     }
   ]

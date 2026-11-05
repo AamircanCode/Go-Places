@@ -210,6 +210,7 @@ img { -webkit-user-drag: none; -webkit-touch-callout: none; user-select: none; -
 .list-item .name { font-weight: 600; }
 .list-item .sub { font-size: 13px; color: var(--muted); }
 .list-item .check { margin-left: auto; }
+a.list-item { text-decoration: none; }
 
 @media (max-width: 380px) {
   .explored-word { display: none; }

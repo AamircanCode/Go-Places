@@ -225,6 +225,35 @@
       (p.credit ? '<span class="credit">' + esc(p.credit) + "</span>" : "");
   }
 
+  // "Around here": things to do near a spot, from its optional `around` list.
+  function aroundBlock(spot) {
+    var items = (spot.around || []).map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("");
+    return items ? '<div class="spot-section"><h3>🚶 Around here</h3><ul>' + items + "</ul></div>" : "";
+  }
+
+  // "Nearby spots": the spot's own `nearby` ids first, then the closest other
+  // spots within walking distance, up to five, each a link to its page.
+  function nearbyBlock(spot) {
+    var here = [spot.lat, spot.lng];
+    var picked = (spot.nearby || []).map(spotById).filter(function (s) { return s && s.id !== spot.id; });
+    var closest = DATA.spots
+      .filter(function (s) { return s.id !== spot.id && picked.indexOf(s) === -1; })
+      .map(function (s) { return { s: s, km: distanceKm(here, [s.lat, s.lng]) }; })
+      .filter(function (x) { return x.km <= 1.5; })
+      .sort(function (a, b) { return a.km - b.km; })
+      .map(function (x) { return x.s; });
+    var list = picked.concat(closest).slice(0, Math.max(5, picked.length));
+    if (!list.length) return "";
+    return '<div class="spot-section"><h3>📍 Nearby spots</h3>' + list.map(function (s) {
+      var km = distanceKm(here, [s.lat, s.lng]);
+      var walk = km < 3 ? Math.max(1, Math.round(km * 1000 / 80)) + " min walk" : km.toFixed(1) + " km";
+      return '<a class="list-item" href="#' + encodeURIComponent(s.id) + '">' +
+        '<span class="emoji">' + esc(s.emoji || "📍") + "</span>" +
+        '<span><span class="name">' + esc(s.name) + '</span><br><span class="sub">' + esc(walk) + "</span></span>" +
+      "</a>";
+    }).join("") + "</div>";
+  }
+
   function openSpot(id) {
     var spot = spotById(id);
     if (!spot) return;
@@ -268,6 +297,8 @@
       (spot.history ? '<div class="spot-section"><h3>📜 History</h3><p>' + esc(spot.history) + "</p></div>" : "") +
       (facts ? '<div class="spot-section"><h3>💡 Fun facts</h3><ul>' + facts + "</ul></div>" : "") +
       (spot.tip ? '<div class="tip">👉 ' + esc(spot.tip) + "</div>" : "") +
+      aroundBlock(spot) +
+      nearbyBlock(spot) +
       (COLLECTIONS ? COLLECTIONS.spotSection(spot) : "") +
       (SOCIAL ? SOCIAL.ratingSection(spot) : "")
     );
