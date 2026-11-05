@@ -21,7 +21,9 @@
  *            and collections.js are optional (see data/place-meta.js).
  *
  * Which city opens: the one in the link (?city=berlin), otherwise the last
- * one this device picked, otherwise `defaultCity`.
+ * one this device picked. On a first visit (neither), `defaultCity` loads
+ * behind a "Where are you exploring?" picker, and nothing is remembered
+ * until the visitor picks a city.
  */
 window.GO_PLACES_CITIES = {
   defaultCity: "munich",
@@ -71,13 +73,19 @@ window.GO_PLACES_CITIES = {
   var saved = null;
   try { saved = localStorage.getItem(KEY); } catch (e) { /* private mode */ }
 
-  var city = find(fromLink) || find(saved) || find(CFG.defaultCity) || CFG.cities[0];
-  try { localStorage.setItem(KEY, city.id); } catch (e) { /* private mode */ }
+  var chosen = find(fromLink) || find(saved);
+  var city = chosen || find(CFG.defaultCity) || CFG.cities[0];
   CFG.current = city.id;
+  // No city in the link and none picked on this device yet: app.js asks.
+  CFG.firstVisit = !chosen;
+  // Until then, leave storage and the address alone, so a reload still asks.
+  if (chosen) {
+    try { localStorage.setItem(KEY, city.id); } catch (e) { /* private mode */ }
+  }
 
   // Keep the city in the address, so any link copied from here opens it.
   var params = new URLSearchParams(location.search);
-  if (params.get("city") !== city.id && window.history && history.replaceState) {
+  if (chosen && params.get("city") !== city.id && window.history && history.replaceState) {
     params.set("city", city.id);
     history.replaceState(history.state, "", location.pathname + "?" + params.toString() + location.hash);
   }

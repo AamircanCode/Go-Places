@@ -140,6 +140,7 @@
   var sheetBody = document.getElementById("sheet-body");
 
   function showSheet(html) {
+    sheet.classList.remove("must-choose");
     sheetBody.innerHTML = html;
     sheet.classList.add("open");
     sheet.setAttribute("aria-hidden", "false");
@@ -336,17 +337,24 @@
   // Each city is its own set of content files (data/cities.js), so switching
   // reloads the page with ?city=… . Explored spots, wishlist and badges are
   // kept per account or device, across all cities.
-  function openCities() {
+  //
+  // On a first visit (no city picked on this device yet), the app opens on
+  // this list as a welcome step that can't be closed: picking a city reloads
+  // into it and remembers it, and the switcher in the top bar changes it later.
+  function openCities(welcome) {
     state.view = "cities";
     state.openSpotId = null;
     stopSpeaking();
-    history.replaceState(null, "", "#cities");
+    history.replaceState(null, "", welcome ? location.pathname + location.search : "#cities");
     var current = DATA.cityId || CITIES.current;
     showSheet(
-      '<h2 class="list-title">🌍 Choose a city</h2>' +
-      '<p class="list-desc">Go Places is growing. Pick a city to explore; more are on the way.</p>' +
+      (welcome
+        ? '<h2 class="list-title">👋 Where are you exploring?</h2>' +
+          '<p class="list-desc">Welcome to Go Places. Pick your city to see its spots, sunsets and side quests. You can switch any time from the top bar.</p>'
+        : '<h2 class="list-title">🌍 Choose a city</h2>' +
+          '<p class="list-desc">Go Places is growing. Pick a city to explore; more are on the way.</p>') +
       CITIES.cities.map(function (c) {
-        var here = c.id === current;
+        var here = !welcome && c.id === current;
         return '<a class="list-item city-item' + (here ? " current" : "") + '" href="?city=' + encodeURIComponent(c.id) + '">' +
           '<span class="emoji">' + esc(c.emoji || "📍") + "</span>" +
           '<span><span class="name">' + esc(c.name) + '</span><br><span class="sub">' + esc(c.tagline || "") + "</span></span>" +
@@ -354,9 +362,10 @@
         "</a>";
       }).join("")
     );
+    if (welcome) sheet.classList.add("must-choose");
   }
 
-  document.getElementById("city-btn").addEventListener("click", openCities);
+  document.getElementById("city-btn").addEventListener("click", function () { openCities(false); });
   if (CITIES.cities.length < 2) document.getElementById("city-btn").disabled = true;
 
   function spotList(ids, emptyText, dates) {
@@ -895,7 +904,7 @@
   function route() {
     var hash = decodeURIComponent(location.hash.slice(1));
     if (hash && spotById(hash)) openSpot(hash);
-    else if (hash === "cities") openCities();
+    else if (hash === "cities") openCities(false);
     else if (DISCOVER && DISCOVER.route(hash)) { /* handled by the discovery layer */ }
     else if (KNOWLEDGE && KNOWLEDGE.route(hash)) { /* handled by Free Knowledge */ }
     else if (SOCIAL && SOCIAL.route(hash)) { /* handled by the social layer */ }
@@ -966,8 +975,10 @@
   updateCounter();
 
   // With nothing in the link, open on "How do you feel today?".
+  // On a first visit, ask for the city before anything else.
   function start() {
-    if (!location.hash && DISCOVER) DISCOVER.openHome();
+    if (!location.hash && CITIES.firstVisit && CITIES.cities.length > 1) openCities(true);
+    else if (!location.hash && DISCOVER) DISCOVER.openHome();
     else route();
   }
 
