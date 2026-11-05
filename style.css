@@ -70,6 +70,26 @@ button { font: inherit; cursor: pointer; }
   border-radius: 999px; padding: 6px 12px; font-size: 14px;
 }
 .chip.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+.chip-divider { flex: 0 0 auto; width: 1px; height: 22px; background: var(--line); }
+
+/* "Hide explored" on/off switch (theme bar and list view) */
+.hide-toggle { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.hide-toggle .switch {
+  position: relative; flex: 0 0 auto;
+  width: 28px; height: 16px; border-radius: 999px;
+  background: var(--line); transition: background 0.15s;
+}
+.hide-toggle .switch::after {
+  content: ""; position: absolute; top: 2px; left: 2px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s;
+}
+.hide-toggle.on { border-color: var(--brand); color: var(--brand); background: var(--brand-soft); }
+.hide-toggle.on .switch { background: var(--brand); }
+.hide-toggle.on .switch::after { transform: translateX(12px); }
+.list-filter { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 6px; }
+.list-filter .sub { font-size: 13px; color: var(--muted); }
 
 /* Map */
 #map {

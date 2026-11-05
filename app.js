@@ -12,10 +12,12 @@
   var PLAN = window.GoPlan; // Plan My Day, optional
   var CITIES = window.GO_PLACES_CITIES || { cities: [] }; // data/cities.js
   var STORAGE_KEY = "goplaces.explored";
+  var HIDE_KEY = "goplaces.hideExplored"; // "1" when explored places are hidden
 
   var state = {
     theme: "all",
     explored: loadExplored(),
+    hideExplored: loadHideExplored(),
     me: null,
     openSpotId: null,
     view: null
@@ -37,6 +39,23 @@
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.explored)); } catch (e) { /* private mode */ }
   }
 
+  // The "Hide explored" filter is a per-device preference, remembered across visits.
+  function loadHideExplored() {
+    try { return localStorage.getItem(HIDE_KEY) === "1"; }
+    catch (e) { return false; }
+  }
+
+  function setHideExplored(on) {
+    state.hideExplored = !!on;
+    try {
+      if (on) localStorage.setItem(HIDE_KEY, "1");
+      else localStorage.removeItem(HIDE_KEY);
+    } catch (e) { /* private mode */ }
+    renderThemes();
+    renderMarkers();
+    if (state.view === "list") openList();
+  }
+
   // Signed in: explored spots come from the account. Otherwise from this device.
   function exploredMap() {
     return ACCT.user ? ACCT.visits : state.explored;
@@ -50,9 +69,19 @@
     return DATA.spots.filter(function (s) { return s.id === id; })[0];
   }
 
-  function visibleSpots() {
+  // Spots in the chosen theme, before the "Hide explored" filter.
+  function themeSpots() {
     if (state.theme === "all") return DATA.spots;
     return DATA.spots.filter(function (s) { return s.themes.indexOf(state.theme) !== -1; });
+  }
+
+  // What the map and the list show: the theme's spots, minus explored ones
+  // when "Hide explored" is on.
+  function visibleSpots() {
+    var spots = themeSpots();
+    if (!state.hideExplored) return spots;
+    var explored = exploredMap();
+    return spots.filter(function (s) { return !explored[s.id]; });
   }
 
   // A link to this page that opens the current city, e.g. for sharing.
@@ -118,13 +147,22 @@
   function renderThemes() {
     var el = document.getElementById("themes");
     var all = [{ id: "all", name: "All spots", emoji: "🗺️" }].concat(DATA.themes);
-    el.innerHTML = all.map(function (t) {
+    el.innerHTML = hideToggle("chip") + '<span class="chip-divider" aria-hidden="true"></span>' + all.map(function (t) {
       var active = t.id === state.theme ? " active" : "";
       return '<button class="chip' + active + '" data-theme="' + esc(t.id) + '">' + esc(t.emoji) + " " + esc(t.name) + "</button>";
     }).join("");
   }
 
+  // An on/off switch that hides spots you've already explored.
+  function hideToggle(cls) {
+    var on = state.hideExplored;
+    return '<button class="' + cls + ' hide-toggle' + (on ? " on" : "") + '" data-hide-explored role="switch" aria-checked="' + on + '"' +
+      ' title="' + (on ? "Show spots you've explored again" : "Hide spots you've already explored") + '">' +
+      '<span class="switch" aria-hidden="true"></span> Hide explored</button>';
+  }
+
   document.getElementById("themes").addEventListener("click", function (e) {
+    if (e.target.closest("[data-hide-explored]")) { setHideExplored(!state.hideExplored); return; }
     var btn = e.target.closest(".chip");
     if (!btn) return;
     state.theme = btn.getAttribute("data-theme");
@@ -308,6 +346,7 @@
     state.view = "list";
     var theme = themeById(state.theme);
     var spots = visibleSpots().slice();
+    var hiddenCount = themeSpots().length - spots.length;
     if (state.me) {
       spots.sort(function (a, b) {
         return distanceKm(state.me, [a.lat, a.lng]) - distanceKm(state.me, [b.lat, b.lng]);
@@ -316,6 +355,10 @@
     showSheet(
       '<h2 class="list-title">' + (theme ? esc(theme.emoji + " " + theme.name) : "🗺️ All spots") + "</h2>" +
       '<p class="list-desc">' + (theme ? esc(theme.description) : "Everything you can explore in " + esc(DATA.city) + ".") + "</p>" +
+      '<div class="list-filter">' + hideToggle("btn small") +
+        (hiddenCount ? '<span class="sub">' + hiddenCount + " explored " + (hiddenCount === 1 ? "spot" : "spots") + " hidden</span>" : "") +
+      "</div>" +
+      (!spots.length && hiddenCount ? '<p class="empty">You\'ve explored every spot here. 🎉 Turn off "Hide explored" to see them again.</p>' : "") +
       spots.map(function (s) {
         var sub = [s.cost, distanceLabel(s)].filter(Boolean).join(" · ");
         return '<button class="list-item" data-spot="' + esc(s.id) + '">' +
@@ -328,6 +371,7 @@
   }
 
   sheetBody.addEventListener("click", function (e) {
+    if (state.view === "list" && e.target.closest("[data-hide-explored]")) { setHideExplored(!state.hideExplored); return; }
     var item = e.target.closest(".list-item");
     if (item && item.hasAttribute("data-spot")) openSpot(item.getAttribute("data-spot"));
   });
@@ -411,6 +455,7 @@
   function refreshExplored() {
     updateCounter();
     renderMarkers();
+    if (state.hideExplored && state.view === "list") openList();
   }
 
   // ---------- accounts ----------
