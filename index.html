@@ -23,7 +23,6 @@
       <div class="explored" title="Spots you've marked as explored">
         <span id="explored-count">0</span>/<span id="total-count">0</span><span class="explored-word"> explored</span>
       </div>
-      <button id="account-btn" class="account-btn" hidden>Sign in</button>
     </div>
   </header>
 
@@ -33,9 +32,15 @@
 
   <div class="map-buttons">
     <button id="locate-btn" class="fab" aria-label="Show my location" title="Show my location">◎</button>
-    <button id="list-btn" class="fab" aria-label="Show list of spots" title="List">☰</button>
-    <button id="suggest-btn" class="fab" aria-label="Suggest a place" title="Suggest a place" hidden>＋</button>
   </div>
+
+  <nav class="tabbar" id="tabbar" aria-label="Main">
+    <button class="tab on" data-tab="map"><b aria-hidden="true">🗺️</b><span>Map</span></button>
+    <button class="tab" data-tab="discover" hidden><b aria-hidden="true">✨</b><span>Discover</span></button>
+    <button class="tab" data-tab="suggest" hidden><b aria-hidden="true">➕</b><span>Suggest</span></button>
+    <button class="tab" data-tab="explorers" hidden><b aria-hidden="true">👥</b><span>Explorers</span></button>
+    <button class="tab" data-tab="me" id="account-btn" hidden><b aria-hidden="true" class="tab-me-icon">🧭</b><span class="tab-me-label">Sign in</span></button>
+  </nav>
 
   <section class="sheet" id="sheet" aria-hidden="true">
     <button class="sheet-close" id="sheet-close" aria-label="Close">✕</button>

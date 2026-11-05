@@ -642,15 +642,9 @@
     pill.innerHTML = "⚡ What can I do right now?";
     pill.addEventListener("click", openNow);
     document.body.appendChild(pill);
-
-    var fab = document.createElement("button");
-    fab.className = "fab";
-    fab.title = "Discover things to do";
-    fab.setAttribute("aria-label", "Discover things to do");
-    fab.textContent = "✨";
-    fab.addEventListener("click", openHome);
-    var buttons = document.querySelector(".map-buttons");
-    if (buttons) buttons.insertBefore(fab, buttons.firstChild);
+    // The Discover tab in the bottom bar opens the rest.
+    var tab = document.querySelector('[data-tab="discover"]');
+    if (tab) tab.hidden = false;
   }
 
   // Warns in the browser console about content that points at things that

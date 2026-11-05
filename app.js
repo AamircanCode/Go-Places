@@ -55,6 +55,7 @@
     renderThemes();
     renderMarkers();
     if (state.view === "list") openList();
+    else if (state.view === "filters") openFilters();
   }
 
   // Signed in: explored spots come from the account. Otherwise from this device.
@@ -126,16 +127,46 @@
     });
   }
 
+  // Pins that would overlap on screen are drawn as one numbered circle;
+  // tapping it zooms in until they separate. Recomputed on every zoom.
+  var CLUSTER_PX = 54;
+
   function renderMarkers() {
     markerLayer.clearLayers();
     markers = {};
+    var zoom = map.getZoom();
+    var groups = [];
     visibleSpots().forEach(function (spot) {
-      var m = L.marker([spot.lat, spot.lng], { icon: markerIcon(spot), title: spot.name, keyboard: true });
-      m.on("click", function () { openSpot(spot.id); });
-      m.addTo(markerLayer);
-      markers[spot.id] = m;
+      var pt = map.project([spot.lat, spot.lng], zoom);
+      var g = zoom >= CLUSTER_MAX_ZOOM ? null : groups.filter(function (g) { return g.pt.distanceTo(pt) < CLUSTER_PX; })[0];
+      if (g) g.spots.push(spot);
+      else groups.push({ pt: pt, spots: [spot] });
+    });
+    groups.forEach(function (g) {
+      if (g.spots.length === 1) {
+        var spot = g.spots[0];
+        var m = L.marker([spot.lat, spot.lng], { icon: markerIcon(spot), title: spot.name, keyboard: true });
+        m.on("click", function () { openSpot(spot.id); });
+        m.addTo(markerLayer);
+        markers[spot.id] = m;
+        return;
+      }
+      var bounds = L.latLngBounds(g.spots.map(function (s) { return [s.lat, s.lng]; }));
+      var n = g.spots.length;
+      // Drawn where its first pin is, so circles keep their distance from each other.
+      var c = L.marker(map.unproject(g.pt, zoom), {
+        icon: L.divIcon({ className: "", html: '<div class="spot-cluster">' + n + "</div>", iconSize: [44, 44], iconAnchor: [22, 22] }),
+        title: n + " places here, tap to zoom in", keyboard: true
+      });
+      c.on("click", function () {
+        var next = Math.min(map.getBoundsZoom(bounds, false, L.point(60, 60)), CLUSTER_MAX_ZOOM);
+        map.setView(bounds.getCenter(), Math.max(next, map.getZoom() + 1));
+      });
+      c.addTo(markerLayer);
     });
   }
+  var CLUSTER_MAX_ZOOM = 17;
+  map.on("zoomend", renderMarkers);
 
   function fitToVisible() {
     var spots = visibleSpots();
@@ -147,11 +178,27 @@
   // ---------- theme chips ----------
   function renderThemes() {
     var el = document.getElementById("themes");
-    var all = [{ id: "all", name: "All spots", emoji: "🗺️" }].concat(DATA.themes);
-    el.innerHTML = hideToggle("chip") + '<span class="chip-divider" aria-hidden="true"></span>' + all.map(function (t) {
+    var all = [{ id: "all", name: "All", emoji: "🗺️" }].concat(DATA.themes);
+    el.innerHTML =
+      '<button class="chip filters-chip' + (state.hideExplored ? " on" : "") + '" data-filters aria-haspopup="true">⚙︎ Filters' + (state.hideExplored ? " · 1" : "") + "</button>" +
+      '<button class="chip" data-list>☰ List</button>' +
+      '<span class="chip-divider" aria-hidden="true"></span>' + all.map(function (t) {
       var active = t.id === state.theme ? " active" : "";
-      return '<button class="chip' + active + '" data-theme="' + esc(t.id) + '">' + esc(t.emoji) + " " + esc(t.name) + "</button>";
+      return '<button class="chip' + active + '" data-theme="' + esc(t.id) + '" title="' + esc(t.name) + '">' + esc(t.emoji) + " " + esc(t.short || t.name) + "</button>";
     }).join("");
+  }
+
+  // The Filters sheet. Only "Hide explored" for now; more filters can join it.
+  function openFilters() {
+    state.view = "filters";
+    state.openSpotId = null;
+    history.replaceState(null, "", location.pathname + location.search);
+    showSheet(
+      '<h2 class="list-title">Filters</h2>' +
+      '<p class="list-desc">Choose what the map and list show.</p>' +
+      '<div class="list-filter">' + hideToggle("btn") + "</div>" +
+      '<button class="btn primary wide" data-close-sheet>Show the map</button>'
+    );
   }
 
   // An on/off switch that hides spots you've already explored.
@@ -163,8 +210,9 @@
   }
 
   document.getElementById("themes").addEventListener("click", function (e) {
-    if (e.target.closest("[data-hide-explored]")) { setHideExplored(!state.hideExplored); return; }
-    var btn = e.target.closest(".chip");
+    if (e.target.closest("[data-filters]")) { openFilters(); return; }
+    if (e.target.closest("[data-list]")) { openList(); return; }
+    var btn = e.target.closest("[data-theme]");
     if (!btn) return;
     state.theme = btn.getAttribute("data-theme");
     renderThemes();
@@ -184,6 +232,7 @@
     sheet.classList.add("open");
     sheet.setAttribute("aria-hidden", "false");
     sheet.scrollTop = 0;
+    updateTabs();
   }
 
   function closeSheet() {
@@ -199,6 +248,7 @@
     if (PLAN) PLAN.onClose();
     if (SUBMIT) SUBMIT.onClose();
     if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+    updateTabs();
   }
 
   document.getElementById("sheet-close").addEventListener("click", closeSheet);
@@ -421,7 +471,8 @@
   }
 
   sheetBody.addEventListener("click", function (e) {
-    if (state.view === "list" && e.target.closest("[data-hide-explored]")) { setHideExplored(!state.hideExplored); return; }
+    if ((state.view === "list" || state.view === "filters") && e.target.closest("[data-hide-explored]")) { setHideExplored(!state.hideExplored); return; }
+    if (e.target.closest("[data-close-sheet]")) { closeSheet(); return; }
     var item = e.target.closest(".list-item");
     if (item && item.hasAttribute("data-spot")) openSpot(item.getAttribute("data-spot"));
   });
@@ -473,7 +524,6 @@
     }).join("");
   }
 
-  document.getElementById("list-btn").addEventListener("click", openList);
 
   // ---------- my location ----------
   var meMarker = null;
@@ -535,24 +585,56 @@
     document.querySelector('meta[name="theme-color"]').setAttribute("content", color);
   }
 
+  // The "Me" tab: your avatar emoji once signed in, otherwise "Sign in".
   function renderAccountBtn() {
     var btn = document.getElementById("account-btn");
     if (!ACCT.enabled) return;
     btn.hidden = false;
+    var icon = btn.querySelector(".tab-me-icon"), label = btn.querySelector(".tab-me-label");
     if (ACCT.profile) {
-      btn.innerHTML = SOCIAL ? SOCIAL.avatar(ACCT.profile, "small") : '<span class="avatar small">' + esc(ACCT.profile.avatar_emoji) + "</span>";
-      if (SOCIAL) SOCIAL.fillAvatars(btn);
+      icon.textContent = ACCT.profile.avatar_emoji || "🧭";
+      label.textContent = "Me";
       btn.setAttribute("aria-label", "Your profile");
-      btn.title = "Your profile";
     } else {
-      btn.textContent = "Sign in";
+      icon.textContent = "🧭";
+      label.textContent = "Sign in";
       btn.setAttribute("aria-label", "Sign in");
-      btn.title = "Sign in or create an account";
     }
   }
 
-  document.getElementById("account-btn").addEventListener("click", function () {
-    if (ACCT.user) openProfile(); else openSignIn();
+  // ---------- bottom tab bar ----------
+  // Which tab a screen belongs to, so the bar shows where you are.
+  function currentTab() {
+    if (document.body.classList.contains("picking")) return "suggest";
+    if (!sheet.classList.contains("open")) return "map";
+    var v = state.view, hash = location.hash.slice(1).split("/")[0];
+    if (v === "profile" || v === "settings" || v === "edit" || v === "auth" || v === "photo" || v === "upload") return "me";
+    if (v === "public") return "explorers";
+    if (v === "social") return /^(explorers|@)/.test(hash) ? "explorers" : "me";
+    if (v === "submit") return hash === "suggest" ? "suggest" : "me";
+    if (v === "discover" || v === "plan" || v === "collections" || v === "knowledge") return "discover";
+    return "map";
+  }
+
+  function updateTabs() {
+    var on = currentTab();
+    Array.prototype.forEach.call(document.querySelectorAll("#tabbar .tab"), function (t) {
+      var is = t.getAttribute("data-tab") === on;
+      t.classList.toggle("on", is);
+      if (is) t.setAttribute("aria-current", "page"); else t.removeAttribute("aria-current");
+    });
+  }
+
+  document.getElementById("tabbar").addEventListener("click", function (e) {
+    var t = e.target.closest("[data-tab]");
+    if (!t) return;
+    var tab = t.getAttribute("data-tab");
+    if (tab === "map") closeSheet();
+    else if (tab === "discover" && DISCOVER) DISCOVER.openHome();
+    else if (tab === "suggest" && SUBMIT) SUBMIT.startSuggest();
+    else if (tab === "explorers" && SOCIAL) SOCIAL.openExplorers();
+    else if (tab === "me") { if (ACCT.user) openProfile(); else openSignIn(); }
+    updateTabs();
   });
 
   // Form helpers: every form shows its errors in a .form-msg element.
@@ -1128,6 +1210,7 @@
       openProfile: openProfile,
       openEditProfile: openEditProfile,
       openSettings: openSettings,
+      updateTabs: updateTabs,
       rerender: rerender,
       close: closeSheet,
       view: function () { return state.view; },
@@ -1160,11 +1243,21 @@
   renderMarkers();
   updateCounter();
 
-  // With nothing in the link, open on "How do you feel today?".
+  // The app opens on the map. "How do you feel today?" shows once, on the
+  // first open after the city is picked; after that it's under Discover.
   // On a first visit, ask for the city before anything else.
+  function seenDiscover() {
+    var KEY = "goplaces.seenDiscover";
+    try {
+      if (localStorage.getItem(KEY)) return true;
+      localStorage.setItem(KEY, "1");
+    } catch (e) { /* private mode: show it */ }
+    return false;
+  }
+
   function start() {
     if (!location.hash && CITIES.firstVisit && CITIES.cities.length > 1) openCities(true);
-    else if (!location.hash && DISCOVER) DISCOVER.openHome();
+    else if (!location.hash && DISCOVER && !seenDiscover()) DISCOVER.openHome();
     else route();
   }
 

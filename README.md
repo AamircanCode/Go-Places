@@ -31,7 +31,7 @@ The site also blocks right-click and long-press "Save image" and dragging on pho
 
 A second layer on top of the map. The map answers "Where can I go?"; this layer answers "What can I do?".
 
-- **How do you feel today?** The app opens on eight mood cards (Relax, Explore, Learn, …). Tap one to see matching activities.
+- **How do you feel today?** Eight mood cards (Relax, Explore, Learn, …) under the **Discover** tab. They open by themselves once, on the first visit; after that the app opens on the map. Tap one to see matching activities.
 - **What can I do right now?** Pick how much time you have (30 minutes to a full day) and get activities that fit and are in season, nearest first if location is on.
 - **Activities** like "Watch the ducks" or "Watch the sunset", each linked to one or more spots. Save them, and tick "Did it here" at a spot (that also marks the spot as explored). Spot pages show "Things to do here".
 - **Hidden gems**: small discoveries shown separately from the main spots, with a "Found it" tick.
@@ -78,12 +78,18 @@ Go Places is not a social network: there are **no follower counts, likes, rankin
 
 - **Profiles** get an emoji avatar (uploaded profile photos are switched off for now), interests, quests completed and activities completed, on top of name, bio, badges, explored places and photos.
 - **Follow / unfollow.** Following a public profile is instant; a followers-only profile gets a request it can accept or decline. "People you follow" and "People following you" are plain lists that only you can see. You can remove a follower; they aren't told.
-- **Discover explorers** (`…/#explorers`, or the 👥 button on the map): public explorers grouped by interests and what they explore (Nature Enthusiasts, Knowledge Hunters, Museum Explorers, …), in random order. Groups and interests live in [`data/social.js`](data/social.js).
+- **Discover explorers** (`…/#explorers`, or the **Explorers** tab): public explorers grouped by interests and what they explore (Nature Enthusiasts, Knowledge Hunters, Museum Explorers, …), in random order. Groups and interests live in [`data/social.js`](data/social.js).
 - **Explorer feed** (`…/#feed`): places explored, photos added, activities done, quests completed and new categories explored, from you and the people you follow.
 - **Ratings** on every place: an overall score plus optional learning value, scenic value, accessibility, family friendly and uniqueness. Only averages are shown; there are no comments.
 - **Privacy** (`…/#privacy`): profile Public / Followers only / Private, and Everyone / Followers only / Only me for visited places, wishlist, activity feed and uploaded photos. The database enforces these rules, not just the app.
 
 These need the "social discovery & privacy" part of [`supabase/schema.sql`](supabase/schema.sql): paste the whole file into the SQL Editor and run it again. Until then they stay hidden and everything else works as before. Existing public profiles stay public; private ones stay private.
+
+## Getting around
+
+- **Tab bar** at the bottom: **Map**, **Discover** (moods, right now, Plan My Day, collections, hidden gems), **Suggest**, **Explorers** and **Me** (your profile, or Sign in). Suggest and Explorers only show once their parts of `supabase/schema.sql` have been run.
+- **Theme bar:** **Filters** (Hide explored), **List**, then the themes. A theme's optional `short` name in `data/spots.js` is used on its chip.
+- **Grouped pins:** pins that would overlap on screen show as one numbered circle; tap it to zoom in. Below zoom 17 they regroup on every zoom.
 
 ## Profile and Settings
 
@@ -95,7 +101,7 @@ These need the "social discovery & privacy" part of [`supabase/schema.sql`](supa
 
 Signed-in explorers can suggest new places and photos. Nothing they send is public until a reviewer approves it. Reviewers see who sent each suggestion; once approved, it's shown without the sender's name.
 
-- **Suggest a place:** the **＋** button on the map (or `…/#suggest`). Move the map so the pin sits on the place, then add a name, an icon, themes, a short description, cost, best time, a tip and an optional photo.
+- **Suggest a place:** the **Suggest** tab (or `…/#suggest`). Move the map so the pin sits on the place, then add a name, an icon, themes, a short description, cost, best time, a tip and an optional photo.
 - **Suggest a photo:** on any spot, **📷 Add photo** and tick **Also suggest it for this place's page**. The photo still goes to their own photos too.
 - **My suggestions** (`…/#suggestions`, also under **⚙️ Settings › Contribute**): each suggestion shows *Waiting for review*, *Approved* or *Not accepted* (with the reviewer's reason, if given). Waiting or rejected ones can be withdrawn.
 - **Review** (`…/#review`, only for reviewers): a **Review queue** row under **⚙️ Settings › Contribute** and a red number on the profile picture when something is waiting. Each suggestion shows who sent it (their username links to their profile); places show their pin on a small map, its text and photo, with **Approve**, **Edit, then approve** and **Reject** (with an optional reason). Approved places appear on the map straight away, and approved photos on their place's page. **Recently decided** lets you unpublish something or approve it after all. **Contributors** is a directory of everyone who has suggested something, with how many were approved, rejected or are waiting; tap a person to see everything they've sent. Suggestions stay in it after they're decided.
@@ -141,7 +147,7 @@ That's it. A **Sign in** button appears in the top bar. Whenever `schema.sql` ch
 - 6 themes / playlists you can filter by
 - Spot pages with cost, best time, history, fun facts, a tip, photos, walking directions (opens Google Maps) and a 🔊 Listen button that reads the text aloud
 - "Mark as explored" counter, saved on the device, or in your account when signed in
-- "Hide explored" switch (theme bar and list view) that hides spots you have already explored from the map and list; turn it off to see them again. The choice is remembered on the device.
+- "Hide explored" switch (under **Filters** in the theme bar, and in the list view) that hides spots you have already explored from the map and list; turn it off to see them again. The choice is remembered on the device.
 - Share links that open straight to a spot (e.g. `…/#hackerbruecke`)
 
 ## Later phases
