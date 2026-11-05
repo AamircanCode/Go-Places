@@ -91,7 +91,7 @@
       address: "Bernauer Straße 111 (visitor centre) to Gartenstraße, Mitte/Wedding",
       knowledge: ["free-museums", "history", "educational-exhibitions", "learning-experiences"],
       tags: ["History", "Cold War", "Open Air", "Knowledge"],
-      themes: ["free-knowledge", "wall-history"],
+      themes: ["free-knowledge", "wall-history", "architecture"],
       opening: "Open-air area daily 8:00–22:00. Visitor centre and documentation centre Tue–Sun 10:00–18:00.", // VERIFY
       duration: "1.5–2 hours",
       summary: "The central memorial to the Berlin Wall: a long stretch of the original border strip with the Wall, the watchtower and the 'death strip' preserved, plus a free documentation centre with a viewing tower.",
@@ -147,6 +147,7 @@
     museum({
       id: "humboldt-forum-free",
       name: "Humboldt Forum (the free parts)",
+      themes: ["free-knowledge", "architecture"],
       emoji: "🏰",
       lat: 52.51740, lng: 13.40260,
       address: "Schlossplatz, Mitte (opposite Museum Island)",

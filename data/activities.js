@@ -143,7 +143,7 @@ window.GO_PLACES_LAYER.activities = [
     "moodTags": ["learn", "take-photos"],
     "bestTime": "Morning or late afternoon light",
     "season": ["spring", "summer", "autumn", "winter"],
-    "placeIds": ["koenigsplatz", "monopteros", "frauenkirche", "wittelsbacherplatz"],
+    "placeIds": ["koenigsplatz", "monopteros", "frauenkirche", "wittelsbacherplatz", "siegestor", "feldherrnhalle", "ludwigskirche", "bavaria-statue"],
     "images": []
   },
   {
@@ -399,6 +399,66 @@ window.GO_PLACES_LAYER.activities = [
     "bestTime": "Start around 10:30 to catch the 11:00 Glockenspiel",
     "season": ["spring", "summer", "autumn", "winter"],
     "placeIds": ["glockenspiel", "frauenkirche", "alter-peter", "asamkirche", "viktualienmarkt", "koenigsplatz"],
+    "images": []
+  },
+  {
+    "id": "old-city-gates",
+    "title": "Walk the three medieval city gates",
+    "emoji": "🏰",
+    "description": "Munich's medieval wall is gone, but three of its gates still stand. Start at the Isartor, cross the Old Town to the Sendlinger Tor, and finish at the Karlstor on the Stachus. On the way you pass Marienplatz and the Asamkirche.",
+    "category": "Architecture",
+    "duration": "About 1.5 hours",
+    "durationMinutes": 90,
+    "cost": 0,
+    "moodTags": ["explore", "learn", "take-photos"],
+    "bestTime": "Daytime",
+    "season": ["spring", "summer", "autumn", "winter"],
+    "placeIds": ["isartor", "sendlinger-tor", "karlstor", "asamkirche", "glockenspiel"],
+    "images": []
+  },
+  {
+    "id": "ludwigstrasse-walk",
+    "title": "Walk Ludwigstraße from gate to gate",
+    "emoji": "🏛️",
+    "description": "From the Feldherrnhalle on Odeonsplatz, walk up King Ludwig I's grand boulevard past the State Library, the Ludwigskirche and the university, all the way to the Siegestor.",
+    "category": "Architecture",
+    "duration": "About 1 hour",
+    "durationMinutes": 60,
+    "cost": 0,
+    "moodTags": ["explore", "learn", "take-photos"],
+    "bestTime": "Afternoon light",
+    "season": ["spring", "summer", "autumn", "winter"],
+    "placeIds": ["feldherrnhalle", "theatinerkirche", "staatsbibliothek", "ludwigskirche", "siegestor"],
+    "images": []
+  },
+  {
+    "id": "modern-munich",
+    "title": "See modern Munich",
+    "emoji": "🔷",
+    "description": "Munich isn't only Baroque: see Frei Otto's Olympic tent roof, BMW's swirling showroom, a glass cube church and the glowing Allianz Arena.",
+    "category": "Architecture",
+    "duration": "Half a day",
+    "durationMinutes": 240,
+    "cost": 0,
+    "moodTags": ["explore", "take-photos"],
+    "bestTime": "Afternoon to evening, to see the arena lit up",
+    "season": ["spring", "summer", "autumn", "winter"],
+    "placeIds": ["olympiastadion-muenchen", "bmw-welt", "herz-jesu-kirche", "pinakothek-der-moderne", "allianz-arena"],
+    "images": []
+  },
+  {
+    "id": "remembrance-walk",
+    "title": "Remembrance walk through Nazi-era Munich",
+    "emoji": "🕯️",
+    "description": "Munich was the 'capital of the movement'. Follow its traces: the Feldherrnhalle and the shirkers' lane, the eternal flame on Brienner Straße, the free NS Documentation Centre and the White Rose courtroom.",
+    "category": "History",
+    "duration": "About 2 hours",
+    "durationMinutes": 120,
+    "cost": 0,
+    "moodTags": ["learn"],
+    "bestTime": "Weekdays, so the courtroom is open",
+    "season": ["spring", "summer", "autumn", "winter"],
+    "placeIds": ["feldherrnhalle", "ns-victims-memorial", "ns-dokuzentrum", "koenigsplatz", "justizpalast", "altes-rathaus"],
     "images": []
   }
 ];
