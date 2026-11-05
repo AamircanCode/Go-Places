@@ -115,6 +115,7 @@ That's it. A **Sign in** button appears in the top bar. Whenever `schema.sql` ch
 - 6 themes / playlists you can filter by
 - Spot pages with cost, best time, history, fun facts, a tip, photos, walking directions (opens Google Maps) and a 🔊 Listen button that reads the text aloud
 - "Mark as explored" counter, saved on the device, or in your account when signed in
+- "Hide explored" switch (theme bar and list view) that hides spots you have already explored from the map and list; turn it off to see them again. The choice is remembered on the device.
 - Share links that open straight to a spot (e.g. `…/#hackerbruecke`)
 
 ## Later phases
