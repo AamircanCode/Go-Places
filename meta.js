@@ -175,7 +175,7 @@
     // "Right now" stays visible; the details fold away under a one-line summary.
     var brief = [spot.duration || m.estimatedDuration, budgetNow, m.activityLevel].filter(Boolean).join(" · ");
     return (good.length ? '<p class="mt-now">✨ Right now is ' + esc(good.join(" and ")) + ".</p>" : "") +
-      '<details class="spot-section mt-glance fold"><summary><h3>🧭 At a glance</h3><span class="fold-brief">' + esc(brief) + "</span></summary>" +
+      '<details class="spot-section mt-glance fold"><summary><h3>At a glance</h3><span class="fold-brief">' + esc(brief) + "</span></summary>" +
       '<div class="mt-rows">' +
         row("⏱", "Time", spot.duration || m.estimatedDuration) +
         row("💶", "Budget", budgetText) +

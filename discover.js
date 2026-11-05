@@ -297,7 +297,7 @@
       '<div class="dz-hero">' +
         '<h2 class="list-title">What can I do?</h2>' +
         '<p class="list-desc">Things to do in ' + esc((window.GO_PLACES || {}).city || "the city") + ", picked for your mood and your time.</p>" +
-        '<button class="btn primary wide dz-now" data-d="now">⚡ What Can I Do Right Now?</button>' +
+        '<button class="btn primary wide dz-now" data-d="now">What can I do right now?</button>' +
         (window.GoPlan || window.GoCollections ? '<div class="dz-plan-row">' +
           (window.GoPlan ? '<a class="btn wide" href="#plan">🗓️ Plan My Day</a>' : "") +
           (window.GoCollections ? '<a class="btn wide" href="#collections">📚 Collections</a>' : "") + "</div>" : "") +
@@ -307,12 +307,12 @@
         return '<button class="mood-card" data-d="mood" data-id="' + esc(m.id) + '">' +
           '<span class="mood-emoji">' + esc(m.emoji) + "</span>" + esc(m.label) + "</button>";
       }).join("") + "</div>" +
-      (gems.length ? '<h3 class="dz-h">💎 Hidden gems</h3>' +
+      (gems.length ? '<h3 class="dz-h">Hidden gems</h3>' +
         '<p class="list-desc">Small discoveries most people walk right past.</p>' +
         '<div class="gem-row">' + byDistance(gems, gemKm).map(gemCard).join("") + "</div>" +
         '<button class="dz-more" data-d="gems">See all hidden gems →</button>' : "") +
-      (saved.length ? '<h3 class="dz-h">💚 Saved for later</h3>' + saved.map(activityRow).join("") : "") +
-      (quests.length ? '<h3 class="dz-h">🏅 Quests</h3>' + quests.map(questRow).join("") +
+      (saved.length ? '<h3 class="dz-h">Saved for later</h3>' + saved.map(activityRow).join("") : "") +
+      (quests.length ? '<h3 class="dz-h">Quests</h3>' + quests.map(questRow).join("") +
         '<button class="dz-more" data-d="quests">Your badges →</button>' : ""),
       "");
   }
@@ -333,7 +333,7 @@
   function openNow() {
     show(openNow, null,
       back() +
-      '<h2 class="list-title">⚡ How much time do you have?</h2>' +
+      '<h2 class="list-title">How much time do you have?</h2>' +
       '<p class="list-desc">We\'ll show what fits, right now, in ' + esc(season()) + ".</p>" +
       '<div class="time-grid">' + timeOptions.map(function (t) {
         return '<button class="btn time-btn" data-d="time" data-id="' + esc(t.id) + '">' + esc(t.label) + "</button>";
@@ -353,7 +353,7 @@
     fits = byDistance(fits, nearestKm);
     show(openTime, id,
       back("Change time", "now") +
-      '<h2 class="list-title">⚡ ' + esc(t.label) + ": you could…</h2>" +
+      '<h2 class="list-title">' + esc(t.label) + ": you could…</h2>" +
       '<p class="list-desc">' + fits.length + " thing" + (fits.length === 1 ? "" : "s") + " that fit, in " + esc(season()) +
         (app.me() ? ", nearest first." : ".") + "</p>" +
       locateHint() +
@@ -425,8 +425,8 @@
         '<button class="btn" data-d="share">↗ Share</button>' +
       "</div>" +
       '<p class="summary">' + esc(a.description) + "</p>" +
-      '<div class="spot-section"><h3>📍 Where to do it</h3>' + (spots.length > 1 ? locateHint() : "") + where + "</div>" +
-      (related.length ? '<div class="spot-section"><h3>🏅 Counts towards</h3>' + related.map(questRow).join("") + "</div>" : ""),
+      '<div class="spot-section"><h3>Where to do it</h3>' + (spots.length > 1 ? locateHint() : "") + where + "</div>" +
+      (related.length ? '<div class="spot-section"><h3>Counts towards</h3>' + related.map(questRow).join("") + "</div>" : ""),
       "do/" + id);
 
     if (spots.length) {
@@ -457,7 +457,7 @@
         '<button class="btn" data-d="share">↗ Share</button>' +
       "</div>" +
       '<p class="summary">' + esc(g.description) + "</p>" +
-      (g.whyVisit ? '<div class="spot-section"><h3>✨ Why go</h3><p>' + esc(g.whyVisit) + "</p></div>" : "") +
+      (g.whyVisit ? '<div class="spot-section"><h3>Why go</h3><p>' + esc(g.whyVisit) + "</p></div>" : "") +
       (g.localTip ? '<div class="tip">👉 ' + esc(g.localTip) + "</div>" : ""),
       "gem/" + id);
 
@@ -474,7 +474,7 @@
     var list = byDistance(gems, gemKm);
     show(openGems, null,
       back() +
-      '<h2 class="list-title">💎 Hidden gems</h2>' +
+      '<h2 class="list-title">Hidden gems</h2>' +
       '<p class="list-desc">Not the big sights: the little corners locals love. Find them and tick them off.</p>' +
       locateHint() +
       list.map(function (g) {
@@ -492,7 +492,7 @@
     var earned = earnedBadges();
     show(openQuests, null,
       back() +
-      '<h2 class="list-title">🏅 Quests & badges</h2>' +
+      '<h2 class="list-title">Quests & badges</h2>' +
       '<p class="list-desc">Do activities and find hidden gems to finish quests and earn badges.' +
         (ACCT.enabled && !ACCT.user ? ' <a href="#" data-d="signin">Sign in</a> to keep them on every device.' : "") + "</p>" +
       '<div class="badge-grid">' + badges.map(function (b) { return badgeChip(b, earned[b.id]); }).join("") + "</div>" +
@@ -531,7 +531,7 @@
   function spotSection(spot) {
     var list = activities.filter(function (a) { return (a.placeIds || []).indexOf(spot.id) !== -1; });
     if (!list.length) return "";
-    return '<div class="spot-section"><h3>🎯 Things to do here</h3>' + list.map(function (a) {
+    return '<div class="spot-section"><h3>Things to do here</h3>' + list.map(function (a) {
       return '<button class="list-item" data-d="act" data-id="' + esc(a.id) + '">' +
         '<span class="emoji">' + esc(a.emoji || "🎯") + "</span>" +
         '<span><span class="name">' + esc(a.title) + '</span><br><span class="sub">' + esc([a.duration, costLabel(a.cost)].join(" · ")) + "</span></span>" +
@@ -548,14 +548,14 @@
     var got = badges.filter(function (b) { return earned[b.id]; });
     var html = "";
     if ((got.length || !theirs) && part !== "saved") {
-      html += '<div class="spot-section"><h3>🏅 Badges</h3>' +
+      html += '<div class="spot-section"><h3>Badges</h3>' +
         (got.length ? '<div class="badge-grid">' + got.map(function (b) { return badgeChip(b, true); }).join("") + "</div>"
           : '<p class="empty">Finish a quest to earn your first badge.</p>') +
         (theirs ? "" : '<button class="dz-more" data-d="quests">See quests →</button>') + "</div>";
     }
     if (!theirs && part !== "badges") {
       var saved = Object.keys(progress().saved).map(activityById).filter(Boolean);
-      html += '<div class="spot-section"><h3>💚 Saved activities</h3>' +
+      html += '<div class="spot-section"><h3>Saved activities</h3>' +
         (saved.length ? saved.map(activityRow).join("") : '<p class="empty">Tap “Save” on an activity to keep it here.</p>') + "</div>";
     }
     return html;

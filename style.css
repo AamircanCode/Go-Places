@@ -8,7 +8,7 @@
   --surface: #f5f7f8;
   --line: #e3e8eb;
   --shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
-  --topbar-h: 56px;
+  --topbar-h: 48px;
   --themes-h: 52px;
   --tabbar-h: calc(58px + env(safe-area-inset-bottom, 0px));
 }
@@ -35,26 +35,23 @@ button { font: inherit; cursor: pointer; }
   background: var(--brand); color: #fff;
   z-index: 1000;
 }
-.brand { display: flex; align-items: center; gap: 10px; }
-.logo { font-size: 24px; }
-.brand h1 { margin: 0; font-size: 18px; line-height: 1.1; white-space: nowrap; }
+.brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.logo { font-size: 20px; }
+.brand h1 { margin: 0; font-size: 17px; line-height: 1.1; white-space: nowrap; }
 .brand p { margin: 0; font-size: 12px; opacity: 0.85; }
 .city-btn {
   display: inline-flex; align-items: center; gap: 4px;
-  margin: 1px 0 0; padding: 1px 8px 1px 0;
-  border: 0; border-radius: 999px; background: none; color: #fff;
-  font-size: 12px; opacity: 0.9; white-space: nowrap;
+  margin: 0 0 0 4px; padding: 3px 10px;
+  border: 0; border-radius: 999px; background: rgba(255,255,255,0.18); color: #fff;
+  font-size: 13px; font-weight: 600; white-space: nowrap;
 }
-.city-btn:hover, .city-btn:focus-visible { opacity: 1; text-decoration: underline; }
+.city-btn:hover, .city-btn:focus-visible { background: rgba(255,255,255,0.28); }
+.city-btn:disabled { cursor: default; }
+.city-btn:disabled .city-caret { display: none; }
 .city-caret { font-size: 10px; }
 .city-item.current { outline: 2px solid var(--brand); outline-offset: -2px; }
 /* First visit: the city picker is a welcome step, so it has no close button. */
 .sheet.must-choose .sheet-close { display: none; }
-.topbar-right { display: flex; align-items: center; gap: 8px; }
-.explored {
-  font-size: 13px; background: rgba(255,255,255,0.18);
-  padding: 4px 10px; border-radius: 999px; white-space: nowrap;
-}
 
 /* Theme chips */
 .themes {
@@ -212,10 +209,6 @@ img { -webkit-user-drag: none; -webkit-touch-callout: none; user-select: none; -
 .list-item .check { margin-left: auto; }
 a.list-item { text-decoration: none; }
 
-@media (max-width: 380px) {
-  .explored-word { display: none; }
-  .explored::before { content: "✅ "; }
-}
 
 /* Accounts */
 .account-btn {

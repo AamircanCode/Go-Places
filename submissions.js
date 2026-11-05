@@ -256,7 +256,7 @@
   function openForm() {
     if (!signedIn()) { app.openSignIn("Sign in to suggest a place for the map."); return; }
     app.show(
-      '<h2 class="list-title">📍 Suggest a place</h2>' +
+      '<h2 class="list-title">Suggest a place</h2>' +
       '<p class="list-desc">Know a free spot that should be on the map? Tell us about it. It\'s checked before it appears, and your name isn\'t shown with it.</p>' +
       '<form class="form" id="suggest-form">' +
         '<div class="pin-line"><span>📌 Pin at ' + draft.lat.toFixed(5) + ", " + draft.lng.toFixed(5) + "</span>" +
@@ -357,7 +357,7 @@
 
   function openThanks(kind) {
     app.show(
-      '<h2 class="list-title">Thanks! 🙌</h2>' +
+      '<h2 class="list-title">Thanks!</h2>' +
       '<p class="list-desc">Your ' + (kind === "place" ? "place" : "photo") + " is waiting for review. Once it's approved it shows up for everyone. You can follow it under “My suggestions” on your profile.</p>" +
       '<div class="actions"><button class="btn primary" id="thanks-mine">My suggestions</button>' +
         '<button class="btn" id="thanks-close">Back to the map</button></div>',
@@ -388,10 +388,11 @@
   function openMine() {
     if (!signedIn()) { app.openSignIn("Sign in to see your suggestions."); return; }
     app.show(
-      '<h2 class="list-title">📮 My suggestions</h2>' +
+      SETTINGS_BACK +
+      '<h2 class="list-title">My suggestions</h2>' +
       '<p class="list-desc">Places and photos you suggested for the map.</p>' +
       '<div class="actions"><button class="btn primary" data-s="suggest">＋ Suggest a place</button>' +
-        (reviewer ? '<button class="btn" data-s="review">🛡️ Review' + (pendingCount ? " (" + pendingCount + ")" : "") + "</button>" : "") + "</div>" +
+        (reviewer ? '<button class="btn" data-s="review">Review' + (pendingCount ? " (" + pendingCount + ")" : "") + "</button>" : "") + "</div>" +
       (mine.length ? mine.map(function (s) {
         return '<div class="sub-item">' +
           '<div class="sub-head"><b>' + esc(title(s)) + "</b>" + statusPill(s) + "</div>" +
@@ -423,6 +424,8 @@
     });
   }
 
+  var SETTINGS_BACK = '<button class="dz-back" data-sback>← Settings</button>';
+
   function wireCommon() {
     Array.prototype.forEach.call(app.sheetBody.querySelectorAll("[data-s]"), function (b) {
       b.addEventListener("click", function () {
@@ -441,10 +444,10 @@
   function openReview() {
     if (!signedIn()) { app.openSignIn("Sign in with the reviewer account to review suggestions."); return; }
     if (!reviewer) {
-      app.show('<h2 class="list-title">🛡️ Review</h2><p class="list-desc">Only reviewers can open the review queue.</p>', "review");
+      app.show(SETTINGS_BACK + '<h2 class="list-title">Review</h2><p class="list-desc">Only reviewers can open the review queue.</p>', "review");
       return;
     }
-    app.show('<h2 class="list-title">🛡️ Review suggestions</h2><p class="list-desc loading">Loading…</p>', "review");
+    app.show(SETTINGS_BACK + '<h2 class="list-title">Review suggestions</h2><p class="list-desc loading">Loading…</p>', "review");
     if (reviewTab === "people") { openPeople(); return; }
     var q = sb.from("submissions").select("*");
     if (reviewTab === "person") {
@@ -462,7 +465,7 @@
         renderReview(rows, r[0], r[1]);
       });
     }).catch(function (err) {
-      app.show('<h2 class="list-title">🛡️ Review suggestions</h2><p class="list-desc">Couldn\'t load the queue: ' + esc(errText(err)) + "</p>", "review");
+      app.show(SETTINGS_BACK + '<h2 class="list-title">Review suggestions</h2><p class="list-desc">Couldn\'t load the queue: ' + esc(errText(err)) + "</p>", "review");
     });
   }
 
@@ -482,7 +485,7 @@
     function t(id, label) {
       return '<button class="btn small' + (tab === id ? " primary" : "") + '" data-tab="' + id + '">' + label + "</button>";
     }
-    return '<h2 class="list-title">🛡️ Review suggestions</h2>' +
+    return SETTINGS_BACK + '<h2 class="list-title">Review suggestions</h2>' +
       '<p class="list-desc">Nothing here is public until you approve it. Only reviewers see who sent it; it isn\'t shown with approved places and photos.</p>' +
       '<div class="seg review-tabs" role="tablist">' +
         t("pending", "Waiting" + (pendingCount ? " (" + pendingCount + ")" : "")) + t("decided", "Recently decided") + t("people", "Contributors") +
@@ -506,7 +509,7 @@
     app.show(
       reviewHead() +
       (reviewTab === "person"
-        ? '<div class="person-head"><button class="btn small" data-tab="people">← All contributors</button>' +
+        ? '<div class="person-head"><button class="dz-back" data-tab="people">← All contributors</button>' +
           "<b>" + (person && people[person] ? '<a href="#@' + esc(people[person].username) + '">' + esc(personName(people[person], person)) + "</a>" : esc(personName(people[person], person))) + "</b>" +
           '<span class="sub">' + rows.length + (rows.length === 1 ? " suggestion" : " suggestions") + "</span></div>"
         : "") +
@@ -597,7 +600,7 @@
               '<button class="btn small danger" data-act="unpublish">Unpublish</button>'
             : '<button class="btn small" data-act="approve">Approve after all</button>')
           : '<button class="btn primary" data-act="approve">✓ Approve</button>' +
-            (r.kind === "place" ? '<button class="btn" data-act="edit">✏️ Edit, then approve</button>' : "") +
+            (r.kind === "place" ? '<button class="btn" data-act="edit">Edit, then approve</button>' : "") +
             '<button class="btn danger" data-act="reject">✕ Reject</button>') +
       "</div>" +
       '<div class="review-edit" hidden></div>' +
@@ -698,6 +701,10 @@
     init: function (layer) {
       app = layer;
       if (!ACCT.enabled) return;
+      // "← Settings" on My suggestions and the review queue.
+      app.sheetBody.addEventListener("click", function (e) {
+        if (e.target.closest && e.target.closest("[data-sback]")) app.openSettings();
+      });
 
       var first = loadApproved().catch(function (err) {
         console.warn("Suggestions are off until the \"submissions\" part of supabase/schema.sql has been run.", err);
@@ -744,13 +751,13 @@
     profileSection: function () {
       if (!ready) return "";
       var waiting = mine.filter(function (s) { return s.status === "pending"; }).length;
-      return '<div class="spot-section"><h3>📮 Suggestions</h3>' +
+      return '<div class="spot-section"><h3>Suggestions</h3>' +
         '<p class="list-desc">' + (mine.length
           ? mine.length + (mine.length === 1 ? " suggestion" : " suggestions") + (waiting ? ", " + waiting + " waiting for review" : "") + "."
           : "Suggest a place for the map, or a photo for a place that's already on it.") + "</p>" +
-        '<div class="actions"><button class="btn" data-sub="mine">📮 My suggestions</button>' +
+        '<div class="actions"><button class="btn" data-sub="mine">My suggestions</button>' +
           '<button class="btn" data-sub="suggest">＋ Suggest a place</button>' +
-          (reviewer ? '<button class="btn primary" data-sub="review">🛡️ Review' + (pendingCount ? " (" + pendingCount + ")" : "") + "</button>" : "") +
+          (reviewer ? '<button class="btn primary" data-sub="review">Review' + (pendingCount ? " (" + pendingCount + ")" : "") + "</button>" : "") +
         "</div></div>";
     },
     startSuggest: startSuggest,

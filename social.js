@@ -229,7 +229,7 @@
 
   function ratingSection(spot) {
     if (!ready()) return "";
-    return '<div class="spot-section rating-box" id="rating-box" data-spot-id="' + esc(spot.id) + '"><h3>⭐ Ratings</h3>' +
+    return '<div class="spot-section rating-box" id="rating-box" data-spot-id="' + esc(spot.id) + '"><h3>Ratings</h3>' +
       '<p class="empty">Loading ratings…</p></div>';
   }
 
@@ -252,12 +252,12 @@
       var rowsHtml = RATINGS.filter(function (c) { return s[c.key] != null; }).map(function (c) {
         return '<div class="rating-row"><span>' + esc(c.emoji + " " + c.label) + "</span>" + stars(+s[c.key]) + "<b>" + esc(s[c.key]) + "</b></div>";
       }).join("");
-      box.innerHTML = '<h3>⭐ Ratings</h3>' +
+      box.innerHTML = '<h3>Ratings</h3>' +
         (n ? '<div class="rating-overall"><b>' + esc(s.overall) + "</b>" + stars(+s.overall) +
             '<span class="sub">overall, from ' + n + (n === 1 ? " rating" : " ratings") + "</span></div>" + rowsHtml
           : '<p class="empty">No ratings yet. Be the first to share how it was.</p>') +
         '<div class="actions">' + (ACCT.user
-          ? '<button class="btn" data-s="rate" data-id="' + esc(spot.id) + '">' + (mine ? "✏️ Your rating: " + "★".repeat(mine.overall) : "☆ Rate this place") + "</button>"
+          ? '<button class="btn" data-s="rate" data-id="' + esc(spot.id) + '">' + (mine ? "Your rating: " + "★".repeat(mine.overall) : "☆ Rate this place") + "</button>"
           : '<button class="btn" data-s="signin-rate">☆ Sign in to rate</button>') + "</div>" +
         '<p class="privacy-note">Ratings are anonymous: only the averages are shown. There are no comments.</p>';
     }).catch(function (err) {
@@ -297,7 +297,7 @@
 
       show(openRate, spotId,
         '<button class="dz-back" data-s="spot" data-id="' + esc(spotId) + '">← ' + esc(spot.name) + "</button>" +
-        '<h2 class="list-title">☆ Rate ' + esc(spot.name) + "</h2>" +
+        '<h2 class="list-title">Rate ' + esc(spot.name) + "</h2>" +
         '<form class="form" id="rate-form"><div id="rate-body"></div>' +
           '<p class="privacy-note">🔒 Your rating is private. Others only see the average.</p>' +
           '<p class="form-msg" role="alert"></p>' +
@@ -421,7 +421,7 @@
 
   function openFeed() {
     if (!ACCT.user) { app.openSignIn("Sign in to see what the explorers you follow are discovering."); return; }
-    show(openFeed, null, back() + '<h2 class="list-title">📰 Explorer feed</h2><p class="list-desc loading">Loading…</p>', "feed");
+    show(openFeed, null, back() + '<h2 class="list-title">Explorer feed</h2><p class="list-desc loading">Loading…</p>', "feed");
     var ids;
     loadFollows().then(function () {
       ids = Object.keys(follows.out).filter(function (id) { return follows.out[id] === "accepted"; }).concat([me()]);
@@ -430,7 +430,7 @@
       if (!isCurrent(openFeed)) return;
       show(openFeed, null,
         back() +
-        '<h2 class="list-title">📰 Explorer feed</h2>' +
+        '<h2 class="list-title">Explorer feed</h2>' +
         '<p class="list-desc">What you and the explorers you follow discovered in the last ' + FEED_DAYS + " days: places, photos, activities and quests. Nothing to like, nothing to count.</p>" +
         (items.length ? items.map(function (it) { return feedItem(it, true); }).join("")
           : '<p class="empty">Nothing here yet. Follow a few explorers, or go explore something yourself.</p>') +
@@ -486,7 +486,7 @@
 
   function openExplorers() {
     if (!ready()) return false;
-    show(openExplorers, null, back() + '<h2 class="list-title">👥 Discover explorers</h2><p class="list-desc loading">Loading…</p>', "explorers");
+    show(openExplorers, null, '<h2 class="list-title">Discover explorers</h2><p class="list-desc loading">Loading…</p>', "explorers");
     loadExplorers().then(function (list) {
       if (!isCurrent(openExplorers)) return;
       var html = CFG.groups.map(function (g) {
@@ -498,8 +498,7 @@
           "</div>";
       }).join("");
       show(openExplorers, null,
-        back() +
-        '<h2 class="list-title">👥 Discover explorers</h2>' +
+        '<h2 class="list-title">Discover explorers</h2>' +
         '<p class="list-desc">Find people who love the same things you do. Shown in a random order: nobody is ranked here.</p>' +
         (ACCT.user && !(ACCT.profile.interests || []).length ? '<p class="privacy-note">💡 <a href="#" data-s="edit">Add your interests</a> so others with the same ones can find you.</p>' : "") +
         (html || '<p class="empty">No public explorers yet. Make your profile public in Privacy settings to be the first.</p>'),
@@ -542,9 +541,9 @@
       var html;
       if (which === "following") {
         html = (accepted.length ? accepted.map(function (c) { return personRow(c); }).join("") : '<p class="empty">You don\'t follow anyone yet.</p>') +
-          (pending.length ? '<h3 class="dz-h">⏳ Waiting for an answer</h3>' + pending.map(function (c) { return personRow(c); }).join("") : "");
+          (pending.length ? '<h3 class="dz-h">Waiting for an answer</h3>' + pending.map(function (c) { return personRow(c); }).join("") : "");
       } else {
-        html = (pending.length ? '<h3 class="dz-h">🙋 Asking to follow you</h3>' + pending.map(function (c) {
+        html = (pending.length ? '<h3 class="dz-h">Asking to follow you</h3>' + pending.map(function (c) {
             return personRow(c, { buttons: '<span class="row-buttons"><button class="btn small primary" data-s="accept" data-id="' + esc(c.id) + '">Accept</button>' +
               '<button class="btn small" data-s="decline" data-id="' + esc(c.id) + '">Decline</button></span>' });
           }).join("") : "") +
@@ -577,7 +576,7 @@
     var p = ACCT.profile;
     show(openPrivacy, null,
       '<button class="dz-back" data-s="settings">← Settings</button>' +
-      '<h2 class="list-title">🔒 Privacy</h2>' +
+      '<h2 class="list-title">Privacy</h2>' +
       '<p class="list-desc">You decide who sees your exploring. Your email is never shown to anyone.</p>' +
       '<form class="form" id="privacy-form">' +
         '<fieldset><legend>👤 Profile</legend>' + radios("profile_visibility", VIS.profile, p.profile_visibility) +
@@ -640,7 +639,7 @@
     function draw() {
       var asks = hasRequests();
       show(openPeopleHub, null,
-        '<button class="dz-back" data-s="profile">← Your profile</button>' +
+        '<button class="dz-back" data-s="profile">← Profile</button>' +
         '<h2 class="list-title">People &amp; feed</h2>' +
         '<p class="list-desc">Only you can see who you follow and who follows you.</p>' +
         '<div class="set-group">' +
@@ -681,14 +680,14 @@
     var followsYou = follows.in[p.id] === "accepted";
     return interestChips(p.interests) +
       (ready() ? '<div class="actions">' + followButton(p) + (followsYou ? '<span class="follows-you">Follows you</span>' : "") + "</div>" : "") +
-      (quests.length ? '<div class="spot-section"><h3>🗺️ Quests completed</h3>' + quests.map(function (q) {
+      (quests.length ? '<div class="spot-section"><h3>Quests completed</h3>' + quests.map(function (q) {
         var b = byId(LAYER.badges, q.rewardBadgeId) || {};
         return '<a class="list-item" href="#quest/' + esc(q.id) + '"><span class="emoji">' + esc(b.emoji || "🏅") + '</span><span class="name">' + esc(q.title) + "</span></a>";
       }).join("") + "</div>" : "") +
-      (acts.length ? '<div class="spot-section"><h3>🎯 Activities completed</h3>' + acts.map(function (a) {
+      (acts.length ? '<div class="spot-section"><h3>Activities completed</h3>' + acts.map(function (a) {
         return '<a class="list-item" href="#do/' + esc(a.id) + '"><span class="emoji">' + esc(a.emoji || "🎯") + '</span><span class="name">' + esc(a.title) + "</span></a>";
       }).join("") + "</div>" : "") +
-      (ready() ? '<div class="spot-section" id="their-feed" hidden><h3>📰 Recently</h3></div>' : "");
+      (ready() ? '<div class="spot-section" id="their-feed" hidden><h3>Recently</h3></div>' : "");
   }
 
   function afterPublicProfile(r) {
@@ -787,7 +786,7 @@
   }
 
   // ---------- plumbing ----------
-  function back() { return '<button class="dz-back" data-s="profile-or-home">← Back</button>'; }
+  function back() { return ACCT.user ? '<button class="dz-back" data-s="people">← People &amp; feed</button>' : ""; }
 
   function show(fn, arg, html, hash) {
     current = { fn: fn, arg: arg };

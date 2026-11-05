@@ -13,7 +13,7 @@ It's a plain website with no build step. Accounts are optional: until you connec
 
 Each city is its own set of content files, and [`data/cities.js`](data/cities.js) lists the cities and loads the right set. Munich's files are the ones directly in `data/`; Berlin's are in [`data/berlin/`](data/berlin/), with photos in `images/berlin/`.
 
-- **Switching city:** tap "Munich, for free ▾" in the top bar. Links carry the city, e.g. `…/?city=berlin#humboldthain`, and the app remembers the last city on each device.
+- **Switching city:** tap "Munich ▾" in the top bar. Links carry the city, e.g. `…/?city=berlin#humboldthain`, and the app remembers the last city on each device.
 - **Adding a city:** make a folder `data/<city>/`, copy Berlin's files into it and change the content (only `spots.js` is required), then add the city to the list at the top of `data/cities.js`. No code changes needed.
 - Explored spots, the wishlist, ratings, photos and badges are kept per person across all cities.
 
@@ -136,7 +136,7 @@ You need to do this yourself, because it creates an account in your name.
 3. **Tell Supabase where the site lives:** **Authentication → URL Configuration**. Set **Site URL** to `https://aamircancode.github.io/Go-Places/` and add the same address under **Redirect URLs** (add `http://localhost:8000/` too if you test locally). Email links (confirm, reset password) only go to these addresses.
 4. **Connect the site:** open **Project Settings → API Keys** (or the **Connect** button), copy the **Project URL** and the **publishable** key (older projects: "anon public"), and paste them into [`config.js`](config.js). Commit and push. These two values are meant to be public; never paste the *secret* / *service_role* key.
 
-That's it. A **Sign in** button appears in the top bar. Whenever `schema.sql` changes, run the whole file again.
+That's it. A **Sign in** tab appears in the bottom tab bar. Whenever `schema.sql` changes, run the whole file again.
 
 **Things to know about the free plan** (check [supabase.com/pricing](https://supabase.com/pricing) for current numbers): about 500 MB of database, 1 GB of photo storage (photos are shrunk to roughly 200–400 KB each, so a few thousand photos) and 50,000 monthly users. A free project is **paused after a week with no visits**; you can wake it up from the dashboard. The built-in email sender only sends a few emails per hour, which is fine for testing. Before a real launch, connect a free email service under **Authentication → Emails → SMTP Settings** (e.g. Resend or Brevo), or new sign-ups may not get their confirmation email.
 

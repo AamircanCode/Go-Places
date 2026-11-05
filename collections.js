@@ -291,7 +291,7 @@
     var wish = wishlistCollection();
     var savedIds = Object.keys(savedMap());
     var html =
-      '<h2 class="list-title">📚 Collections</h2>' +
+      '<h2 class="list-title">Collections</h2>' +
       '<p class="list-desc">Lists of places, like playlists for ' + esc(DATA.city) + ". Make your own, or save someone else's.</p>" +
       '<button class="btn primary wide" data-c="new">＋ New collection</button>' +
       signInHint() +
@@ -354,10 +354,10 @@
         '<p class="meta">by ' + esc(owner(c)) + " · " + esc(vis) + " · " + list.length + (list.length === 1 ? " place" : " places") + "</p>" +
         (c.description ? '<p class="summary">' + esc(c.description) + "</p>" : "") +
         '<div class="actions">' +
-          (isMine ? '<button class="btn" data-c="edit" data-id="' + esc(c.id) + '">✏️ Edit</button>' : "") +
+          (isMine ? '<button class="btn" data-c="edit" data-id="' + esc(c.id) + '">Edit</button>' : "") +
           (c.kind === "wishlist" ? '<a class="btn" href="#privacy">🔒 Who sees it</a>' : "") +
           (!isMine && c.kind !== "wishlist" ? '<button class="btn' + (saved ? " wished" : "") + '" data-c="save" data-id="' + esc(c.id) + '">' + (saved ? "💚 Saved" : "♡ Save") + "</button>" : "") +
-          (list.length ? '<button class="btn" data-c="map" data-id="' + esc(c.id) + '">🗺 Show on map</button>' : "") +
+          (list.length ? '<button class="btn" data-c="map" data-id="' + esc(c.id) + '">Show on map</button>' : "") +
           (c.kind !== "wishlist" ? '<button class="btn" data-c="share" data-id="' + esc(c.id) + '">↗ Share</button>' : "") +
         "</div>" +
         (list.length ? list.map(function (s) {
@@ -386,7 +386,7 @@
     var covers = [];
     list.forEach(function (s) { (s.photos || []).forEach(function (p) { if (/^images\//.test(p.url) && !has(covers, p.url)) covers.push(p.url); }); });
     show(openEdit, id,
-      back(id ? "Back" : "Collections", id ? "open" : "home", id) +
+      back(id ? (d.title || "Collection") : "Collections", id ? "open" : "home", id) +
       '<h2 class="list-title">' + (id ? "✏️ Edit collection" : "＋ New collection") + "</h2>" +
       '<form class="form" id="col-form">' +
         '<label>Title<input name="title" maxlength="80" required value="' + esc(d.title) + '" placeholder="e.g. Best Sunset Spots"></label>' +
@@ -411,7 +411,7 @@
         "</fieldset>" +
         '<p class="form-msg" id="col-msg"></p>' +
         '<button class="btn primary" type="submit">' + (id ? "Save changes" : "Create collection") + "</button>" +
-        (id ? '<button type="button" class="btn" data-c="delete" data-id="' + esc(id) + '">🗑 Delete collection</button>' : "") +
+        (id ? '<button type="button" class="btn" data-c="delete" data-id="' + esc(id) + '">Delete collection</button>' : "") +
       "</form>",
       id ? "collection/" + id + "/edit" : "collection-new");
 
@@ -506,7 +506,7 @@
   function spotSection(spot) {
     var ours = goPlaces().filter(function (c) { return has(c.placeIds, spot.id); });
     var mineIn = mine().filter(function (c) { return has(c.placeIds, spot.id); });
-    return '<div class="spot-section"><h3>📚 Included in collections</h3><div class="col-chips" id="col-included">' +
+    return '<div class="spot-section"><h3>Included in collections</h3><div class="col-chips" id="col-included">' +
       chips(mineIn.concat(ours)) + "</div></div>";
   }
 
@@ -535,7 +535,7 @@
 
   function profileSection() {
     var my = mine();
-    return '<div class="spot-section"><h3>📚 My collections</h3>' +
+    return '<div class="spot-section"><h3>My collections</h3>' +
       (my.length ? my.map(row).join("") : '<p class="empty">Make a list of places, like a playlist for the city.</p>') +
       '<button class="dz-more" data-c="home">All collections →</button></div>';
   }
@@ -550,7 +550,7 @@
         var list = rows.map(fromRow);
         list.forEach(function (c) { cache[c.id] = c; });
         return loadNames([profileId]).then(function () {
-          el.innerHTML = '<div class="spot-section"><h3>📚 Collections</h3>' + list.map(row).join("") + "</div>";
+          el.innerHTML = '<div class="spot-section"><h3>Collections</h3>' + list.map(row).join("") + "</div>";
         });
       }).catch(function () { /* tables not there yet */ });
     return '<div id="col-theirs"></div>';

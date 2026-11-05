@@ -67,7 +67,7 @@
     var explored = all.filter(function (s) { return app.exploredMap()[s.id]; }).length;
     var museums = nearestFirst(inSub("free-museums"));
     show(openHome, null,
-      '<h2 class="list-title">📚 Free Knowledge</h2>' +
+      '<h2 class="list-title">Free Knowledge</h2>' +
       '<p class="list-desc">Learning in ' + esc(DATA.city) + " that costs nothing: free museums, public bookshelves, libraries and exhibitions. " +
         "You've explored " + explored + " of " + all.length + ".</p>" +
       '<div class="kn-grid">' + K.subcategories.map(function (c) {
@@ -83,7 +83,7 @@
           '<span><span class="name">' + esc(g.title) + '</span><br><span class="sub">' + inGroup(g.id).length + " places · always free</span></span>" +
           '<span class="check">→</span></button>';
       }).join("") +
-      '<h3 class="dz-h">🏛️ Free museums</h3>' + museums.map(placeRow).join(""),
+      '<h3 class="dz-h">Free museums</h3>' + museums.map(placeRow).join(""),
       "knowledge");
     fit(all);
   }
@@ -135,7 +135,7 @@
   }
 
   function spotSections(spot) {
-    return (spot.whyVisit ? '<div class="spot-section"><h3>✨ Why visit</h3><p>' + esc(spot.whyVisit) + "</p></div>" : "") +
+    return (spot.whyVisit ? '<div class="spot-section"><h3>Why visit</h3><p>' + esc(spot.whyVisit) + "</p></div>" : "") +
       (spot.visitorInfo ? '<div class="spot-section"><h3>ℹ️ Visitor information</h3><p>' + esc(spot.visitorInfo) + "</p></div>" : "");
   }
 
