@@ -102,8 +102,9 @@
 
   // ---------- profile photos ----------
   function avatar(p, cls) {
-    var path = p && p.avatar_path;
-    var url = path && avatarUrls[path];
+    // Avatars are emoji only for now; uploaded profile photos are not shown.
+    var path = null;
+    var url = null;
     return '<span class="avatar' + (cls ? " " + cls : "") + '" style="--accent:' + esc(p.accent_color || "") + '"' +
       (path ? ' data-avatar="' + esc(path) + '"' : "") + ">" +
       (url ? '<img src="' + esc(url) + '" alt="">' : esc(p.avatar_emoji || "🧭")) + "</span>";
@@ -529,7 +530,7 @@
   function openPeople(which) {
     if (!ACCT.user) { app.openSignIn(); return; }
     var title = which === "following" ? "👣 People you follow" : "🤝 People following you";
-    show(openPeople, which, '<button class="dz-back" data-s="profile">← Your profile</button><h2 class="list-title">' + title + '</h2><p class="list-desc loading">Loading…</p>', which);
+    show(openPeople, which, '<button class="dz-back" data-s="people">← People &amp; feed</button><h2 class="list-title">' + title + '</h2><p class="list-desc loading">Loading…</p>', which);
     loadFollows().then(function () {
       var map = which === "following" ? follows.out : follows.in;
       return loadCards(Object.keys(map)).then(function (list) { return { map: map, list: list }; });
@@ -553,7 +554,7 @@
           }).join("") : '<p class="empty">Nobody follows you yet.</p>');
       }
       show(openPeople, which,
-        '<button class="dz-back" data-s="profile">← Your profile</button>' +
+        '<button class="dz-back" data-s="people">← People &amp; feed</button>' +
         '<h2 class="list-title">' + title + "</h2>" +
         '<p class="list-desc">' + (which === "following" ? "The explorers whose discoveries show up in your feed." :
           "You can remove anyone from this list. They won't be told.") + " Only you can see this list.</p>" + html +
@@ -575,7 +576,7 @@
     if (!ready()) return;
     var p = ACCT.profile;
     show(openPrivacy, null,
-      '<button class="dz-back" data-s="profile">← Your profile</button>' +
+      '<button class="dz-back" data-s="settings">← Settings</button>' +
       '<h2 class="list-title">🔒 Privacy</h2>' +
       '<p class="list-desc">You decide who sees your exploring. Your email is never shown to anyone.</p>' +
       '<form class="form" id="privacy-form">' +
@@ -587,7 +588,7 @@
         '<p class="privacy-note">"Followers only" means people you have accepted, or anyone following a public profile. ' +
           "A followers-only or private profile limits everything below it. Badges, quests and done activities follow your profile setting.</p>" +
         '<p class="form-msg" role="alert"></p>' +
-        '<div class="actions"><button class="btn primary" type="submit">Save</button><button class="btn" type="button" data-s="profile">Cancel</button></div>' +
+        '<div class="actions"><button class="btn primary" type="submit">Save</button><button class="btn" type="button" data-s="settings">Cancel</button></div>' +
       "</form>",
       "privacy");
     var form = document.getElementById("privacy-form");
@@ -601,7 +602,7 @@
       e.preventDefault();
       var f = form.elements, fields = { profile_visibility: f.profile_visibility.value };
       SECTIONS.forEach(function (s) { fields[s.key] = f[s.key].value; });
-      ACCT.updateProfile(fields).then(function () { explorerCache = null; app.openProfile(); },
+      ACCT.updateProfile(fields).then(function () { explorerCache = null; app.openSettings(); },
         function (err) { form.querySelector(".form-msg").textContent = err.message; });
     });
   }
@@ -624,13 +625,34 @@
     if (!ready()) return "";
     var asks = Object.keys(follows.in).some(function (id) { return follows.in[id] === "pending"; });
     return interestChips(ACCT.profile.interests) +
-      '<div class="actions social-actions">' +
-        '<button class="btn" data-s="feed">📰 Feed</button>' +
-        '<button class="btn" data-s="explorers">👥 Discover explorers</button>' +
-        '<button class="btn" data-s="following">👣 People you follow</button>' +
-        '<button class="btn' + (asks ? " wished" : "") + '" data-s="followers">🤝 People following you' + (asks ? " · new requests" : "") + "</button>" +
-        '<button class="btn" data-s="privacy">🔒 Privacy</button>' +
-      "</div>";
+      '<button class="set-row people-row" data-s="people"><span class="set-icon">👥</span><span class="set-label">People &amp; feed' +
+        (asks ? ' <span class="count-dot">new request</span>' : "") + '</span><span class="set-val"></span></button>';
+  }
+
+  function hasRequests() {
+    return Object.keys(follows.in).some(function (id) { return follows.in[id] === "pending"; });
+  }
+
+  // One place for the feed and both people lists (no counts anywhere).
+  function openPeopleHub() {
+    if (!ACCT.user) { app.openSignIn(); return; }
+    if (!ready()) return;
+    function draw() {
+      var asks = hasRequests();
+      show(openPeopleHub, null,
+        '<button class="dz-back" data-s="profile">← Your profile</button>' +
+        '<h2 class="list-title">People &amp; feed</h2>' +
+        '<p class="list-desc">Only you can see who you follow and who follows you.</p>' +
+        '<div class="set-group">' +
+          '<button class="set-row" data-s="feed"><span class="set-icon">📰</span><span class="set-label">Feed</span><span class="set-val"></span></button>' +
+          '<button class="set-row" data-s="following"><span class="set-icon">👣</span><span class="set-label">People you follow</span><span class="set-val"></span></button>' +
+          '<button class="set-row" data-s="followers"><span class="set-icon">🤝</span><span class="set-label">People following you' +
+            (asks ? ' <span class="count-dot">new request</span>' : "") + '</span><span class="set-val"></span></button>' +
+          '<button class="set-row" data-s="explorers"><span class="set-icon">🧭</span><span class="set-label">Discover explorers</span><span class="set-val"></span></button>' +
+        "</div>", "people");
+    }
+    draw();
+    loadFollows().then(function () { if (isCurrent(openPeopleHub, null)) draw(); }).catch(function () {});
   }
 
   function canSee(p, setting) {
@@ -710,15 +732,10 @@
   // ---------- edit profile ----------
   function editFields(p) {
     var mine = p.interests || [];
-    return '<fieldset><legend>Profile photo</legend><div class="avatar-edit">' + avatar(p) +
-        '<button class="btn small" type="button" data-s="avatar-pick">📷 ' + (p.avatar_path ? "Change photo" : "Add a photo") + "</button>" +
-        (p.avatar_path ? '<button class="btn small" type="button" data-s="avatar-remove">Remove</button>' : "") +
-      '</div><p class="seg-note">Without a photo, your avatar emoji is shown. Photos are shrunk and their location data removed before upload.</p></fieldset>' +
-      '<fieldset><legend>Interests</legend><div class="tags pick">' + CFG.interests.map(function (i) {
+    return '<fieldset><legend>Interests</legend><div class="tags pick">' + CFG.interests.map(function (i) {
         return '<label class="pill"><input type="checkbox" name="interest" value="' + esc(i.id) + '"' + (mine.indexOf(i.id) !== -1 ? " checked" : "") + "><span>" +
           esc(i.emoji + " " + i.label) + "</span></label>";
-      }).join("") + '</div><p class="seg-note">Explorers with the same interests can find you in Discover explorers (if your profile is public).</p></fieldset>' +
-      '<p class="privacy-note">🔒 Who sees your profile, places, wishlist, feed and photos: <a href="#privacy">Privacy settings</a></p>';
+      }).join("") + '</div><p class="seg-note">Explorers with the same interests can find you in Discover explorers (if your profile is public).</p></fieldset>';
   }
 
   function readEditFields(form) {
@@ -817,6 +834,8 @@
     else if (s === "group") openGroup(id);
     else if (s === "following" || s === "followers") openPeople(s);
     else if (s === "privacy") openPrivacy();
+    else if (s === "people") openPeopleHub();
+    else if (s === "settings") app.openSettings();
     else if (s === "profile") app.openProfile();
     else if (s === "profile-or-home") { if (ACCT.user) app.openProfile(); else app.close(); }
     else if (s === "edit") app.openEditProfile();
@@ -878,6 +897,7 @@
       else if (parts[0] === "explorers" && parts[1]) openGroup(parts[1]);
       else if (hash === "feed") openFeed();
       else if (hash === "privacy") openPrivacy();
+      else if (hash === "people") openPeopleHub();
       else if (hash === "following" || hash === "followers") openPeople(hash);
       else if (parts[0] === "rate" && parts[1]) openRate(parts[1]);
       else return false;

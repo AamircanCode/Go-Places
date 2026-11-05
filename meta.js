@@ -172,8 +172,10 @@
     var good = [];
     if (has(m.bestTimeOfDay, timeOfDay(now))) good.push("a good time of day");
     if (!has(m.bestSeason, "All Year") && inSeason(spot, now)) good.push("in season");
-    return '<div class="spot-section mt-glance"><h3>🧭 At a glance</h3>' +
-      (good.length ? '<p class="mt-now">✨ Right now is ' + esc(good.join(" and ")) + ".</p>" : "") +
+    // "Right now" stays visible; the details fold away under a one-line summary.
+    var brief = [spot.duration || m.estimatedDuration, budgetNow, m.activityLevel].filter(Boolean).join(" · ");
+    return (good.length ? '<p class="mt-now">✨ Right now is ' + esc(good.join(" and ")) + ".</p>" : "") +
+      '<details class="spot-section mt-glance fold"><summary><h3>🧭 At a glance</h3><span class="fold-brief">' + esc(brief) + "</span></summary>" +
       '<div class="mt-rows">' +
         row("⏱", "Time", spot.duration || m.estimatedDuration) +
         row("💶", "Budget", budgetText) +
@@ -188,7 +190,7 @@
       scoreBar("🧠", "Knowledge", m.knowledgeValue) +
       scoreBar("📸", "Photo", m.photoValue) +
       (m.guessed ? '<p class="seg-note">Estimated from the place\'s details; not checked yet.</p>' : "") +
-    "</div>";
+    "</details>";
   }
 
   // ---------- content checks (browser console) ----------
