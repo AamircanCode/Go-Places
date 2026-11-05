@@ -41,7 +41,8 @@
   var mine = [];              // your own suggestions, newest first
   var draft = null;           // the place being suggested
   var picker = null;          // the pin picker on the map, while open
-  var reviewTab = "pending";
+  var reviewTab = "pending";  // pending | decided | people | person
+  var person = null;          // the contributor open in the directory: user id, or "" for deleted accounts
 
   function cityId() { return (DATA && (DATA.cityId || String(DATA.city || "").toLowerCase())) || "munich"; }
   function esc(s) { return app.esc(s); }
@@ -442,10 +443,15 @@
       return;
     }
     app.show('<h2 class="list-title">🛡️ Review suggestions</h2><p class="list-desc loading">Loading…</p>', "review");
+    if (reviewTab === "people") { openPeople(); return; }
     var q = sb.from("submissions").select("*");
-    q = reviewTab === "pending"
-      ? q.eq("status", "pending").order("created_at", { ascending: true }).limit(100)
-      : q.neq("status", "pending").order("reviewed_at", { ascending: false, nullsFirst: false }).limit(40);
+    if (reviewTab === "person") {
+      q = (person ? q.eq("user_id", person) : q.is("user_id", null)).order("created_at", { ascending: false }).limit(500);
+    } else if (reviewTab === "pending") {
+      q = q.eq("status", "pending").order("created_at", { ascending: true }).limit(100);
+    } else {
+      q = q.neq("status", "pending").order("reviewed_at", { ascending: false, nullsFirst: false }).limit(40);
+    }
     q.then(check).then(function (rows) {
       return Promise.all([signUrls(rows.map(function (r) { return r.photo_path; })), senders(rows)]).then(function (r) {
         if (!app.isOpen()) return;
@@ -460,7 +466,7 @@
 
   // Usernames of the senders, which only reviewers can look up.
   function senders(rows) {
-    var ids = rows.map(function (r) { return r.user_id; }).filter(function (id, i, a) { return a.indexOf(id) === i; });
+    var ids = rows.map(function (r) { return r.user_id; }).filter(function (id, i, a) { return id && a.indexOf(id) === i; });
     if (!ids.length) return Promise.resolve({});
     return sb.rpc("submission_senders", { ids: ids }).then(check).then(function (list) {
       var by = {};
@@ -469,22 +475,93 @@
     }, function () { return {}; });
   }
 
-  function renderReview(rows, urls, people) {
-    app.show(
-      '<h2 class="list-title">🛡️ Review suggestions</h2>' +
+  function reviewHead() {
+    var tab = reviewTab === "person" ? "people" : reviewTab;
+    function t(id, label) {
+      return '<button class="btn small' + (tab === id ? " primary" : "") + '" data-tab="' + id + '">' + label + "</button>";
+    }
+    return '<h2 class="list-title">🛡️ Review suggestions</h2>' +
       '<p class="list-desc">Nothing here is public until you approve it. Only reviewers see who sent it; it isn\'t shown with approved places and photos.</p>' +
       '<div class="seg review-tabs" role="tablist">' +
-        '<button class="btn small' + (reviewTab === "pending" ? " primary" : "") + '" data-tab="pending">Waiting' + (pendingCount ? " (" + pendingCount + ")" : "") + "</button>" +
-        '<button class="btn small' + (reviewTab === "decided" ? " primary" : "") + '" data-tab="decided">Recently decided</button>' +
-      "</div>" +
-      (rows.length ? rows.map(function (r) { return reviewCard(r, urls[r.photo_path], people[r.user_id]); }).join("")
-        : '<p class="empty">' + (reviewTab === "pending" ? "All caught up. 🎉 New suggestions will show up here." : "Nothing decided yet.") + "</p>"),
-      "review"
-    );
+        t("pending", "Waiting" + (pendingCount ? " (" + pendingCount + ")" : "")) + t("decided", "Recently decided") + t("people", "Contributors") +
+      "</div>";
+  }
+
+  function wireTabs() {
     Array.prototype.forEach.call(app.sheetBody.querySelectorAll("[data-tab]"), function (b) {
       b.addEventListener("click", function () { reviewTab = b.getAttribute("data-tab"); openReview(); });
     });
+  }
+
+  function personName(who, id) {
+    if (!id) return "Deleted accounts";
+    return who ? "@" + who.username + (who.display_name ? " (" + who.display_name + ")" : "") : "an account you can't see";
+  }
+
+  function renderReview(rows, urls, people) {
+    var empty = reviewTab === "pending" ? "All caught up. 🎉 New suggestions will show up here."
+      : reviewTab === "person" ? "Nothing from this contributor." : "Nothing decided yet.";
+    app.show(
+      reviewHead() +
+      (reviewTab === "person"
+        ? '<div class="person-head"><button class="btn small" data-tab="people">← All contributors</button>' +
+          "<b>" + (person && people[person] ? '<a href="#@' + esc(people[person].username) + '">' + esc(personName(people[person], person)) + "</a>" : esc(personName(people[person], person))) + "</b>" +
+          '<span class="sub">' + rows.length + (rows.length === 1 ? " suggestion" : " suggestions") + "</span></div>"
+        : "") +
+      (rows.length ? rows.map(function (r) { return reviewCard(r, urls[r.photo_path], people[r.user_id]); }).join("")
+        : '<p class="empty">' + empty + "</p>"),
+      "review"
+    );
+    wireTabs();
     rows.forEach(function (r) { wireCard(r); });
+  }
+
+  // ---------- contributors directory ----------
+  // Everyone who has suggested something, with what became of it. Rows stay
+  // after approval, so this is the full history.
+  function openPeople() {
+    sb.from("submissions").select("user_id, status, created_at").order("created_at", { ascending: false }).limit(5000)
+      .then(check).then(function (rows) {
+        var by = {}, order = [];
+        rows.forEach(function (r) {
+          var k = r.user_id || "";
+          if (!by[k]) { by[k] = { id: k, total: 0, approved: 0, rejected: 0, pending: 0, last: r.created_at }; order.push(k); }
+          by[k].total++;
+          by[k][r.status]++;
+        });
+        return senders(rows).then(function (people) {
+          if (!app.isOpen() || reviewTab !== "people") return;
+          renderPeople(order.map(function (k) { return by[k]; }), people);
+        });
+      }).catch(function (err) {
+        app.show(reviewHead() + '<p class="list-desc">Couldn\'t load contributors: ' + esc(errText(err)) + "</p>", "review");
+        wireTabs();
+      });
+  }
+
+  function renderPeople(list, people) {
+    app.show(
+      reviewHead() +
+      '<p class="list-desc">' + list.length + (list.length === 1 ? " contributor" : " contributors") + ", most recent first.</p>" +
+      (list.length ? list.map(function (c) {
+        var who = people[c.id];
+        return '<button class="list-item" data-person="' + esc(c.id) + '">' +
+          '<span class="emoji">' + (c.id ? esc((who && who.avatar_emoji) || "🧭") : "👻") + "</span>" +
+          '<span><span class="name">' + esc(personName(who, c.id)) + "</span><br>" +
+          '<span class="sub">' + c.total + (c.total === 1 ? " suggestion" : " suggestions") + " · ✅ " + c.approved + " · ✖️ " + c.rejected +
+            (c.pending ? " · ⏳ " + c.pending : "") + " · last " + esc(app.formatDate(c.last)) + "</span></span>" +
+        "</button>";
+      }).join("") : '<p class="empty">Nobody has suggested anything yet.</p>'),
+      "review"
+    );
+    wireTabs();
+    Array.prototype.forEach.call(app.sheetBody.querySelectorAll("[data-person]"), function (b) {
+      b.addEventListener("click", function () {
+        person = b.getAttribute("data-person");
+        reviewTab = "person";
+        openReview();
+      });
+    });
   }
 
   function reviewCard(r, url, who) {

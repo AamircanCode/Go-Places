@@ -454,9 +454,10 @@
   };
 
   // Photos sent with suggestions (the "submissions" part of
-  // supabase/schema.sql). Their rows go with the account.
+  // supabase/schema.sql) that weren't approved. Their rows go with the
+  // account; approved places and photos stay up, without a sender.
   function removeSuggestionFiles() {
-    return sb.from("submissions").select("photo_path").eq("user_id", uid()).not("photo_path", "is", null)
+    return sb.from("submissions").select("photo_path").eq("user_id", uid()).neq("status", "approved").not("photo_path", "is", null)
       .then(check).then(function (rows) {
         var files = rows.map(function (r) { return r.photo_path; });
         return files.length ? sb.storage.from("submissions").remove(files).then(check) : null;

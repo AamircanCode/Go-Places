@@ -623,3 +623,6 @@ body.picking .map-buttons { display: none; }
 .review-photo img { width: 100%; max-height: 360px; object-fit: contain; background: var(--surface); border-radius: 10px; display: block; margin-bottom: 8px; }
 .review-map { height: 150px; border-radius: 10px; overflow: hidden; margin: 8px 0 4px; background: var(--surface); }
 .review-edit { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 4px; }
+.person-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 4px 0 6px; }
+.person-head a { color: var(--brand); }
+.person-head .sub { font-size: 13px; color: var(--muted); }

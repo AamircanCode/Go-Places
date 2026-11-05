@@ -756,7 +756,9 @@ grant execute on function public.is_reviewer() to anon, authenticated;
 -- ---------- submissions ----------
 create table if not exists public.submissions (
   id           uuid primary key default gen_random_uuid(),
-  user_id      uuid not null references public.profiles (id) on delete cascade,
+  -- empty once the sender has deleted their account (approved places and
+  -- photos stay up; everything else of theirs is removed)
+  user_id      uuid references public.profiles (id) on delete set null,
   kind         text not null check (kind in ('place', 'photo')),
   city         text not null check (city ~ '^[a-z0-9-]{1,40}$'),
   -- a photo: the place it's for. A new place: its id on the map, set by the
@@ -787,6 +789,12 @@ create table if not exists public.submissions (
   -- the file must sit in the sender's own folder: <user id>/<file>
   check (photo_path is null or split_part(photo_path, '/', 1) = user_id::text)
 );
+-- Tables created by an earlier copy of this file: same as above.
+alter table public.submissions alter column user_id drop not null;
+alter table public.submissions drop constraint if exists submissions_user_id_fkey;
+alter table public.submissions add constraint submissions_user_id_fkey
+  foreign key (user_id) references public.profiles (id) on delete set null;
+
 create index if not exists submissions_status_idx on public.submissions (status, created_at desc);
 create index if not exists submissions_city_idx on public.submissions (city, status);
 create index if not exists submissions_user_idx on public.submissions (user_id, created_at desc);
@@ -823,7 +831,8 @@ create or replace function public.review_submission()
 returns trigger language plpgsql security definer set search_path = '' as $$
 begin
   new.id := old.id;
-  new.user_id := old.user_id;
+  -- the sender can only be cleared, which happens when they delete their account
+  if new.user_id is not null then new.user_id := old.user_id; end if;
   new.kind := old.kind;
   new.spot_id := old.spot_id;
   new.photo_path := old.photo_path;
@@ -842,6 +851,20 @@ $$;
 drop trigger if exists submissions_review on public.submissions;
 create trigger submissions_review before update on public.submissions
   for each row execute function public.review_submission();
+
+-- When someone deletes their account, their suggestions that aren't
+-- approved go with it. Approved ones stay, without a sender.
+create or replace function public.forget_sender()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  delete from public.submissions where user_id = old.id and status <> 'approved';
+  return old;
+end;
+$$;
+
+drop trigger if exists profiles_forget_sender on public.profiles;
+create trigger profiles_forget_sender before delete on public.profiles
+  for each row execute function public.forget_sender();
 
 -- ---------- row level security ----------
 alter table public.reviewers   enable row level security;
@@ -890,11 +913,13 @@ $$;
 grant execute on function public.approved_submissions(text) to anon, authenticated;
 
 -- Who sent these suggestions: for reviewers only, whatever the sender's
--- profile privacy. Everyone else gets nothing back.
-create or replace function public.submission_senders(ids uuid[])
-returns table (id uuid, username text, display_name text)
+-- profile privacy (it powers the Contributors directory in the app).
+-- Everyone else gets nothing back.
+drop function if exists public.submission_senders(uuid[]);
+create function public.submission_senders(ids uuid[])
+returns table (id uuid, username text, display_name text, avatar_emoji text)
 language sql stable security definer set search_path = '' as $$
-  select p.id, p.username, p.display_name from public.profiles p
+  select p.id, p.username, p.display_name, p.avatar_emoji from public.profiles p
   where p.id = any(ids) and public.is_reviewer();
 $$;
 revoke all on function public.submission_senders(uuid[]) from public, anon;

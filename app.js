@@ -814,7 +814,7 @@
     });
 
     document.getElementById("delete-btn").addEventListener("click", function () {
-      var typed = prompt("This deletes your profile, explored spots, wishlist and all your photos. It can't be undone.\n\nType your username (" + p.username + ") to confirm.");
+      var typed = prompt("This deletes your profile, explored spots, wishlist and all your photos. Places and photos you suggested that were already approved stay up, without your name. It can't be undone.\n\nType your username (" + p.username + ") to confirm.");
       if (typed == null) return;
       if (typed.trim().toLowerCase() !== p.username) { alert("The username didn't match, so nothing was deleted."); return; }
       this.disabled = true;
