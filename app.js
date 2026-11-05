@@ -280,7 +280,7 @@
   // "Around here": things to do near a spot, from its optional `around` list.
   function aroundBlock(spot) {
     var items = (spot.around || []).map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("");
-    return items ? '<div class="spot-section"><h3>🚶 Around here</h3><ul>' + items + "</ul></div>" : "";
+    return items ? '<div class="spot-section"><h3>Around here</h3><ul>' + items + "</ul></div>" : "";
   }
 
   // "Nearby spots": the spot's own `nearby` ids first, then the closest other
@@ -296,7 +296,7 @@
       .map(function (x) { return x.s; });
     var list = picked.concat(closest).slice(0, Math.max(5, picked.length));
     if (!list.length) return "";
-    return '<div class="spot-section"><h3>📍 Nearby spots</h3>' + list.map(function (s) {
+    return '<div class="spot-section"><h3>Nearby spots</h3>' + list.map(function (s) {
       var km = distanceKm(here, [s.lat, s.lng]);
       var walk = km < 3 ? Math.max(1, Math.round(km * 1000 / 80)) + " min walk" : km.toFixed(1) + " km";
       return '<a class="list-item" href="#' + encodeURIComponent(s.id) + '">' +
@@ -353,7 +353,7 @@
       '<div class="tags">' + tags + "</div>" +
       (KNOWLEDGE ? KNOWLEDGE.spotSections(spot) : "") +
       (DISCOVER ? DISCOVER.spotSection(spot) : "") +
-      (spot.history || facts ? '<details class="spot-section fold"><summary><h3>📜 History' + (facts ? " &amp; fun facts" : "") + "</h3></summary>" +
+      (spot.history || facts ? '<details class="spot-section fold"><summary><h3>History' + (facts ? " &amp; fun facts" : "") + "</h3></summary>" +
         (spot.history ? "<p>" + esc(spot.history) + "</p>" : "") +
         (facts ? '<h4 class="fold-sub">💡 Fun facts</h4><ul>' + facts + "</ul>" : "") + "</details>" : "") +
       aroundBlock(spot) +
@@ -453,7 +453,7 @@
       });
     }
     showSheet(
-      '<h2 class="list-title">' + (theme ? esc(theme.emoji + " " + theme.name) : "🗺️ All spots") + "</h2>" +
+      '<h2 class="list-title">' + (theme ? esc(theme.emoji + " " + theme.name) : "All spots") + "</h2>" +
       '<p class="list-desc">' + (theme ? esc(theme.description) : "Everything you can explore in " + esc(DATA.city) + ".") + "</p>" +
       '<div class="list-filter">' + hideToggle("btn small") +
         (hiddenCount ? '<span class="sub">' + hiddenCount + " explored " + (hiddenCount === 1 ? "spot" : "spots") + " hidden</span>" : "") +
@@ -493,9 +493,9 @@
     var current = DATA.cityId || CITIES.current;
     showSheet(
       (welcome
-        ? '<h2 class="list-title">👋 Where are you exploring?</h2>' +
+        ? '<h2 class="list-title">Where are you exploring?</h2>' +
           '<p class="list-desc">Welcome to Go Places. Pick your city to see its spots, sunsets and side quests. You can switch any time from the top bar.</p>'
-        : '<h2 class="list-title">🌍 Choose a city</h2>' +
+        : '<h2 class="list-title">Choose a city</h2>' +
           '<p class="list-desc">Go Places is growing. Pick a city to explore; more are on the way.</p>') +
       CITIES.cities.map(function (c) {
         var here = !welcome && c.id === current;
@@ -556,8 +556,8 @@
   function updateCounter() {
     var explored = exploredMap();
     var n = DATA.spots.filter(function (s) { return explored[s.id]; }).length;
-    document.getElementById("explored-count").textContent = n;
-    document.getElementById("total-count").textContent = DATA.spots.length;
+    var el = document.getElementById("explored-count");
+    if (el) el.textContent = n;
   }
 
   function refreshExplored() {
@@ -718,7 +718,7 @@
       return ACCT.signUp(f.email.value, f.password.value, f.username.value, f.name.value).then(function (r) {
         if (r.needsConfirmation) {
           showSheet(
-            '<h2 class="list-title">Check your email 📬</h2>' +
+            '<h2 class="list-title">Check your email</h2>' +
             '<p class="list-desc">We sent a link to <b>' + esc(f.email.value) + "</b>. Click it to finish creating your account, then come back here.</p>" +
             '<p class="form-links"><a href="#" data-go="signin">Back to sign in</a></p>'
           );
@@ -781,11 +781,11 @@
     }).join("") + "</div>";
   }
 
-  function wirePhotoGrid(photos, mine, back) {
+  function wirePhotoGrid(photos, mine, back, backLabel) {
     Array.prototype.forEach.call(sheetBody.querySelectorAll(".photo-tile"), function (t) {
       t.addEventListener("click", function () {
         var id = t.getAttribute("data-photo-id");
-        openPhoto(photos.filter(function (p) { return p.id === id; })[0], mine, back);
+        openPhoto(photos.filter(function (p) { return p.id === id; })[0], mine, back, backLabel);
       });
     });
   }
@@ -850,7 +850,7 @@
       '<div class="pf-panel">' + profilePanel(tab, visitedIds, wishIds) + "</div>"
     );
     wireLinks();
-    if (tab === "photos") wirePhotoGrid(ACCT.photos, true, openProfile);
+    if (tab === "photos") wirePhotoGrid(ACCT.photos, true, openProfile, "Profile");
     if (SOCIAL) SOCIAL.fillAvatars(sheetBody);
     Array.prototype.forEach.call(sheetBody.querySelectorAll("[data-pt]"), function (b) {
       b.addEventListener("click", function () { state.profileTab = b.getAttribute("data-pt"); openProfile(); });
@@ -876,7 +876,7 @@
         '<span class="set-label">' + esc(label) + '</span><span class="set-val">' + esc(value || "") + "</span></button>";
     }
     showSheet(
-      '<button class="dz-back" data-go="profile">← Your profile</button>' +
+      '<button class="dz-back" data-go="profile">← Profile</button>' +
       '<h2 class="list-title">Settings</h2>' +
       '<h3 class="set-h">Account</h3><div class="set-group">' +
         row("set-edit", "✏️", "Edit profile") +
@@ -936,12 +936,12 @@
         (SOCIAL ? SOCIAL.publicProfileSection(r) : "") +
         (DISCOVER ? DISCOVER.profileSection(r.badges || {}) : "") +
         (COLLECTIONS ? COLLECTIONS.publicProfileSection(r.profile.id) : "") +
-        '<div class="spot-section"><h3>📷 Photos</h3>' + (hidden(r.profile, "photos_visibility", "photos") || photoGrid(r.photos, "No photos yet.")) + "</div>" +
-        '<div class="spot-section"><h3>✅ Explored</h3>' + (hidden(r.profile, "visits_visibility", "explored places") || spotList(ids, "Nothing explored yet.", r.visits)) + "</div>" +
+        '<div class="spot-section"><h3>Photos</h3>' + (hidden(r.profile, "photos_visibility", "photos") || photoGrid(r.photos, "No photos yet.")) + "</div>" +
+        '<div class="spot-section"><h3>Explored</h3>' + (hidden(r.profile, "visits_visibility", "explored places") || spotList(ids, "Nothing explored yet.", r.visits)) + "</div>" +
         (r.profile.wishlist_visibility && !hidden(r.profile, "wishlist_visibility", "wishlist") && r.profile.wishlist_visibility !== "only_me"
-          ? '<div class="spot-section"><h3>💚 Wishlist</h3>' + spotList(Object.keys(r.wishlist || {}), "Nothing on the wishlist yet.") + "</div>" : "")
+          ? '<div class="spot-section"><h3>Wishlist</h3>' + spotList(Object.keys(r.wishlist || {}), "Nothing on the wishlist yet.") + "</div>" : "")
       );
-      wirePhotoGrid(r.photos, false, function () { openPublicProfile(username); });
+      wirePhotoGrid(r.photos, false, function () { openPublicProfile(username); }, r.profile ? (r.profile.display_name || r.profile.username) : username);
       if (SOCIAL) SOCIAL.afterPublicProfile(r);
     }).catch(function (err) {
       showSheet('<h2 class="list-title">Couldn\'t load profile</h2><p class="list-desc">' + esc(errText(err)) + "</p>");
@@ -1032,7 +1032,7 @@
     if (!ACCT.user) return "";
     var photos = ACCT.photosFor(spot.id);
     if (!photos.length) return "";
-    return '<div class="spot-section"><h3>📷 Your photos</h3>' + photoGrid(photos, "") + "</div>";
+    return '<div class="spot-section"><h3>Your photos</h3>' + photoGrid(photos, "") + "</div>";
   }
 
   function pickPhoto(spot) {
@@ -1049,7 +1049,7 @@
     state.view = "upload";
     var preview = URL.createObjectURL(file);
     showSheet(
-      '<h2 class="list-title">📷 ' + esc(spot.name) + "</h2>" +
+      '<h2 class="list-title">' + esc(spot.name) + "</h2>" +
       '<div class="upload-preview"><img src="' + preview + '" alt="Your photo"></div>' +
       '<form class="form" id="upload-form">' +
         '<label>Caption (optional)<input name="caption" maxlength="140" placeholder="What did you find?"></label>' +
@@ -1079,17 +1079,17 @@
     });
   }
 
-  function openPhoto(photo, mine, back) {
+  function openPhoto(photo, mine, back, backLabel) {
     if (!photo) return;
     var spot = spotById(photo.spot_id);
     state.view = "photo";
     showSheet(
+      '<button class="dz-back" id="photo-back">← ' + esc(backLabel || "Back") + "</button>" +
       '<div class="photo-full"><img src="' + esc(photo.url) + '" alt="' + esc(spot ? spot.name : "") + '"' +
         (LIGHTBOX ? LIGHTBOX.attrs([{ src: photo.url, caption: photo.caption || (spot ? spot.name : "") }], 0) : "") + "></div>" +
       (photo.caption ? '<p class="summary">' + esc(photo.caption) + "</p>" : "") +
       '<p class="meta">' + (spot ? esc(spot.emoji + " " + spot.name) + " · " : "") + esc(formatDate(photo.created_at)) + "</p>" +
       '<div class="actions">' +
-        '<button class="btn" id="photo-back">← Back</button>' +
         (spot ? '<button class="btn" id="photo-spot">Open spot</button>' : "") +
         (mine ? '<button class="btn danger" id="photo-delete">Delete photo</button>' : "") +
       "</div>"
@@ -1237,7 +1237,7 @@
   if (META) META.check(DATA.spots);
 
   // ---------- start ----------
-  document.getElementById("city-label").textContent = DATA.city + ", for free";
+  document.getElementById("city-label").textContent = DATA.city;
   document.title = "Go Places · " + DATA.city;
   renderThemes();
   renderMarkers();

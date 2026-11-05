@@ -362,18 +362,18 @@
     clearRoute();
     var me = app.me();
     app.show(
-      '<h2 class="list-title">🗓️ Plan My Day</h2>' +
+      '<h2 class="list-title">Plan My Day</h2>' +
       '<p class="list-desc">Tell us what you\'re up for and we\'ll put together a route through ' + esc(DATA.city) + "'s places.</p>" +
-      '<h3 class="dz-h">⏱ Time available</h3><div class="pl-pills">' +
+      '<h3 class="dz-h">Time available</h3><div class="pl-pills">' +
         TIMES.map(function (t) { return pill("t", t.id, t.label, p.time === t.id); }).join("") + "</div>" +
-      '<h3 class="dz-h">💶 Budget</h3><div class="pl-pills">' +
+      '<h3 class="dz-h">Budget</h3><div class="pl-pills">' +
         CFG.budgets.map(function (b) { return pill("b", b.id, b.label, p.budget === b.id); }).join("") + "</div>" +
-      '<h3 class="dz-h">✨ Interests <span class="seg-note">pick any</span></h3><div class="pl-pills">' +
+      '<h3 class="dz-h">Interests <span class="seg-note">pick any</span></h3><div class="pl-pills">' +
         CFG.interests.map(function (i) { return pill("i", i.id, i.emoji + " " + i.label, has(p.interests, i.id), true); }).join("") + "</div>" +
-      '<h3 class="dz-h">👥 Who\'s coming?</h3><div class="pl-pills">' +
+      '<h3 class="dz-h">Who\'s coming?</h3><div class="pl-pills">' +
         CFG.companions.map(function (c) { return pill("c", c.id, c.emoji + " " + c.label, p.companions === c.id); }).join("") + "</div>" +
-      '<h3 class="dz-h">🌦 Weather</h3>' + weatherBlock(p) +
-      '<button class="btn primary wide pl-go" data-pl="go">🗓️ Plan my day</button>' +
+      '<h3 class="dz-h">Weather</h3>' + weatherBlock(p) +
+      '<button class="btn primary wide pl-go" data-pl="go">Plan my day</button>' +
       '<p class="seg-note">' + (me ? "📍 Starting from where you are." : '📍 <button type="button" class="link-btn" data-pl="locate">Use my location</button> to start from where you are.') + "</p>",
       "plan");
     detectWeather();
@@ -395,7 +395,7 @@
     if (!result) {
       clearRoute();
       app.show(
-        back() + '<h2 class="list-title">🗓️ Plan My Day</h2>' +
+        back() + '<h2 class="list-title">Plan My Day</h2>' +
         '<p class="empty">Nothing fits ' + esc(summary) + ". Try more time or a bigger budget.</p>",
         toHash(p));
       return;
@@ -405,15 +405,15 @@
     }).join("");
     app.show(
       back() +
-      '<h2 class="list-title">🗓️ Your ' + esc(t.label.toLowerCase()) + "</h2>" +
+      '<h2 class="list-title">Your ' + esc(t.label.toLowerCase()) + "</h2>" +
       '<p class="list-desc">' + result.stops.length + " stop" + (result.stops.length === 1 ? "" : "s") + " · about " + duration(result.minutes) + " · " + esc(summary) + "</p>" +
       (result.relaxed ? '<p class="privacy-note">Nothing matched all your interests in that time, so here are the closest fits.</p>' : "") +
       '<ol class="pl-route">' + html + "</ol>" +
       '<div class="actions">' +
         '<a class="btn primary" target="_blank" rel="noopener" href="' + mapsLink(result, me) + '">🧭 Directions</a>' +
-        '<button class="btn" data-pl="map">🗺 Show on map</button>' +
-        '<button class="btn" data-pl="again">🔀 Try another</button>' +
-        (window.GoCollections ? '<button class="btn" data-pl="save">➕ Save as collection</button>' : "") +
+        '<button class="btn" data-pl="map">Show on map</button>' +
+        '<button class="btn" data-pl="again">Try another</button>' +
+        (window.GoCollections ? '<button class="btn" data-pl="save">Save as collection</button>' : "") +
         '<button class="btn" data-pl="share">↗ Share</button>' +
       "</div>" +
       '<p class="seg-note">Times between stops are estimates. Opening hours aren\'t checked yet, so look at each place before you go.</p>',
