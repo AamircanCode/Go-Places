@@ -21,7 +21,9 @@ Each city is its own set of content files, and [`data/cities.js`](data/cities.js
 
 Every city's places come from one file: **[`data/spots.js`](data/spots.js)** for Munich, **[`data/berlin/spots.js`](data/berlin/spots.js)** for Berlin. The top of that file explains every field. To add a spot, copy an existing block, paste it at the end of the list and change the text and coordinates. To get coordinates, right-click the place in Google Maps and click the numbers to copy them.
 
-Photos: put image files into `images/` and list them in the spot's `photos`, e.g. `{ url: "images/hackerbruecke-1.jpg", credit: "Photo: Aamir" }`. Spots without photos show a coloured card with their emoji.
+Photos: put image files into `images/`, run `python3 tools/watermark.py` to stamp "© Go Places" onto any new ones (already stamped photos are skipped), and list them in the spot's `photos`, e.g. `{ url: "images/hackerbruecke-1.jpg", credit: "Photo: Aamir" }`. Spots without photos show a coloured card with their emoji.
+
+The site also blocks right-click and long-press "Save image" and dragging on photos ([`protect.js`](protect.js)) and asks search engines not to index them. That stops casual saving, not a determined person (a screenshot or the browser's developer tools still work), which is why the mark is in the photo itself. Keep unstamped originals outside the repo.
 
 ## What can I do? (activities, moods, hidden gems, quests)
 

@@ -145,6 +145,15 @@ button { font: inherit; cursor: pointer; }
   position: absolute; right: 8px; bottom: 6px;
   font-size: 11px; color: #fff; text-shadow: 0 1px 2px #000;
 }
+/* Photo protection (protect.js, tools/watermark.py). The mark is also baked into
+   the photo files, but cards crop photos, so it is repeated here on top. */
+img { -webkit-user-drag: none; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+.photo:has(img)::after {
+  content: "© Go Places"; position: absolute; left: 10px; bottom: 6px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.85); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
 .photo-strip { display: flex; gap: 6px; overflow-x: auto; margin: -4px 0 12px; }
 .photo-strip img { height: 56px; border-radius: 8px; cursor: pointer; }
 
