@@ -10,6 +10,7 @@
   var META = window.GoMeta; // place metadata ("At a glance"), optional
   var COLLECTIONS = window.GoCollections; // collections of places, optional
   var PLAN = window.GoPlan; // Plan My Day, optional
+  var SUBMIT = window.GoSubmissions; // suggest a place or photo, and the review queue; optional
   var CITIES = window.GO_PLACES_CITIES || { cities: [] }; // data/cities.js
   var STORAGE_KEY = "goplaces.explored";
   var HIDE_KEY = "goplaces.hideExplored"; // "1" when explored places are hidden
@@ -196,6 +197,7 @@
     if (SOCIAL) SOCIAL.onClose();
     if (COLLECTIONS) COLLECTIONS.onClose();
     if (PLAN) PLAN.onClose();
+    if (SUBMIT) SUBMIT.onClose();
     if (location.hash) history.replaceState(null, "", location.pathname + location.search);
   }
 
@@ -262,6 +264,7 @@
       "</div>" +
       myPhotosBlock(spot) +
       '<p class="summary">' + esc(spot.summary) + "</p>" +
+      (SUBMIT ? SUBMIT.spotNote(spot) : "") +
       (META ? META.glance(spot) : "") +
       (KNOWLEDGE ? KNOWLEDGE.spotSections(spot) : "") +
       (DISCOVER ? DISCOVER.spotSection(spot) : "") +
@@ -684,6 +687,7 @@
       (SOCIAL ? SOCIAL.ownProfileSection() : "") +
       (DISCOVER ? DISCOVER.profileSection(null) : "") +
       '<div class="spot-section"><h3>📷 My photos</h3>' + photoGrid(ACCT.photos, "Open a spot and tap “Add photo” to post your first one.") + "</div>" +
+      (SUBMIT ? SUBMIT.profileSection() : "") +
       (COLLECTIONS ? COLLECTIONS.profileSection() : "") +
       '<div class="spot-section"><h3>💚 Wishlist</h3>' + spotList(wishIds, "Tap “Wishlist” on any spot to save it for later.") + "</div>" +
       '<div class="spot-section"><h3>✅ Explored</h3>' + spotList(visitedIds, "Spots you mark as explored show up here.", ACCT.visits) + "</div>"
@@ -691,6 +695,7 @@
     wireLinks();
     wirePhotoGrid(ACCT.photos, true, openProfile);
     if (SOCIAL) SOCIAL.fillAvatars(sheetBody);
+    if (SUBMIT) SUBMIT.afterProfile();
     document.getElementById("signout-btn").addEventListener("click", function () {
       ACCT.signOut().catch(function (err) { alert(errText(err)); });
     });
@@ -797,6 +802,7 @@
     document.getElementById("export-btn").addEventListener("click", function () {
       var data = ACCT.exportData();
       if (COLLECTIONS) Object.assign(data, COLLECTIONS.exportData());
+      if (SUBMIT) Object.assign(data, SUBMIT.exportData());
       var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       var a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
@@ -844,6 +850,7 @@
       '<div class="upload-preview"><img src="' + preview + '" alt="Your photo"></div>' +
       '<form class="form" id="upload-form">' +
         '<label>Caption (optional)<input name="caption" maxlength="140" placeholder="What did you find?"></label>' +
+        (SUBMIT ? SUBMIT.uploadOption() : "") +
         '<p class="privacy-note">🔒 Before uploading, the photo is resized and its hidden location (GPS) and camera data are removed.</p>' +
         '<p class="form-msg" role="alert"></p>' +
         '<div class="actions"><button class="btn primary" type="submit">Upload</button>' +
@@ -856,9 +863,12 @@
     });
     onSubmit("upload-form", function (form, f) {
       form.querySelector('button[type="submit"]').textContent = "Uploading…";
+      var suggest = !!(SUBMIT && f.suggest && f.suggest.checked);
       return ACCT.uploadPhoto(spot.id, file, f.caption.value).then(function () {
+        return suggest ? SUBMIT.suggestPhoto(spot, file, f.caption.value) : null;
+      }).then(function () {
         URL.revokeObjectURL(preview);
-        openSpot(spot.id);
+        if (suggest) SUBMIT.thanks("photo"); else openSpot(spot.id);
       }, function (err) {
         form.querySelector('button[type="submit"]').textContent = "Upload";
         throw err;
@@ -901,6 +911,7 @@
     else if (state.view === "social" && SOCIAL) SOCIAL.rerender();
     else if (state.view === "collections" && COLLECTIONS) COLLECTIONS.rerender();
     else if (state.view === "plan" && PLAN) PLAN.rerender();
+    else if (state.view === "submit" && SUBMIT) SUBMIT.rerender();
   }
 
   ACCT.on && ACCT.on(function (event) {
@@ -955,6 +966,7 @@
     else if (SOCIAL && SOCIAL.route(hash)) { /* handled by the social layer */ }
     else if (COLLECTIONS && COLLECTIONS.route(hash)) { /* handled by collections */ }
     else if (PLAN && PLAN.route(hash)) { /* handled by Plan My Day */ }
+    else if (SUBMIT && SUBMIT.route(hash)) { /* handled by suggestions and review */ }
     else if (ACCT.enabled && hash === "me") { if (ACCT.user) openProfile(); else openSignIn(); }
     else if (ACCT.enabled && hash.charAt(0) === "@") openPublicProfile(hash.slice(1).toLowerCase());
   }
@@ -984,6 +996,10 @@
       formatDate: formatDate,
       exploredMap: exploredMap,
       markExplored: markExplored,
+      refreshMap: function () {
+        refreshExplored();
+        if (state.view === "spot" && state.openSpotId) openSpot(state.openSpotId);
+      },
       openSpot: openSpot,
       openSignIn: openSignIn,
       openProfile: openProfile,
@@ -1010,6 +1026,7 @@
   if (SOCIAL) SOCIAL.init(layerApi("social"));
   if (COLLECTIONS) COLLECTIONS.init(layerApi("collections"));
   if (PLAN) PLAN.init(layerApi("plan"));
+  if (SUBMIT) SUBMIT.init(layerApi("submit"));
   if (META) META.check(DATA.spots);
 
   // ---------- start ----------

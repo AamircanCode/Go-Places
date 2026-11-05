@@ -583,3 +583,43 @@ img[data-gallery]:focus-visible { outline: 3px solid var(--brand); outline-offse
 }
 .pl-route-pill button { border: none; background: var(--brand); color: #fff; font-weight: 700; font-size: 14px; padding: 10px 14px; }
 .pl-route-pill .pl-route-x { background: #115e59; padding: 10px 12px; }
+
+/* Suggestions and the review queue (submissions.js) */
+.fab[hidden] { display: none; }
+.account-btn { position: relative; }
+.review-dot {
+  position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px;
+  border-radius: 999px; background: #dc2626; color: #fff; font-size: 11px; font-weight: 700;
+  line-height: 18px; text-align: center; border: 2px solid #fff;
+}
+body.picking .map-buttons { display: none; }
+.pin-cross {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -100%); font-size: 40px; line-height: 1;
+  pointer-events: none; z-index: 1000; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.35));
+}
+.pin-banner {
+  position: fixed; left: 16px; right: 16px; bottom: 24px; z-index: 1000;
+  background: var(--bg); border-radius: 14px; box-shadow: var(--shadow); padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 4px; max-width: 520px; margin: 0 auto;
+}
+.pin-banner span { font-size: 14px; color: var(--muted); }
+.pin-banner .actions { margin-top: 8px; }
+.pin-line {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  background: var(--surface); border-radius: 10px; padding: 8px 10px; font-size: 14px;
+}
+.sub-item { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 10px 0; }
+.sub-item .actions { margin-top: 6px; }
+.sub-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.sub-item .sub { font-size: 13px; color: var(--muted); margin: 4px 0 0; }
+.sub-note { font-size: 13px; color: var(--ink); background: var(--surface); border-radius: 8px; padding: 6px 8px; margin: 6px 0 0; }
+.kind { font-size: 12px; color: var(--muted); }
+.status-pill { font-size: 12px; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.status-pill.pending { background: #fef3c7; color: #92400e; }
+.status-pill.approved { background: #dcfce7; color: #166534; }
+.status-pill.rejected { background: #fee2e2; color: #991b1b; }
+.review-tabs { display: flex; gap: 6px; margin: 4px 0 8px; }
+.review-photo img { width: 100%; max-height: 360px; object-fit: contain; background: var(--surface); border-radius: 10px; display: block; margin-bottom: 8px; }
+.review-map { height: 150px; border-radius: 10px; overflow: hidden; margin: 8px 0 4px; background: var(--surface); }
+.review-edit { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 4px; }

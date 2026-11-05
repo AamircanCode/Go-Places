@@ -712,3 +712,228 @@ create policy "collections: remove own" on public.collections
 drop policy if exists "collection saves: own only" on public.collection_saves;
 create policy "collection saves: own only" on public.collection_saves
   for all to authenticated using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
+
+
+-- =====================================================================
+-- SUBMISSIONS (suggest a place, suggest a photo)
+-- =====================================================================
+-- Added with the submissions / review queue update. Safe to run again, like
+-- the rest of this file.
+--
+-- Signed-in explorers can suggest a new place (with an optional photo) or a
+-- photo for a place that's already on the map. Nothing they send is public
+-- until a reviewer approves it.
+--
+--   reviewers     who may approve or reject. Nobody can add themselves from
+--                 the app; reviewers are added in the SQL Editor (see
+--                 "reviewer" at the end of this section).
+--   submissions   one row per suggestion. status: pending | approved | rejected
+--                 Approved places show on the map for everyone, approved
+--                 photos on their place's page. Who sent them is never shown:
+--                 only the sender and reviewers can read the rows, and
+--                 everyone else gets the approved content, without names,
+--                 through approved_submissions(). A reviewer can also
+--                 approve or reject straight
+--                 in Supabase → Table Editor → submissions by changing the
+--                 status column; it has the same effect as the app's buttons.
+--   submissions   a private storage bucket for the photos. The app stamps
+--                 "© Go Places" on them and removes their location data
+--                 before upload.
+
+-- ---------- reviewers ----------
+create table if not exists public.reviewers (
+  user_id   uuid primary key references public.profiles (id) on delete cascade,
+  added_at  timestamptz not null default now()
+);
+
+create or replace function public.is_reviewer()
+returns boolean language sql stable security definer set search_path = '' as $$
+  select exists (select 1 from public.reviewers where user_id = (select auth.uid()));
+$$;
+grant execute on function public.is_reviewer() to anon, authenticated;
+
+-- ---------- submissions ----------
+create table if not exists public.submissions (
+  id           uuid primary key default gen_random_uuid(),
+  user_id      uuid not null references public.profiles (id) on delete cascade,
+  kind         text not null check (kind in ('place', 'photo')),
+  city         text not null check (city ~ '^[a-z0-9-]{1,40}$'),
+  -- a photo: the place it's for. A new place: its id on the map, set by the
+  -- database ("c-" plus 10 letters and numbers).
+  spot_id      text check (spot_id ~ '^[a-z0-9-]{1,60}$'),
+  -- new places only
+  name         text check (char_length(name) between 2 and 80),
+  emoji        text check (char_length(emoji) between 1 and 8),
+  lat          double precision check (lat between -90 and 90),
+  lng          double precision check (lng between -180 and 180),
+  themes       text[] not null default '{}' check (cardinality(themes) <= 8),
+  cost         text check (char_length(cost) <= 80),
+  best_time    text check (char_length(best_time) <= 120),
+  summary      text check (char_length(summary) <= 600),
+  tip          text check (char_length(tip) <= 300),
+  -- the photo (optional for a place)
+  photo_path   text unique,
+  caption      text check (char_length(caption) <= 140),
+  width        int,
+  height       int,
+  status       text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
+  review_note  text check (char_length(review_note) <= 300),
+  reviewed_by  uuid references public.profiles (id) on delete set null,
+  reviewed_at  timestamptz,
+  created_at   timestamptz not null default now(),
+  check (kind <> 'place' or (name is not null and lat is not null and lng is not null and summary is not null)),
+  check (kind <> 'photo' or (spot_id is not null and photo_path is not null)),
+  -- the file must sit in the sender's own folder: <user id>/<file>
+  check (photo_path is null or split_part(photo_path, '/', 1) = user_id::text)
+);
+create index if not exists submissions_status_idx on public.submissions (status, created_at desc);
+create index if not exists submissions_city_idx on public.submissions (city, status);
+create index if not exists submissions_user_idx on public.submissions (user_id, created_at desc);
+
+-- New suggestions always start as pending, and a new place gets its id.
+-- At most 20 pending
+-- suggestions per person, to keep the queue manageable.
+create or replace function public.prepare_submission()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  new.status := 'pending';
+  new.review_note := null;
+  new.reviewed_by := null;
+  new.reviewed_at := null;
+  new.created_at := now();
+  if new.kind = 'place' then
+    new.spot_id := 'c-' || left(replace(new.id::text, '-', ''), 10);
+  end if;
+  if (select count(*) from public.submissions where user_id = new.user_id and status = 'pending') >= 20 then
+    raise exception 'You have 20 suggestions waiting for review. Please wait until some are reviewed.';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists submissions_prepare on public.submissions;
+create trigger submissions_prepare before insert on public.submissions
+  for each row execute function public.prepare_submission();
+
+-- Reviewers may change the text and the status, never who sent it, what
+-- kind it is, or its id. A change of status records who decided and when
+-- (reviewed_by stays empty when it's done in the Table Editor).
+create or replace function public.review_submission()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  new.id := old.id;
+  new.user_id := old.user_id;
+  new.kind := old.kind;
+  new.spot_id := old.spot_id;
+  new.photo_path := old.photo_path;
+  new.created_at := old.created_at;
+  if new.status is distinct from old.status then
+    new.reviewed_by := (select auth.uid());
+    new.reviewed_at := now();
+  else
+    new.reviewed_by := old.reviewed_by;
+    new.reviewed_at := old.reviewed_at;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists submissions_review on public.submissions;
+create trigger submissions_review before update on public.submissions
+  for each row execute function public.review_submission();
+
+-- ---------- row level security ----------
+alter table public.reviewers   enable row level security;
+alter table public.submissions enable row level security;
+
+grant select on public.reviewers to authenticated;
+grant select, insert, update, delete on public.submissions to authenticated;
+
+drop policy if exists "reviewers: see yourself" on public.reviewers;
+create policy "reviewers: see yourself" on public.reviewers
+  for select to authenticated using (user_id = (select auth.uid()));
+
+-- only the sender and the reviewers see a row; everyone sees approved
+-- content through approved_submissions() below
+drop policy if exists "submissions: read own or as reviewer" on public.submissions;
+create policy "submissions: read own or as reviewer" on public.submissions
+  for select to authenticated using (user_id = (select auth.uid()) or public.is_reviewer());
+drop policy if exists "submissions: send as yourself" on public.submissions;
+create policy "submissions: send as yourself" on public.submissions
+  for insert to authenticated with check (user_id = (select auth.uid()));
+drop policy if exists "submissions: reviewers decide" on public.submissions;
+create policy "submissions: reviewers decide" on public.submissions
+  for update to authenticated using (public.is_reviewer()) with check (public.is_reviewer());
+-- senders can take back a suggestion that isn't approved; reviewers can
+-- remove any
+drop policy if exists "submissions: withdraw unapproved or as reviewer" on public.submissions;
+create policy "submissions: withdraw unapproved or as reviewer" on public.submissions
+  for delete to authenticated using (
+    (user_id = (select auth.uid()) and status <> 'approved') or public.is_reviewer()
+  );
+
+-- Approved places and photos for one city, for everyone (also visitors who
+-- aren't signed in). Leaves out who sent them.
+create or replace function public.approved_submissions(for_city text)
+returns table (
+  id uuid, kind text, spot_id text, name text, emoji text, lat double precision, lng double precision,
+  themes text[], cost text, best_time text, summary text, tip text,
+  photo_path text, caption text, width int, height int, approved_at timestamptz
+) language sql stable security definer set search_path = '' as $$
+  select s.id, s.kind, s.spot_id, s.name, s.emoji, s.lat, s.lng, s.themes, s.cost, s.best_time, s.summary, s.tip,
+         s.photo_path, s.caption, s.width, s.height, coalesce(s.reviewed_at, s.created_at)
+  from public.submissions s
+  where s.status = 'approved' and s.city = for_city
+  order by coalesce(s.reviewed_at, s.created_at);
+$$;
+grant execute on function public.approved_submissions(text) to anon, authenticated;
+
+-- ---------- submission photos ----------
+-- Private bucket, 5 MB, JPEG only. A file can be seen by its sender, by
+-- reviewers, and by everyone once its suggestion is approved.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('submissions', 'submissions', false, 5242880, array['image/jpeg'])
+on conflict (id) do update
+  set public = false, file_size_limit = 5242880, allowed_mime_types = array['image/jpeg'];
+
+create or replace function public.is_approved_photo(file text)
+returns boolean language sql stable security definer set search_path = '' as $$
+  select exists (select 1 from public.submissions where photo_path = file and status = 'approved');
+$$;
+grant execute on function public.is_approved_photo(text) to anon, authenticated;
+
+drop policy if exists "submissions: read if allowed" on storage.objects;
+create policy "submissions: read if allowed" on storage.objects
+  for select using (
+    bucket_id = 'submissions'
+    and ((storage.foldername(name))[1] = (select auth.uid())::text
+         or public.is_reviewer()
+         or public.is_approved_photo(name))
+  );
+drop policy if exists "submissions: upload own" on storage.objects;
+create policy "submissions: upload own" on storage.objects
+  for insert to authenticated with check (
+    bucket_id = 'submissions' and (storage.foldername(name))[1] = (select auth.uid())::text
+  );
+drop policy if exists "submissions: remove own or as reviewer" on storage.objects;
+create policy "submissions: remove own or as reviewer" on storage.objects
+  for delete to authenticated using (
+    bucket_id = 'submissions'
+    and ((storage.foldername(name))[1] = (select auth.uid())::text or public.is_reviewer())
+  );
+
+-- ---------- reviewer ----------
+-- @aamiradmin is the reviewer. If that account doesn't exist yet when this
+-- runs, sign up with that username first and run the file again.
+--
+-- To add another reviewer, run this on its own in the SQL Editor with their
+-- username:
+--   insert into public.reviewers (user_id)
+--   select id from public.profiles where username = 'their_username'
+--   on conflict do nothing;
+-- To remove one:
+--   delete from public.reviewers
+--   where user_id = (select id from public.profiles where username = 'their_username');
+insert into public.reviewers (user_id)
+select id from public.profiles where username = 'aamiradmin'
+on conflict do nothing;
