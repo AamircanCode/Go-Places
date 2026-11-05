@@ -85,12 +85,12 @@ These need the "social discovery & privacy" part of [`supabase/schema.sql`](supa
 
 ## Suggestions and the review queue
 
-Signed-in explorers can suggest new places and photos. Nothing they send is public until a reviewer approves it, and who sent it is never shown.
+Signed-in explorers can suggest new places and photos. Nothing they send is public until a reviewer approves it. Reviewers see who sent each suggestion; once approved, it's shown without the sender's name.
 
 - **Suggest a place:** the **＋** button on the map (or `…/#suggest`). Move the map so the pin sits on the place, then add a name, an icon, themes, a short description, cost, best time, a tip and an optional photo.
 - **Suggest a photo:** on any spot, **📷 Add photo** and tick **Also suggest it for this place's page**. The photo still goes to their own photos too.
 - **My suggestions** (`…/#suggestions`, also on the profile): each suggestion shows *Waiting for review*, *Approved* or *Not accepted* (with the reviewer's reason, if given). Waiting or rejected ones can be withdrawn.
-- **Review** (`…/#review`, only for reviewers): a **Review** button on the profile and a red number on the profile picture when something is waiting. Each place shows its pin on a small map, its text and photo, with **Approve**, **Edit, then approve** and **Reject** (with an optional reason). Approved places appear on the map straight away, and approved photos on their place's page. **Recently decided** lets you unpublish something or approve it after all.
+- **Review** (`…/#review`, only for reviewers): a **Review** button on the profile and a red number on the profile picture when something is waiting. Each suggestion shows who sent it (their username links to their profile); places show their pin on a small map, its text and photo, with **Approve**, **Edit, then approve** and **Reject** (with an optional reason). Approved places appear on the map straight away, and approved photos on their place's page. **Recently decided** lets you unpublish something or approve it after all.
 - **Approving from Supabase instead:** in **Table Editor → submissions**, change a row's `status` to `approved` or `rejected`. It has the same effect as the buttons.
 
 Photos are shrunk, stripped of their location data and stamped with "© Go Places" on the phone before upload. Approved places live in the database, not in `data/spots.js`; to give one full history and fun facts later, copy it into `spots.js` (keeping its `c-…` id) and unpublish the suggestion.

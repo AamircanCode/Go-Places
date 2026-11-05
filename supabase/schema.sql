@@ -729,8 +729,9 @@ create policy "collection saves: own only" on public.collection_saves
 --                 "reviewer" at the end of this section).
 --   submissions   one row per suggestion. status: pending | approved | rejected
 --                 Approved places show on the map for everyone, approved
---                 photos on their place's page. Who sent them is never shown:
---                 only the sender and reviewers can read the rows, and
+--                 photos on their place's page. Who sent them is only shown
+--                 to reviewers: only the sender and reviewers can read the
+--                 rows, and
 --                 everyone else gets the approved content, without names,
 --                 through approved_submissions(). A reviewer can also
 --                 approve or reject straight
@@ -887,6 +888,17 @@ returns table (
   order by coalesce(s.reviewed_at, s.created_at);
 $$;
 grant execute on function public.approved_submissions(text) to anon, authenticated;
+
+-- Who sent these suggestions: for reviewers only, whatever the sender's
+-- profile privacy. Everyone else gets nothing back.
+create or replace function public.submission_senders(ids uuid[])
+returns table (id uuid, username text, display_name text)
+language sql stable security definer set search_path = '' as $$
+  select p.id, p.username, p.display_name from public.profiles p
+  where p.id = any(ids) and public.is_reviewer();
+$$;
+revoke all on function public.submission_senders(uuid[]) from public, anon;
+grant execute on function public.submission_senders(uuid[]) to authenticated;
 
 -- ---------- submission photos ----------
 -- Private bucket, 5 MB, JPEG only. A file can be seen by its sender, by

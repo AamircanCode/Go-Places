@@ -8,7 +8,8 @@
  *   approved place   shows on the map for everyone, like any other spot
  *   approved photo   shows on its place's page for everyone
  *
- * Who sent a suggestion is never shown. Photos are shrunk, stripped of their
+ * Only reviewers see who sent a suggestion; it isn't shown with approved
+ * places and photos. Photos are shrunk, stripped of their
  * location data and stamped "© Go Places" on the phone, before upload.
  *
  * Needs the "submissions" part of supabase/schema.sql. Until it has been run,
@@ -446,26 +447,37 @@
       ? q.eq("status", "pending").order("created_at", { ascending: true }).limit(100)
       : q.neq("status", "pending").order("reviewed_at", { ascending: false, nullsFirst: false }).limit(40);
     q.then(check).then(function (rows) {
-      return signUrls(rows.map(function (r) { return r.photo_path; })).then(function (urls) {
+      return Promise.all([signUrls(rows.map(function (r) { return r.photo_path; })), senders(rows)]).then(function (r) {
         if (!app.isOpen()) return;
         if (reviewTab === "pending") pendingCount = rows.length;
         showDot();
-        renderReview(rows, urls);
+        renderReview(rows, r[0], r[1]);
       });
     }).catch(function (err) {
       app.show('<h2 class="list-title">🛡️ Review suggestions</h2><p class="list-desc">Couldn\'t load the queue: ' + esc(errText(err)) + "</p>", "review");
     });
   }
 
-  function renderReview(rows, urls) {
+  // Usernames of the senders, which only reviewers can look up.
+  function senders(rows) {
+    var ids = rows.map(function (r) { return r.user_id; }).filter(function (id, i, a) { return a.indexOf(id) === i; });
+    if (!ids.length) return Promise.resolve({});
+    return sb.rpc("submission_senders", { ids: ids }).then(check).then(function (list) {
+      var by = {};
+      list.forEach(function (p) { by[p.id] = p; });
+      return by;
+    }, function () { return {}; });
+  }
+
+  function renderReview(rows, urls, people) {
     app.show(
       '<h2 class="list-title">🛡️ Review suggestions</h2>' +
-      '<p class="list-desc">Nothing here is public until you approve it. Who sent it is never shown to other people.</p>' +
+      '<p class="list-desc">Nothing here is public until you approve it. Only reviewers see who sent it; it isn\'t shown with approved places and photos.</p>' +
       '<div class="seg review-tabs" role="tablist">' +
         '<button class="btn small' + (reviewTab === "pending" ? " primary" : "") + '" data-tab="pending">Waiting' + (pendingCount ? " (" + pendingCount + ")" : "") + "</button>" +
         '<button class="btn small' + (reviewTab === "decided" ? " primary" : "") + '" data-tab="decided">Recently decided</button>' +
       "</div>" +
-      (rows.length ? rows.map(function (r) { return reviewCard(r, urls[r.photo_path]); }).join("")
+      (rows.length ? rows.map(function (r) { return reviewCard(r, urls[r.photo_path], people[r.user_id]); }).join("")
         : '<p class="empty">' + (reviewTab === "pending" ? "All caught up. 🎉 New suggestions will show up here." : "Nothing decided yet.") + "</p>"),
       "review"
     );
@@ -475,7 +487,7 @@
     rows.forEach(function (r) { wireCard(r); });
   }
 
-  function reviewCard(r, url) {
+  function reviewCard(r, url, who) {
     var spot = r.kind === "photo" ? app.spotById(r.spot_id) : null;
     var themes = (r.themes || []).map(themeById).filter(Boolean).map(function (t) {
       return '<span class="tag">' + esc(t.emoji + " " + t.name) + "</span>";
@@ -495,7 +507,9 @@
     return '<div class="sub-item review-card" id="card-' + esc(r.id) + '">' +
       (url ? '<div class="review-photo"><img src="' + esc(url) + '" alt="" loading="lazy"></div>' : "") +
       body +
-      '<p class="sub">Sent ' + esc(app.formatDate(r.created_at)) +
+      '<p class="sub">Sent by ' + (who
+        ? '<a href="#@' + esc(who.username) + '">@' + esc(who.username) + "</a>" + (who.display_name ? " (" + esc(who.display_name) + ")" : "")
+        : "a deleted account") + " · " + esc(app.formatDate(r.created_at)) +
         (decided ? " · " + statusPill(r) + (r.review_note ? " “" + esc(r.review_note) + "”" : "") : "") + "</p>" +
       '<div class="actions">' +
         (decided
