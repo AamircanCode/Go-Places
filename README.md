@@ -85,6 +85,22 @@ Go Places is not a social network: there are **no follower counts, likes, rankin
 
 These need the "social discovery & privacy" part of [`supabase/schema.sql`](supabase/schema.sql): paste the whole file into the SQL Editor and run it again. Until then they stay hidden and everything else works as before. Existing public profiles stay public; private ones stay private.
 
+## Suggestions and the review queue
+
+Signed-in explorers can suggest new places and photos. Nothing they send is public until a reviewer approves it. Reviewers see who sent each suggestion; once approved, it's shown without the sender's name.
+
+- **Suggest a place:** the **＋** button on the map (or `…/#suggest`). Move the map so the pin sits on the place, then add a name, an icon, themes, a short description, cost, best time, a tip and an optional photo.
+- **Suggest a photo:** on any spot, **📷 Add photo** and tick **Also suggest it for this place's page**. The photo still goes to their own photos too.
+- **My suggestions** (`…/#suggestions`, also on the profile): each suggestion shows *Waiting for review*, *Approved* or *Not accepted* (with the reviewer's reason, if given). Waiting or rejected ones can be withdrawn.
+- **Review** (`…/#review`, only for reviewers): a **Review** button on the profile and a red number on the profile picture when something is waiting. Each suggestion shows who sent it (their username links to their profile); places show their pin on a small map, its text and photo, with **Approve**, **Edit, then approve** and **Reject** (with an optional reason). Approved places appear on the map straight away, and approved photos on their place's page. **Recently decided** lets you unpublish something or approve it after all. **Contributors** is a directory of everyone who has suggested something, with how many were approved, rejected or are waiting; tap a person to see everything they've sent. Suggestions stay in it after they're decided.
+- **Approving from Supabase instead:** in **Table Editor → submissions**, change a row's `status` to `approved` or `rejected`. It has the same effect as the buttons.
+
+If someone deletes their account, their approved places and photos stay up (listed under *Deleted accounts*) and everything else they suggested is removed.
+
+Photos are shrunk, stripped of their location data and stamped with "© Go Places" on the phone before upload. Approved places live in the database, not in `data/spots.js`; to give one full history and fun facts later, copy it into `spots.js` (keeping its `c-…` id) and unpublish the suggestion.
+
+This needs the "submissions" part of [`supabase/schema.sql`](supabase/schema.sql): paste the whole file into the SQL Editor and run it again. Until then the ＋ button stays hidden. The file makes **@aamiradmin** the reviewer; if that account doesn't exist yet, sign up with that username and run the file again. The end of the file shows how to add or remove other reviewers. Nobody can make themselves a reviewer from the app.
+
 ## Accounts (optional, free)
 
 With accounts switched on, people can:
@@ -124,7 +140,7 @@ That's it. A **Sign in** button appears in the top bar. Whenever `schema.sql` ch
 
 ## Later phases
 
-AR camera view, monthly challenges, side-quest submissions from users, a community forum, and local business partner deals.
+AR camera view, monthly challenges, a community forum, and local business partner deals.
 
 ## Files
 
@@ -138,6 +154,7 @@ AR camera view, monthly challenges, side-quest submissions from users, a communi
 - `meta.js`: place metadata and "At a glance"; `data/place-meta.js`: the metadata of each place
 - `collections.js`: collections; `data/collections.js`: the Go Places starter collections
 - `plan.js`: Plan My Day and the route planner; `data/plan.js`: its choices, interests and weights
+- `submissions.js`: suggest a place or photo, and the review queue
 - `lightbox.js`: the full-size photo viewer (tap any photo; swipe or arrow keys to move, Esc or tap to close)
 - `data/spots.js`: all spots and themes
 - `data/activities.js`, `data/hidden-gems.js`, `data/quests.js`, `data/discover.js`: content for the "What can I do?" layer

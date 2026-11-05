@@ -327,7 +327,9 @@
   // Re-draws the photo on a canvas and saves it as a new JPEG. The new file
   // has no EXIF data at all, so the GPS location, camera serial number and
   // original timestamp are gone before anything leaves the phone.
-  function cleanPhoto(file, maxSide) {
+  // With `mark`, "© Go Places" is drawn into the corner, like
+  // tools/watermark.py does for the photos in images/.
+  function cleanPhoto(file, maxSide, mark) {
     return decode(file).then(function (img) {
       var w = img.width, h = img.height;
       var scale = Math.min(1, (maxSide || MAX_SIDE) / Math.max(w, h));
@@ -336,6 +338,7 @@
       canvas.height = Math.round(h * scale);
       canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
       if (img.close) img.close();
+      if (mark) watermark(canvas);
       return new Promise(function (resolve, reject) {
         canvas.toBlob(function (blob) {
           if (blob) resolve({ blob: blob, width: canvas.width, height: canvas.height });
@@ -343,6 +346,21 @@
         }, "image/jpeg", JPEG_QUALITY);
       });
     });
+  }
+
+  function watermark(canvas) {
+    var ctx = canvas.getContext("2d");
+    var w = canvas.width, h = canvas.height, short = Math.min(w, h);
+    var size = Math.max(14, Math.round(short * 0.035));
+    var margin = Math.round(short * 0.03);
+    var shadow = Math.max(1, Math.round(short * 0.002));
+    ctx.font = "bold " + size + "px system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif";
+    ctx.textAlign = "right";
+    ctx.textBaseline = "bottom";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.47)";
+    ctx.fillText("© Go Places", w - margin + shadow, h - margin + shadow);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.78)";
+    ctx.fillText("© Go Places", w - margin, h - margin);
   }
 
   function decode(file) {
@@ -428,12 +446,23 @@
   acct.deleteAccount = function () {
     var paths = acct.photos.map(function (p) { return p.path; });
     var removeFiles = paths.length ? sb.storage.from(BUCKET).remove(paths).then(check) : Promise.resolve();
-    return removeFiles.then(function () {
+    return removeFiles.then(removeSuggestionFiles).then(function () {
       return sb.rpc("delete_my_account").then(check);
     }).then(function () {
       return sb.auth.signOut({ scope: "local" });
     });
   };
+
+  // Photos sent with suggestions (the "submissions" part of
+  // supabase/schema.sql) that weren't approved. Their rows go with the
+  // account; approved places and photos stay up, without a sender.
+  function removeSuggestionFiles() {
+    return sb.from("submissions").select("photo_path").eq("user_id", uid()).neq("status", "approved").not("photo_path", "is", null)
+      .then(check).then(function (rows) {
+        var files = rows.map(function (r) { return r.photo_path; });
+        return files.length ? sb.storage.from("submissions").remove(files).then(check) : null;
+      }).catch(function (err) { console.warn("No suggestion photos removed", err); });
+  }
 
   // For social.js, which adds follows, ratings and privacy settings on top.
   acct.client = sb;
