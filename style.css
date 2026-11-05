@@ -49,6 +49,7 @@ button { font: inherit; cursor: pointer; }
 .city-btn:disabled { cursor: default; }
 .city-btn:disabled .city-caret { display: none; }
 .city-caret { font-size: 10px; }
+.city-free { font-weight: 400; opacity: 0.9; margin-left: -4px; }
 .city-item.current { outline: 2px solid var(--brand); outline-offset: -2px; }
 /* First visit: the city picker is a welcome step, so it has no close button. */
 .sheet.must-choose .sheet-close { display: none; }
@@ -500,7 +501,25 @@ img[data-gallery]:focus-visible { outline: 3px solid var(--brand); outline-offse
 }
 
 /* Place metadata: "At a glance" */
-.mt-glance .mt-rows { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 14px; margin-bottom: 10px; }
+.mt-card { margin: 16px 0 4px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.mt-glance > summary { list-style: none; cursor: pointer; padding: 12px 14px; display: grid; gap: 8px; }
+.mt-glance > summary::-webkit-details-marker { display: none; }
+.mt-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.mt-head h3 { margin: 0; font-size: 16px; }
+.mt-more { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px 4px 12px; border-radius: 999px; background: var(--brand-soft); color: var(--brand); font-size: 13px; font-weight: 600; }
+.mt-chev { display: block; transition: transform 0.15s; }
+.mt-glance[open] .mt-chev { transform: rotate(180deg); }
+.mt-less-t, .mt-glance[open] .mt-more-t { display: none; }
+.mt-glance[open] .mt-less-t { display: inline; }
+.mt-facts { display: flex; flex-wrap: wrap; gap: 6px; }
+.mt-fact { font-size: 13px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; color: var(--ink); white-space: nowrap; }
+.mt-glance[open] > summary { border-bottom: 1px solid var(--line); }
+.mt-glance > :not(summary) { margin-left: 14px; margin-right: 14px; }
+.mt-glance .mt-rows { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 14px; margin-top: 12px; margin-bottom: 12px; }
+.mt-glance .seg-note { margin-bottom: 12px; }
+.mt-tags { padding: 0 14px 12px; margin: 0; }
+.mt-tags .mood-tag { background: var(--bg); border: 1px solid var(--line); }
+.mt-glance[open] + .mt-tags { padding-top: 12px; border-top: 1px solid var(--line); }
 .mt-row { display: contents; }
 .mt-k { color: var(--muted); white-space: nowrap; }
 .mt-v { color: var(--ink); }
