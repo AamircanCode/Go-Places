@@ -13,7 +13,7 @@ It's a plain website with no build step. Accounts are optional: until you connec
 
 Each city is its own set of content files, and [`data/cities.js`](data/cities.js) lists the cities and loads the right set. Munich's files are the ones directly in `data/`; Berlin's are in [`data/berlin/`](data/berlin/), with photos in `images/berlin/`.
 
-- **Switching city:** tap "Munich ▾" in the top bar. Links carry the city, e.g. `…/?city=berlin#humboldthain`, and the app remembers the last city on each device.
+- **Switching city:** tap "Munich, for free ▾" in the top bar. Links carry the city, e.g. `…/?city=berlin#humboldthain`, and the app remembers the last city on each device.
 - **Adding a city:** make a folder `data/<city>/`, copy Berlin's files into it and change the content (only `spots.js` is required), then add the city to the list at the top of `data/cities.js`. No code changes needed.
 - Explored spots, the wishlist, ratings, photos and badges are kept per person across all cities.
 

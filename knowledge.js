@@ -125,11 +125,12 @@
       (spot.duration && !window.GoMeta ? '<p class="meta"><b>Time:</b> ' + esc(spot.duration) + "</p>" : "");
   }
 
-  function spotTags(spot) {
+  function spotTags(spot, themes) {
     var html = "";
     if (isKnowledge(spot)) {
       var g = spot.group && byId(K.groups, spot.group);
-      if (g) html += '<button class="tag kn-tag" data-k="group" data-id="' + esc(g.id) + '">' + esc(g.emoji + " " + g.title) + "</button>";
+      var dup = g && (themes || []).some(function (t) { return t.name === g.title; });
+      if (g && !dup) html += '<button class="tag kn-tag" data-k="group" data-id="' + esc(g.id) + '">' + esc(g.emoji + " " + g.title) + "</button>";
     }
     return html + (spot.tags || []).map(function (t) { return '<span class="tag mood-tag">' + esc(t) + "</span>"; }).join("");
   }

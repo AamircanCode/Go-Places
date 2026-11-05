@@ -153,18 +153,18 @@
   function scoreBar(emoji, label, n) {
     var v = Math.max(0, Math.min(10, n || 0));
     return '<div class="mt-score" title="' + esc(label) + ": " + v + '/10">' +
-      '<span class="mt-score-label">' + esc(emoji + " " + label) + "</span>" +
+      '<span class="mt-score-label">' + esc(label) + "</span>" +
       '<span class="dz-bar"><span style="width:' + v * 10 + '%"></span></span>' +
       '<span class="mt-score-n">' + v + "/10</span></div>";
   }
 
   function row(emoji, label, value) {
     if (!value || (Array.isArray(value) && !value.length)) return "";
-    return '<div class="mt-row"><span class="mt-k">' + esc(emoji + " " + label) + '</span><span class="mt-v">' +
+    return '<div class="mt-row"><span class="mt-k">' + esc(label) + '</span><span class="mt-v">' +
       esc(Array.isArray(value) ? value.join(", ") : value) + "</span></div>";
   }
 
-  function glance(spot) {
+  function glance(spot, tags) {
     var m = forSpot(spot);
     var now = new Date();
     var budgetNow = budget(spot, now);
@@ -173,16 +173,22 @@
     if (has(m.bestTimeOfDay, timeOfDay(now))) good.push("a good time of day");
     if (!has(m.bestSeason, "All Year") && inSeason(spot, now)) good.push("in season");
     // "Right now" stays visible; the details fold away under a one-line summary.
-    var brief = [spot.duration || m.estimatedDuration, budgetNow, m.activityLevel].filter(Boolean).join(" · ");
+    var brief = [
+      ["⏱", spot.duration || m.estimatedDuration], ["💶", budgetNow], ["🚶", m.activityLevel]
+    ].filter(function (b) { return b[1]; }).map(function (b) {
+      return '<span class="mt-fact"><span aria-hidden="true">' + b[0] + "</span> " + esc(b[1]) + "</span>";
+    }).join("");
     return (good.length ? '<p class="mt-now">✨ Right now is ' + esc(good.join(" and ")) + ".</p>" : "") +
-      '<details class="spot-section mt-glance fold"><summary><h3>At a glance</h3><span class="fold-brief">' + esc(brief) + "</span></summary>" +
+      '<div class="mt-card"><details class="mt-glance"><summary>' +
+        '<span class="mt-head"><h3>At a glance</h3><span class="mt-more"><span class="mt-more-t">Details</span><span class="mt-less-t">Less</span><svg class="mt-chev" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>' +
+        '<span class="mt-facts">' + brief + "</span>" +
+      "</summary>" +
       '<div class="mt-rows">' +
-        row("⏱", "Time", spot.duration || m.estimatedDuration) +
-        row("💶", "Budget", budgetText) +
+        // Time, budget and pace are already in the pills above.
+        (budgetText !== budgetNow ? row("💶", "Budget", budgetText) : "") +
         row("🕐", "Best time", m.bestTimeOfDay) +
         row("📅", "Season", m.bestSeason) +
         row("🌦", "Weather", m.weatherSuitability) +
-        row("🚶", "Pace", m.activityLevel) +
         row("♿", "Access", m.accessibilityLevel === "Unknown" ? "" : m.accessibilityLevel) +
         row("👥", "Good for", m.visitorTypes) +
       "</div>" +
@@ -190,7 +196,8 @@
       scoreBar("🧠", "Knowledge", m.knowledgeValue) +
       scoreBar("📸", "Photo", m.photoValue) +
       (m.guessed ? '<p class="seg-note">Estimated from the place\'s details; not checked yet.</p>' : "") +
-    "</details>";
+    "</details>" +
+    (tags ? '<div class="tags mt-tags">' + tags + "</div>" : "") + "</div>";
   }
 
   // ---------- content checks (browser console) ----------

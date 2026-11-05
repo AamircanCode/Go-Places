@@ -313,10 +313,13 @@
     state.view = "spot";
     history.replaceState(null, "", "#" + id);
 
-    var tags = spot.themes.map(function (tid) {
+    // Themes already show under "Included in collections", so only list them
+    // here when collections are off. Moods and the knowledge group go into
+    // the "At a glance" card.
+    var tags = (COLLECTIONS ? "" : spot.themes.map(function (tid) {
       var t = themeById(tid);
       return t ? '<span class="tag">' + esc(t.emoji) + " " + esc(t.name) + "</span>" : "";
-    }).join("") + (KNOWLEDGE ? KNOWLEDGE.spotTags(spot) : "");
+    }).join("")) + (KNOWLEDGE ? KNOWLEDGE.spotTags(spot, COLLECTIONS ? DATA.themes : null) : "");
 
     var facts = (spot.funFacts || []).map(function (f) { return "<li>" + esc(f) + "</li>"; }).join("");
     var done = !!exploredMap()[id];
@@ -349,8 +352,7 @@
       '<p class="summary">' + esc(spot.summary) + "</p>" +
       (spot.tip ? '<div class="tip">👉 ' + esc(spot.tip) + "</div>" : "") +
       (SUBMIT ? SUBMIT.spotNote(spot) : "") +
-      (META ? META.glance(spot) : "") +
-      '<div class="tags">' + tags + "</div>" +
+      (META ? META.glance(spot, tags) : (tags ? '<div class="tags">' + tags + "</div>" : "")) +
       (KNOWLEDGE ? KNOWLEDGE.spotSections(spot) : "") +
       (DISCOVER ? DISCOVER.spotSection(spot) : "") +
       (spot.history || facts ? '<details class="spot-section fold"><summary><h3>History' + (facts ? " &amp; fun facts" : "") + "</h3></summary>" +
