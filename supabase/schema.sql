@@ -743,15 +743,25 @@ create policy "collection saves: own only" on public.collection_saves
 
 -- ---------- reviewers ----------
 create table if not exists public.reviewers (
-  user_id   uuid primary key references public.profiles (id) on delete cascade,
-  added_at  timestamptz not null default now()
+  user_id      uuid primary key references public.profiles (id) on delete cascade,
+  added_at     timestamptz not null default now(),
+  -- may publish their own places and photos straight away, without review.
+  -- Only @aamiradmin (see "reviewer" at the end of this section).
+  can_publish  boolean not null default false
 );
+alter table public.reviewers add column if not exists can_publish boolean not null default false;
 
 create or replace function public.is_reviewer()
 returns boolean language sql stable security definer set search_path = '' as $$
   select exists (select 1 from public.reviewers where user_id = (select auth.uid()));
 $$;
 grant execute on function public.is_reviewer() to anon, authenticated;
+
+create or replace function public.can_publish()
+returns boolean language sql stable security definer set search_path = '' as $$
+  select exists (select 1 from public.reviewers where user_id = (select auth.uid()) and can_publish);
+$$;
+grant execute on function public.can_publish() to anon, authenticated;
 
 -- ---------- submissions ----------
 create table if not exists public.submissions (
@@ -799,20 +809,28 @@ create index if not exists submissions_status_idx on public.submissions (status,
 create index if not exists submissions_city_idx on public.submissions (city, status);
 create index if not exists submissions_user_idx on public.submissions (user_id, created_at desc);
 
--- New suggestions always start as pending, and a new place gets its id.
--- At most 20 pending
--- suggestions per person, to keep the queue manageable.
+-- New suggestions start as pending, and a new place gets its id. At most 20
+-- pending suggestions per person, to keep the queue manageable.
+-- The one exception: what a reviewer with can_publish (@aamiradmin) adds is
+-- approved straight away. The app can't ask for this; the database decides
+-- from who is signed in.
 create or replace function public.prepare_submission()
 returns trigger language plpgsql security definer set search_path = '' as $$
 begin
-  new.status := 'pending';
   new.review_note := null;
-  new.reviewed_by := null;
-  new.reviewed_at := null;
   new.created_at := now();
   if new.kind = 'place' then
     new.spot_id := 'c-' || left(replace(new.id::text, '-', ''), 10);
   end if;
+  if new.user_id = (select auth.uid()) and public.can_publish() then
+    new.status := 'approved';
+    new.reviewed_by := new.user_id;
+    new.reviewed_at := now();
+    return new;
+  end if;
+  new.status := 'pending';
+  new.reviewed_by := null;
+  new.reviewed_at := null;
   if (select count(*) from public.submissions where user_id = new.user_id and status = 'pending') >= 20 then
     raise exception 'You have 20 suggestions waiting for review. Please wait until some are reviewed.';
   end if;
@@ -960,17 +978,19 @@ create policy "submissions: remove own or as reviewer" on storage.objects
   );
 
 -- ---------- reviewer ----------
--- @aamiradmin is the reviewer. If that account doesn't exist yet when this
--- runs, sign up with that username first and run the file again.
+-- @aamiradmin is the reviewer, and the only account that can publish places
+-- and photos without review (can_publish). If that account doesn't exist yet
+-- when this runs, sign up with that username first and run the file again.
 --
--- To add another reviewer, run this on its own in the SQL Editor with their
--- username:
+-- To add another reviewer (who can approve and reject, but whose own
+-- suggestions still go through review), run this on its own in the SQL
+-- Editor with their username:
 --   insert into public.reviewers (user_id)
 --   select id from public.profiles where username = 'their_username'
 --   on conflict do nothing;
 -- To remove one:
 --   delete from public.reviewers
 --   where user_id = (select id from public.profiles where username = 'their_username');
-insert into public.reviewers (user_id)
-select id from public.profiles where username = 'aamiradmin'
-on conflict do nothing;
+insert into public.reviewers (user_id, can_publish)
+select id, true from public.profiles where username = 'aamiradmin'
+on conflict (user_id) do update set can_publish = true;

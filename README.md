@@ -113,6 +113,8 @@ Photos are shrunk, stripped of their location data and stamped with "© Go Place
 
 This needs the "submissions" part of [`supabase/schema.sql`](supabase/schema.sql): paste the whole file into the SQL Editor and run it again. Until then the ＋ button stays hidden. The file makes **@aamiradmin** the reviewer; if that account doesn't exist yet, sign up with that username and run the file again. The end of the file shows how to add or remove other reviewers. Nobody can make themselves a reviewer from the app.
 
+**@aamiradmin can also publish directly.** Places and photos that account adds skip the queue and go live straight away (the form says **Publish** instead of *Send for review*, and the photo tick box says *Also add it to this place's page*). The database decides this from who is signed in (`can_publish` in the `reviewers` table), so no other account can do it, other reviewers included.
+
 ## Accounts (optional, free)
 
 With accounts switched on, people can:

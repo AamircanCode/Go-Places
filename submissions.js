@@ -8,6 +8,9 @@
  *   approved place   shows on the map for everyone, like any other spot
  *   approved photo   shows on its place's page for everyone
  *
+ * The one exception is @aamiradmin (can_publish in the reviewers table):
+ * what that account adds is approved by the database straight away.
+ *
  * Only reviewers see who sent a suggestion; it isn't shown with approved
  * places and photos. Photos are shrunk, stripped of their
  * location data and stamped "© Go Places" on the phone, before upload.
@@ -37,6 +40,8 @@
   var added = {};             // spotId -> true for places added from suggestions
   var addedPhotos = {};       // submission id -> true for photos already on a spot
   var reviewer = false;
+  var publisher = false;      // may publish without review (only @aamiradmin; the database decides)
+  var last = null;            // the suggestion just sent
   var pendingCount = 0;
   var mine = [];              // your own suggestions, newest first
   var draft = null;           // the place being suggested
@@ -108,13 +113,14 @@
 
   // ---------- your role and your suggestions ----------
   function loadMine() {
-    if (!ready || !ACCT.user) { reviewer = false; mine = []; pendingCount = 0; showDot(); return Promise.resolve(); }
+    if (!ready || !ACCT.user) { reviewer = false; publisher = false; mine = []; pendingCount = 0; showDot(); return Promise.resolve(); }
     var uid = ACCT.user.id;
     return Promise.all([
-      sb.from("reviewers").select("user_id").eq("user_id", uid).maybeSingle().then(check),
+      sb.from("reviewers").select("*").eq("user_id", uid).maybeSingle().then(check),
       sb.from("submissions").select("*").eq("user_id", uid).order("created_at", { ascending: false }).then(check)
     ]).then(function (r) {
       reviewer = !!r[0];
+      publisher = !!(r[0] && r[0].can_publish);
       mine = r[1];
       return reviewer ? countPending() : 0;
     }).then(function () {
@@ -256,8 +262,11 @@
   function openForm() {
     if (!signedIn()) { app.openSignIn("Sign in to suggest a place for the map."); return; }
     app.show(
-      '<h2 class="list-title">Suggest a place</h2>' +
-      '<p class="list-desc">Know a free spot that should be on the map? Tell us about it. It\'s checked before it appears, and your name isn\'t shown with it.</p>' +
+      (publisher
+        ? '<h2 class="list-title">Add a place</h2>' +
+          '<p class="list-desc">As the reviewer, what you add goes on the map straight away, without review.</p>'
+        : '<h2 class="list-title">Suggest a place</h2>' +
+          '<p class="list-desc">Know a free spot that should be on the map? Tell us about it. It\'s checked before it appears, and your name isn\'t shown with it.</p>') +
       '<form class="form" id="suggest-form">' +
         '<div class="pin-line"><span>📌 Pin at ' + draft.lat.toFixed(5) + ", " + draft.lng.toFixed(5) + "</span>" +
           '<button class="btn small" type="button" id="move-pin">Move pin</button></div>' +
@@ -266,7 +275,7 @@
         '<div class="upload-preview" id="suggest-preview" hidden></div>' +
         '<p class="privacy-note">🔒 Photos are resized, their hidden location (GPS) and camera data are removed, and they get the “© Go Places” mark before upload.</p>' +
         '<p class="form-msg" role="alert"></p>' +
-        '<div class="actions"><button class="btn primary" type="submit">Send for review</button>' +
+        '<div class="actions"><button class="btn primary" type="submit">' + sendLabel() + "</button>" +
           '<button class="btn" type="button" id="suggest-cancel">Cancel</button></div>' +
       "</form>",
       "suggest"
@@ -300,10 +309,12 @@
       }, function (err) {
         msg.textContent = errText(err);
         btn.disabled = false;
-        btn.textContent = "Send for review";
+        btn.textContent = sendLabel();
       });
     });
   }
+
+  function sendLabel() { return publisher ? "Publish" : "Send for review"; }
 
   function showPreview(file) {
     var box = document.getElementById("suggest-preview");
@@ -333,6 +344,7 @@
       });
     }).then(function (saved) {
       mine.unshift(saved);
+      last = saved;
       return saved;
     });
   }
@@ -356,6 +368,11 @@
   }
 
   function openThanks(kind) {
+    // published straight away (only for @aamiradmin): show it where it lives
+    if (last && last.status === "approved") {
+      var id = last.spot_id;
+      return loadApproved().then(function () { app.openSpot(id); });
+    }
     app.show(
       '<h2 class="list-title">Thanks!</h2>' +
       '<p class="list-desc">Your ' + (kind === "place" ? "place" : "photo") + " is waiting for review. Once it's approved it shows up for everyone. You can follow it under “My suggestions” on your profile.</p>" +
@@ -741,6 +758,10 @@
     // The tick box on the "Add photo" screen of a spot.
     uploadOption: function () {
       if (!ready) return "";
+      if (publisher) {
+        return '<label class="toggle"><input type="checkbox" name="suggest"><span><b>Also add it to this place\'s page</b><br>' +
+          "It goes live for everyone straight away, with the “© Go Places” mark.</span></label>";
+      }
       return '<label class="toggle"><input type="checkbox" name="suggest"><span><b>Also suggest it for this place\'s page</b><br>' +
         "After review it can be shown to everyone, with the “© Go Places” mark and without your name.</span></label>";
     },
