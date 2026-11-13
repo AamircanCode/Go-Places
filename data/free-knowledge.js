@@ -142,11 +142,16 @@
     bookshelf({
       id: "bookshelf-rudi-hierl-platz",
       name: "Bookshelf at Rudi-Hierl-Platz",
-      lat: 48.14760, lng: 11.55860, // approximate
+      lat: 48.14859, lng: 11.55906, // from the photos' GPS data
       address: "Rudi-Hierl-Platz, near Stiglmaierplatz, Maxvorstadt",
-      summary: "A real insider tip: a bookshelf on a small square near Stiglmaierplatz with plenty of benches.",
-      whyVisit: "Close to the museums of the Kunstareal but much quieter. Pick a book here, then walk on to the free museums around Königsplatz.",
-      tags: ["Reading", "Literature", "Community", "Sustainability", "Hidden Gem"]
+      summary: "A real insider tip: a grey glass-fronted bookshelf under the plane trees of a small square near Stiglmaierplatz, with plenty of benches and three table tennis tables right next to it.",
+      whyVisit: "Close to the museums of the Kunstareal but much quieter. Pick a book, read the first pages on one of the long benches, then walk on to the free museums around Königsplatz.",
+      tags: ["Reading", "Literature", "Community", "Sustainability", "Hidden Gem"],
+      nearby: ["rudi-hierl-platz-table-tennis", "koenigsplatz"],
+      photos: [
+        { url: "images/bookshelf-rudi-hierl-platz-1.jpg", credit: "Photo: Go Places community" },
+        { url: "images/bookshelf-rudi-hierl-platz-2.jpg", credit: "Photo: Go Places community" }
+      ]
     }),
     bookshelf({
       id: "bookshelf-lenbachhaus",

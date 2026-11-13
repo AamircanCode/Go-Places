@@ -462,6 +462,21 @@ window.GO_PLACES_LAYER.activities = [
     "images": []
   },
   {
+    "id": "play-table-tennis",
+    "title": "Play table tennis outdoors",
+    "emoji": "🏓",
+    "description": "Bring bats and a ball to Rudi-Hierl-Platz: three free outdoor tables under the trees, benches all around for whoever is waiting or watching, and a public bookshelf on the same square for the breaks.",
+    "category": "Adventure",
+    "duration": "About 1 hour",
+    "durationMinutes": 60,
+    "cost": 0,
+    "moodTags": ["be-active", "socialize", "date"],
+    "bestTime": "Late afternoon and early evening",
+    "season": ["spring", "summer", "autumn"],
+    "placeIds": ["rudi-hierl-platz-table-tennis", "bookshelf-rudi-hierl-platz"],
+    "images": ["images/rudi-hierl-platz-table-tennis-2.jpg"]
+  },
+  {
     "id": "shoot-hoops",
     "title": "Shoot hoops on a free court",
     "emoji": "🏀",
@@ -491,4 +506,5 @@ window.GO_PLACES_LAYER.activities = [
     "placeIds": ["bookshelf-lenbachhaus", "lenbachhaus-garden", "lenbachhaus-lounge"],
     "images": ["images/lenbachhaus-garden-1.jpg"]
   }
+
 ];
