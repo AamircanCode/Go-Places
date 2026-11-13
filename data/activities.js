@@ -450,7 +450,7 @@ window.GO_PLACES_LAYER.activities = [
     "id": "remembrance-walk",
     "title": "Remembrance walk through Nazi-era Munich",
     "emoji": "🕯️",
-    "description": "Munich was the 'capital of the movement'. Follow its traces: the Feldherrnhalle and the shirkers' lane, the eternal flame on Brienner Straße, the free NS Documentation Centre and the White Rose courtroom.",
+    "description": "Munich was the 'capital of the movement'. Follow its traces: the Feldherrnhalle and the shirkers' lane, the eternal flame on Brienner Straße, the free NS Documentation Centre, the book-burning memorial on Königsplatz and the White Rose courtroom.",
     "category": "History",
     "duration": "About 2 hours",
     "durationMinutes": 120,
@@ -458,7 +458,7 @@ window.GO_PLACES_LAYER.activities = [
     "moodTags": ["learn"],
     "bestTime": "Weekdays, so the courtroom is open",
     "season": ["spring", "summer", "autumn", "winter"],
-    "placeIds": ["feldherrnhalle", "ns-victims-memorial", "ns-dokuzentrum", "koenigsplatz", "justizpalast", "altes-rathaus"],
+    "placeIds": ["feldherrnhalle", "ns-victims-memorial", "ns-dokuzentrum", "koenigsplatz", "book-burning-memorial", "justizpalast", "altes-rathaus"],
     "images": []
   },
   {
@@ -475,5 +475,36 @@ window.GO_PLACES_LAYER.activities = [
     "season": ["spring", "summer", "autumn"],
     "placeIds": ["rudi-hierl-platz-table-tennis", "bookshelf-rudi-hierl-platz"],
     "images": ["images/rudi-hierl-platz-table-tennis-2.jpg"]
+  },
+  {
+    "id": "shoot-hoops",
+    "title": "Shoot hoops on a free court",
+    "emoji": "🏀",
+    "description": "Bring a ball to Karl-Stützel-Platz near the main station: a free court under big trees, right behind the giant red ring where skaters ride the ledges. Or head out to the court and outdoor gym at Olympiapark.",
+    "category": "Adventure",
+    "duration": "About 1 hour",
+    "durationMinutes": 60,
+    "cost": 0,
+    "moodTags": ["be-active", "socialize"],
+    "bestTime": "Late afternoon and early evening",
+    "season": ["spring", "summer", "autumn"],
+    "placeIds": ["karl-stuetzel-platz-basketball", "karl-stuetzel-platz-ring", "olympiapark-sports"],
+    "images": ["images/karl-stuetzel-platz-basketball-1.jpg"]
+  },
+  {
+    "id": "art-book-and-garden",
+    "title": "Borrow an art book and read it in a villa garden",
+    "emoji": "🎨",
+    "description": "Pick a free art book from the red public bookshelf beside the Lenbachhaus, then walk through the museum to its free Italian-style garden and read among the fountains and statues. Finish under the lights of the wooden lounge on the forecourt.",
+    "category": "Culture",
+    "duration": "About 1 hour",
+    "durationMinutes": 60,
+    "cost": 0,
+    "moodTags": ["relax", "learn", "date"],
+    "bestTime": "Late afternoon, before the museum closes",
+    "season": ["spring", "summer", "autumn"],
+    "placeIds": ["bookshelf-lenbachhaus", "lenbachhaus-garden", "lenbachhaus-lounge"],
+    "images": ["images/lenbachhaus-garden-1.jpg"]
   }
+
 ];
