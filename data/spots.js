@@ -1192,6 +1192,35 @@ window.GO_PLACES = {
       ],
       nearby: ["nymphenburg-canal"],
       photos: []
+    },
+    {
+      id: "rudi-hierl-platz-table-tennis",
+      name: "Table tennis and benches at Rudi-Hierl-Platz",
+      emoji: "🏓",
+      lat: 48.14867, lng: 11.55906, // from the photos' GPS data, at the tables
+      themes: ["outdoors", "side-quests"],
+      cost: "Free",
+      when: "Daylight, spring to autumn; the square is lit in the evening",
+      summary: "Three free outdoor table tennis tables on a leafy square near Stiglmaierplatz, with long benches all around under the plane trees and a public bookshelf a few steps away.",
+      history: "Rudi-Hierl-Platz is a small tree-lined square on the edge of Maxvorstadt, across the road from the Löwenbräukeller at Stiglmaierplatz. Munich has put concrete table tennis tables into many of its squares and parks, free for anyone to use.",
+      funFacts: [
+        "There are three tables, so even on a busy evening you rarely wait long for a game.",
+        "The square is full of benches: long concrete and wooden seats line the paths and ring the trees.",
+        "The open bookshelf on the same square means you can swap a book between games."
+      ],
+      tip: "Bring your own bats and a ball: the tables are always there, the equipment isn't.",
+      around: [
+        "Take or leave a book at the bookshelf on the same square.",
+        "Walk ten minutes east to Königsplatz and the free museums of the Kunstareal.",
+        "The Löwenbräukeller beer garden is right across Stiglmaierplatz."
+      ],
+      nearby: ["bookshelf-rudi-hierl-platz", "koenigsplatz"],
+      photos: [
+        { url: "images/rudi-hierl-platz-table-tennis-1.jpg", credit: "Photo: Go Places community" },
+        { url: "images/rudi-hierl-platz-table-tennis-2.jpg", credit: "Photo: Go Places community" },
+        { url: "images/rudi-hierl-platz-table-tennis-3.jpg", credit: "Photo: Go Places community" },
+        { url: "images/rudi-hierl-platz-table-tennis-4.jpg", credit: "Photo: Go Places community" }
+      ]
     }
   ]
 };
