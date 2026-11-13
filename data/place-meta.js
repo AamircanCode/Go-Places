@@ -79,6 +79,7 @@ window.GO_PLACES_LAYER = window.GO_PLACES_LAYER || {};
     "viktualienmarkt":     m("1 Hour", ["Morning", "Afternoon"], ["All Year"], OUTDOOR, ["Tourists", "Friends", "Couples", "Families", "Locals"], "Relaxed", 2, 4, 7, "Step-free", "Free"),
     "olympiaberg":         m("1 Hour", ["Sunset", "Morning"], ["Spring", "Summer", "Autumn"], ["Sunny"], ["Friends", "Couples", "Families", "Students", "Locals", "Solo"], "Moderate", 4, 4, 10, "Partly step-free", "Free"),
     "olympiapark-sports":  m("1 Hour", ["Morning", "Afternoon"], ["Spring", "Summer", "Autumn"], OUTDOOR, ["Friends", "Families", "Students", "Locals", "Solo"], "Active", 6, 1, 4, "Step-free", "Free"),
+    "rudi-hierl-platz-table-tennis": m("1 Hour", ["Afternoon", "Evening"], ["Spring", "Summer", "Autumn"], OUTDOOR, ["Friends", "Couples", "Students", "Locals"], "Moderate", 8, 1, 5, "Step-free", "Free"),
     "nymphenburg-monopteros": m("1 Hour", ["Afternoon", "Sunset"], ["All Year"], ["Sunny", "Cloudy", "Snow"], ["Couples", "Families", "Solo", "Locals"], "Relaxed", 7, 5, 9, "Partly step-free", "Free"),
     "wittelsbacherplatz":  m("15 Minutes", ["Evening", "Night"], ["All Year"], OUTDOOR, ["Solo", "Couples", "Students"], "Very Relaxed", 6, 6, 7, "Step-free", "Free"),
     "botanischer-garten":  m("2 Hours", ["Morning", "Afternoon"], ["Autumn", "Winter"], OUTDOOR, ["Couples", "Families", "Solo", "Students"], "Relaxed", 5, 7, 8, "Step-free", "Under 10€", { budgetBySeason: { "Winter": "Free" } }),
