@@ -150,15 +150,27 @@
     }),
     bookshelf({
       id: "bookshelf-lenbachhaus",
-      name: "Lenbachhaus Kunstbücherschrank",
+      name: "Public art bookshelf at the Lenbachhaus",
       emoji: "🎨",
-      lat: 48.14680, lng: 11.56370, // approximate
-      address: "Luisenstraße 33, in front of the Lenbachhaus, Maxvorstadt",
-      summary: "An 'art bookshelf' in front of the Lenbachhaus art museum, for books about art, artists and design.",
-      whyVisit: "Art books are expensive. Here you can take one home for free, and the Königsplatz and its free museums are right around the corner.",
+      lat: 48.14653, lng: 11.56385, // from the photos' GPS data, at the shelf
+      address: "Luisenstraße 33, on the forecourt of the Lenbachhaus, Maxvorstadt",
+      summary: "A free public bookshelf in a bright red glass cabinet on the lawn beside the Lenbachhaus, open around the clock. Like any open bookshelf, anyone can take or leave a book, but this one is stocked mostly with books about art.",
+      whyVisit: "Art books and exhibition catalogues are expensive. Here you can take one home for free, keep it or bring it back, and the free museums of Königsplatz are around the corner.",
       tags: ["Reading", "Art", "Community", "Sustainability", "Knowledge"],
       knowledge: ["public-bookshelves", "public-art", "learning-experiences"],
-      visitorInfo: "Best for art books, catalogues and books about design and architecture. Take a book, leave a book."
+      visitorInfo: "Open 24 hours, free. Take any book that sparks your interest, keep it or bring it back, and feel free to add an art book you'd like others to discover. The museum's library staff look after the shelf (bibliothek-lenbachhaus@muenchen.de). Ordinary books, novels and films turn up here too.",
+      tip: "Look at the free-standing painted wall right next to the shelf: the Lenbachhaus uses it as a giant poster for its current show (Maria Jarema, until 25 April 2027), so the artwork changes with each exhibition.",
+      around: [
+        "Sit in the lit wooden lounge on the same forecourt, with a view of the museum and the buildings around it.",
+        "Go through the museum to the Lenbachhaus garden, with its fountains, statues and benches.",
+        "Walk two minutes to Königsplatz and the free book-burning memorial in front of the Antikensammlungen."
+      ],
+      nearby: ["lenbachhaus-lounge", "lenbachhaus-garden", "koenigsplatz", "book-burning-memorial"],
+      photos: [
+        { url: "images/bookshelf-lenbachhaus-1.jpg", credit: "Photo: Go Places community" },
+        { url: "images/bookshelf-lenbachhaus-2.jpg", credit: "Photo: Go Places community" },
+        { url: "images/bookshelf-lenbachhaus-3.jpg", credit: "Photo: Go Places community" }
+      ]
     }),
     bookshelf({
       id: "bookshelf-volkartstrasse",

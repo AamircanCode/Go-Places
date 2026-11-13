@@ -241,17 +241,171 @@ window.GO_PLACES = {
       id: "koenigsplatz",
       name: "Königsplatz",
       emoji: "🏺",
-      lat: 48.14580, lng: 11.56550,
+      lat: 48.14580, lng: 11.56550, // centre of the square; the photos' GPS data puts all three buildings around this pin
       themes: ["architecture"],
       cost: "Free",
       when: "Any time; summer evenings often have open-air events",
-      summary: "A huge square framed by Greek-style buildings, the heart of King Ludwig I's 'Athens on the Isar'.",
-      history: "Ludwig I wanted Munich to be a city of art and learning. In the 19th century Leo von Klenze and others built the Glyptothek, the Propylaea gate and the State Collection of Antiquities around this square. In the 1930s the Nazis paved it over for rallies; the grass was restored in the 1980s.",
+      summary: "A huge square framed by Greek-style buildings, the heart of King Ludwig I's 'Athens on the Isar': the Propylaea gate to the west, the Glyptothek to the north and the State Collection of Antiquities to the south.",
+      history: "Ludwig I wanted Munich to be a city of art and learning. In the 19th century Leo von Klenze and others built the Glyptothek, the Propylaea gate and the State Collection of Antiquities around this square. In the 1930s the Nazis paved it over for rallies, and on 10 May 1933 students burned books here. The grass was restored in the 1980s, and since 2021 a memorial in the paving in front of the Antikensammlungen recalls the book burning.",
       funFacts: [
         "The Glyptothek was Munich's first public museum.",
-        "The Propylaea gate celebrates Ludwig's son Otto becoming King of Greece."
+        "The Propylaea gate celebrates Ludwig's son Otto becoming King of Greece.",
+        "The three buildings show three Greek column styles: Doric on the Propylaea, Ionic on the Glyptothek and Corinthian on the Antikensammlungen.",
+        "Walk right through the Propylaea: the cobbles at its feet are laid in a fan-shaped pattern."
       ],
-      photos: []
+      tip: "Stand on the round memorial in front of the Antikensammlungen and read the spiral of book titles from the outside in.",
+      around: [
+        "Read the book-burning memorial in front of the Antikensammlungen.",
+        "Swap an art book at the public bookshelf beside the Lenbachhaus, two minutes west.",
+        "Visit the free NS Documentation Centre on the east side of the square."
+      ],
+      nearby: ["book-burning-memorial", "bookshelf-lenbachhaus", "lenbachhaus-garden", "ns-dokuzentrum"],
+      photos: [
+        { url: "images/koenigsplatz-1.jpg", credit: "Photo: Go Places community" },
+        { url: "images/koenigsplatz-2.jpg", credit: "Photo: Go Places community" },
+        { url: "images/book-burning-memorial-1.jpg", credit: "Photo: Go Places community" },
+        { url: "images/koenigsplatz-3.jpg", credit: "Photo: Go Places community" }
+      ]
+    },
+    {
+      id: "book-burning-memorial",
+      name: "Book-burning memorial 'The Blacklist' at Königsplatz",
+      emoji: "📜",
+      lat: 48.14533, lng: 11.56505, // from the photo's GPS data, in front of the Antikensammlungen steps
+      themes: ["side-quests"],
+      cost: "Free",
+      when: "Any time, in daylight to read the letters",
+      summary: "A round disc set into the ground in front of the State Collection of Antiquities, engraved with a spiral of book titles by authors the Nazis banned. It marks the spot where books were burned on 10 May 1933.",
+      history: "On 10 May 1933 Nazi students burned books on Königsplatz, as in many German university towns that night. In 2016 the city council decided to remember it, and the Berlin artist Arnold Dreyblatt won the competition. His work 'The Blacklist / Die Schwarze Liste' was installed in 2021: an 8-metre circle of dyed concrete, flush with the ground, with about 9,600 letters set into it in a spiral.",
+      funFacts: [
+        "The spiral lists the last book up to 1933 by each of 310 banned and persecuted authors.",
+        "The titles run together without punctuation, so words collide and form new phrases as you read.",
+        "The spiral is meant to recall the smoke and curling pages seen in photographs of the book burnings.",
+        "The name refers to the 'blacklists' of unwanted literature drawn up in spring 1933."
+      ],
+      tip: "A plaque nearby points to the NS Documentation Centre's website, which lists every title and author on the disc.",
+      around: [
+        "Walk round the square to the Glyptothek and through the Propylaea gate.",
+        "The free NS Documentation Centre is a few minutes east.",
+        "Swap a book at the public art bookshelf beside the Lenbachhaus."
+      ],
+      nearby: ["koenigsplatz", "ns-dokuzentrum", "bookshelf-lenbachhaus"],
+      photos: [
+        { url: "images/book-burning-memorial-1.jpg", credit: "Photo: Go Places community" }
+      ]
+    },
+    {
+      id: "lenbachhaus-garden",
+      name: "Lenbachhaus garden",
+      emoji: "⛲",
+      lat: 48.14678, lng: 11.56401, // from the photos' GPS data, middle of the garden
+      themes: ["side-quests", "architecture"],
+      cost: "Free (you walk through the museum to get there; the exhibitions are paid)",
+      when: "Museum opening hours, Tuesday to Sunday (closed Mondays)", // VERIFY: opening hours
+      summary: "The Italian-style garden of painter Franz von Lenbach's golden villa: fountains, statues, clipped hedges, benches and a shady pergola looking over the Königsplatz area. The museum charges for its exhibitions, but the garden is free; you reach it through the museum.",
+      history: "Franz von Lenbach, the celebrated 'painter prince' of 19th-century Munich, had this villa built in 1887–1891 by Gabriel von Seidl, in the style of a Tuscan country house, with a formal garden in front. His widow sold it to the city in 1924, and it opened as the Städtische Galerie im Lenbachhaus in 1929. Today it is famous for the Blue Rider painters (Kandinsky, Marc, Münter), and a Foster + Partners extension opened in 2013.",
+      funFacts: [
+        "The garden is laid out like an Italian villa garden, with balustrades, gravel paths and hedges cut into squares.",
+        "One fountain is guarded by stone horse-like sea creatures; another has a dancing bronze figure in a round pool ringed with stone benches.",
+        "From the pergola at the top of the steps you look out over the treetops towards Luisenstraße and the Königsplatz area.",
+        "Gabriele Münter gave the city her huge Blue Rider collection in 1957, which made the Lenbachhaus world-famous."
+      ],
+      tip: "Tell the front desk you're only going to the garden. Come in late afternoon, when the villa's windows glow and the benches are quiet.",
+      around: [
+        "Take a free art book from the red public bookshelf on the forecourt.",
+        "Sit in the lit wooden lounge in front of the museum.",
+        "Walk on to Königsplatz and the book-burning memorial, two minutes away."
+      ],
+      nearby: ["bookshelf-lenbachhaus", "lenbachhaus-lounge", "koenigsplatz", "book-burning-memorial"],
+      photos: [
+        { url: "images/lenbachhaus-garden-1.jpg", credit: "Photo: Go Places community" },
+        { url: "images/lenbachhaus-garden-2.jpg", credit: "Photo: Go Places community" },
+        { url: "images/lenbachhaus-garden-3.jpg", credit: "Photo: Go Places community" },
+        { url: "images/lenbachhaus-garden-4.jpg", credit: "Photo: Go Places community" },
+        { url: "images/lenbachhaus-garden-5.jpg", credit: "Photo: Go Places community" },
+        { url: "images/lenbachhaus-garden-6.jpg", credit: "Photo: Go Places community" },
+        { url: "images/lenbachhaus-garden-7.jpg", credit: "Photo: Go Places community" },
+        { url: "images/lenbachhaus-garden-8.jpg", credit: "Photo: Go Places community" }
+      ]
+    },
+    {
+      id: "lenbachhaus-lounge",
+      name: "Lit wooden lounge outside the Lenbachhaus",
+      emoji: "🪵",
+      lat: 48.14647, lng: 11.56367, // from the photo's GPS data, a few steps west of where it was taken
+      themes: ["side-quests"],
+      cost: "Free",
+      when: "Any time; nicest at dusk when the lights come on",
+      summary: "A wooden seating platform under a glass roof with planters and warm lights, on the lawn in front of the Lenbachhaus. A calm place to sit, with a view of the museum and the grand buildings around Königsplatz.",
+      history: "The forecourt of the Lenbachhaus faces Luisenstraße, between the museum and the Kunstareal around Königsplatz. The lounge sits beside the museum's red public art bookshelf, so it's a natural place to start a book you've just picked up.",
+      funFacts: [
+        "Glowing light posts line the path from the bookshelf to the lounge, so it is lit after dark.",
+        "The public art bookshelf is a few steps away and open around the clock."
+      ],
+      tip: "Grab an art book from the red bookshelf and read it here as the lights come on.",
+      around: [
+        "Take or leave an art book at the public bookshelf next door.",
+        "Go through the museum to the free Lenbachhaus garden.",
+        "Walk two minutes to Königsplatz."
+      ],
+      nearby: ["bookshelf-lenbachhaus", "lenbachhaus-garden", "koenigsplatz"],
+      photos: [
+        { url: "images/lenbachhaus-lounge-1.jpg", credit: "Photo: Go Places community" }
+      ]
+    },
+    {
+      id: "karl-stuetzel-platz-ring",
+      name: "Kunstplattform: the giant red ring at Karl-Stützel-Platz",
+      emoji: "⭕",
+      lat: 48.14235, lng: 11.56178, // from the photos' GPS data (about ±15 m), at the ring
+      themes: ["side-quests", "architecture"],
+      cost: "Free",
+      when: "Any time; skaters come in the afternoons and evenings",
+      summary: "A huge rust-red steel ring standing on its edge on a paved platform at the west end of the Old Botanical Garden, with skate ledges all around it. A striking photo spot and a free skate area in the middle of the city.",
+      history: "The ring is by the Italian sculptor Mauro Staccioli (1937–2018), who made giant, simple geometric shapes for public spaces all over Europe. It has stood on Karl-Stützel-Platz since 1996, between the Old Botanical Garden and the busy streets north of the main station.",
+      funFacts: [
+        "Staccioli's rings and arcs are meant to frame the place they stand in: look through it and the trees and buildings become a picture.",
+        "The concrete ledges and the smooth stone platform under the ring make it a favourite spot for skaters.",
+        "A free basketball court and a treehouse-style kiosk with a raised walkway are just behind it."
+      ],
+      tip: "Line up the ring with the trees behind it for the best photo, and stand back from the skate ledges.",
+      around: [
+        "Shoot some hoops on the free basketball court just behind the ring.",
+        "Walk through the Old Botanical Garden to the Neptune Fountain.",
+        "The Lenbachhaus and Königsplatz are about ten minutes north."
+      ],
+      nearby: ["karl-stuetzel-platz-basketball", "bookshelf-lenbachhaus", "koenigsplatz"],
+      photos: [
+        { url: "images/karl-stuetzel-platz-ring-1.jpg", credit: "Photo: Go Places community" },
+        { url: "images/karl-stuetzel-platz-ring-2.jpg", credit: "Photo: Go Places community" },
+        { url: "images/karl-stuetzel-platz-ring-3.jpg", credit: "Photo: Go Places community" }
+      ]
+    },
+    {
+      id: "karl-stuetzel-platz-basketball",
+      name: "Basketball court at Karl-Stützel-Platz",
+      emoji: "🏀",
+      lat: 48.14235, lng: 11.56210, // from the photos' GPS data, on the court just east of the ring
+      themes: ["outdoors", "side-quests"],
+      cost: "Free",
+      when: "Daylight, spring to autumn",
+      summary: "A free outdoor basketball court under big trees right behind the giant red ring, with benches and a treehouse-style kiosk next to it.",
+      history: "Karl-Stützel-Platz sits at the west end of the Old Botanical Garden, a few minutes from the main station. Next to Mauro Staccioli's red ring sculpture and its skate platform, the court makes the square one of the few places in the city centre to play for free.",
+      funFacts: [
+        "The court is right next to the skate platform, so it's a lively corner on warm evenings.",
+        "There's no booking and no fee: bring a ball and play."
+      ],
+      tip: "Bring your own ball: the hoop is always there, the ball isn't.",
+      around: [
+        "Watch the skaters under the giant red ring next door.",
+        "Cool down on a bench in the Old Botanical Garden.",
+        "Walk ten minutes north to the Lenbachhaus and Königsplatz."
+      ],
+      nearby: ["karl-stuetzel-platz-ring", "olympiapark-sports"],
+      photos: [
+        { url: "images/karl-stuetzel-platz-basketball-1.jpg", credit: "Photo: Go Places community" },
+        { url: "images/karl-stuetzel-platz-basketball-2.jpg", credit: "Photo: Go Places community" }
+      ]
     },
     {
       id: "viktualienmarkt",
