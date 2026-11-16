@@ -94,6 +94,27 @@ Wanderly is not a social network: there are **no follower counts, likes, ranking
 
 These need the "social discovery & privacy" part of [`supabase/schema.sql`](supabase/schema.sql): paste the whole file into the SQL Editor and run it again. Until then they stay hidden and everything else works as before. Existing public profiles stay public; private ones stay private.
 
+## Meetups (go places with new people)
+
+Explorers can start a small, temporary meetup for a place, a collection or a theme, and others ask to join. It's how people who haven't met plan to go somewhere together.
+
+- **Start one:** on a place page, **🙋 Go with others › Start a meetup here**; on a collection or theme, **🙋 Go with others**; or **＋ Start a meetup** under **People & feed › Meetups** (`…/#meetups`). Pick a day (up to 30 days ahead), an optional time, a public meeting point, a size (2 to 8, host included) and who can see it (everyone in the city, or only your followers).
+- **Find one:** a **Meetups** strip at the top of the Explorer feed, on the place's or collection's page, and at `…/#meetups`. Links open straight to a meetup: `…/#meetup/<id>`.
+- **Join:** **Ask to join**, with an optional line about yourself. The host sees your name, avatar, interests and that line, and taps **Let in** or **No thanks**. Someone who's declined or removed can't ask for that meetup again.
+- **Chat:** only people who are in see who else is going and the group chat. A pinned card in every chat has the meet-safely tips and the emergency number. The host gets a red number on the profile button when people are waiting.
+- **Changes:** the host can edit the details (members get a note in the chat when the day, time or meeting point changes), remove people or cancel. Anyone can leave.
+- **No dead rooms:** a meetup locks the day after its date (the chat becomes read-only) and is deleted, with its chat, 7 days later.
+
+**Safety, all enforced by the database, not just the app:**
+
+- To join you need a confirmed email, no suspension, and a one-time step: "I'm 18 or older" plus the meet-safely tips (`…/#meetups-safety`). To host, the account must also be at least 3 days old. Signed-out visitors don't see meetups at all.
+- Rooms show only a **meetup card**: username, display name, emoji avatar and interests, never emails. Private profiles can join and host too. When asking to join (or starting a meetup), people can tick extras to share with that one meetup: bio, badges, places explored, activities done. The host sees them with the request, and members once they're in; **🪪 Change** on the meetup page edits it. Everything else on a private profile stays private. Before a message, intro or meeting point that looks like a phone number, email, street address or outside contact is sent, the app asks "Send anyway?".
+- **Report** a meetup, a person or a message (with a reason); **block** someone, which hides your meetups from each other, removes them from yours and you from theirs, and stops new requests. They aren't told.
+- Limits per person: 3 upcoming meetups hosted at a time (and 5 started a day), 10 join requests a day, 20 messages a minute, 10 reports a day.
+- **Moderation:** reviewers get **⚙️ Settings › Contribute › Meetup reports** (`…/#meetup-reports`). Each report shows the reason, the reported message (copied, so it survives deletion) and how often that person has been reported, with **Close meetup**, **Delete message**, **Suspend from meetups**, **Handled** and **Dismiss**. Reviewers can read a meetup's chat only while it has an open report. Suspending someone closes their meetups and takes them out of the rest. Someone needs to check this list regularly.
+
+This needs the "meetup rooms" part of [`supabase/schema.sql`](supabase/schema.sql): paste the whole file into the SQL Editor and run it again. Until then meetups stay hidden. Two optional steps in Supabase: live chat updates use **Realtime** (the file switches it on for the chat table; without it the chat refreshes every 15 seconds), and if you turn on **Integrations › Cron**, old meetups are cleaned up every night (without it they're cleaned up whenever someone starts or joins a meetup, and the app never shows them anyway). Make sure **Authentication › Sign In / Providers › Confirm email** is on, since joining checks for a confirmed email.
+
 ## Getting around
 
 - **Tab bar** at the bottom: **Map**, **Discover** (moods, right now, Plan My Day, collections, hidden gems), **Suggest**, **Explorers** and **Me** (your profile, or Sign in). Suggest and Explorers only show once their parts of `supabase/schema.sql` have been run.
@@ -179,6 +200,7 @@ AR camera view, monthly challenges, a community forum, and local business partne
 - `collections.js`: collections; `data/collections.js`: the Wanderly starter collections
 - `plan.js`: Plan My Day and the route planner; `data/plan.js`: its choices, interests and weights
 - `submissions.js`: suggest a place or photo, and the review queue
+- `meetups.js`: meetup rooms (start, join, chat, report, block, moderation)
 - `lightbox.js`: the full-size photo viewer (tap any photo; swipe or arrow keys to move, Esc or tap to close)
 - `data/spots.js`: all spots and themes
 - `data/activities.js`, `data/hidden-gems.js`, `data/quests.js`, `data/discover.js`: content for the "What can I do?" layer

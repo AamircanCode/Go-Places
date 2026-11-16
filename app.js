@@ -11,6 +11,7 @@
   var COLLECTIONS = window.GoCollections; // collections of places, optional
   var PLAN = window.GoPlan; // Plan My Day, optional
   var SUBMIT = window.GoSubmissions; // suggest a place or photo, and the review queue; optional
+  var MEETUPS = window.GoMeetups; // meetup rooms for places and collections; optional
   var CITIES = window.GO_PLACES_CITIES || { cities: [] }; // data/cities.js
   var STORAGE_KEY = "goplaces.explored";
   var HIDE_KEY = "goplaces.hideExplored"; // "1" when explored places are hidden
@@ -247,6 +248,7 @@
     if (COLLECTIONS) COLLECTIONS.onClose();
     if (PLAN) PLAN.onClose();
     if (SUBMIT) SUBMIT.onClose();
+    if (MEETUPS) MEETUPS.onClose();
     if (location.hash) history.replaceState(null, "", location.pathname + location.search);
     updateTabs();
   }
@@ -360,6 +362,7 @@
         (facts ? '<h4 class="fold-sub">💡 Fun facts</h4><ul>' + facts + "</ul>" : "") + "</details>" : "") +
       aroundBlock(spot) +
       nearbyBlock(spot) +
+      (MEETUPS ? MEETUPS.spotSection(spot) : "") +
       (COLLECTIONS ? COLLECTIONS.spotSection(spot) : "") +
       (SOCIAL ? SOCIAL.ratingSection(spot) : "")
     );
@@ -368,6 +371,7 @@
     wireSpotButtons(spot);
     if (SOCIAL) SOCIAL.afterSpot(spot);
     if (COLLECTIONS) COLLECTIONS.afterSpot(spot);
+    if (MEETUPS) MEETUPS.afterSpot(spot);
   }
 
   function wireSpotButtons(spot) {
@@ -887,7 +891,7 @@
     history.replaceState(null, "", "#settings");
     var shareable = (p.profile_visibility || (p.is_public ? "public" : "private")) !== "private";
     var social = SOCIAL && SOCIAL.ready();
-    var contribute = SUBMIT ? SUBMIT.settingsRows() : "";
+    var contribute = (SUBMIT ? SUBMIT.settingsRows() : "") + (MEETUPS ? MEETUPS.settingsRows() : "");
     var cityId = DATA.cityId || CITIES.current;
     var city = CITIES.cities.filter(function (c) { return c.id === cityId; })[0] || {};
     function row(id, icon, label, value, cls) {
@@ -1025,6 +1029,8 @@
       var data = ACCT.exportData();
       if (COLLECTIONS) Object.assign(data, COLLECTIONS.exportData());
       if (SUBMIT) Object.assign(data, SUBMIT.exportData());
+      (MEETUPS ? MEETUPS.exportData() : Promise.resolve({})).then(function (meetups) {
+      Object.assign(data, meetups);
       var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       var a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
@@ -1033,6 +1039,7 @@
       a.click();
       a.remove();
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+      });
     });
 
     document.getElementById("delete-btn").addEventListener("click", function () {
@@ -1135,6 +1142,7 @@
     else if (state.view === "collections" && COLLECTIONS) COLLECTIONS.rerender();
     else if (state.view === "plan" && PLAN) PLAN.rerender();
     else if (state.view === "submit" && SUBMIT) SUBMIT.rerender();
+    else if (state.view === "meetups" && MEETUPS) MEETUPS.rerender();
   }
 
   ACCT.on && ACCT.on(function (event) {
@@ -1190,6 +1198,7 @@
     else if (COLLECTIONS && COLLECTIONS.route(hash)) { /* handled by collections */ }
     else if (PLAN && PLAN.route(hash)) { /* handled by Plan My Day */ }
     else if (SUBMIT && SUBMIT.route(hash)) { /* handled by suggestions and review */ }
+    else if (MEETUPS && MEETUPS.route(hash)) { /* handled by meetup rooms */ }
     else if (ACCT.enabled && hash === "me") { if (ACCT.user) openProfile(); else openSignIn(); }
     else if (ACCT.enabled && hash === "settings") { if (ACCT.user) openSettings(); else openSignIn(); }
     else if (ACCT.enabled && hash.charAt(0) === "@") openPublicProfile(hash.slice(1).toLowerCase());
@@ -1253,6 +1262,7 @@
   if (COLLECTIONS) COLLECTIONS.init(layerApi("collections"));
   if (PLAN) PLAN.init(layerApi("plan"));
   if (SUBMIT) SUBMIT.init(layerApi("submit"));
+  if (MEETUPS) MEETUPS.init(layerApi("meetups"));
   if (META) META.check(DATA.spots);
 
   // ---------- start ----------
