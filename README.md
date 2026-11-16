@@ -32,7 +32,7 @@ Every city's places come from one file: **[`data/spots.js`](data/spots.js)** for
 
 Spot pages also show **🚶 Around here** (a spot's optional `around` list of things to do nearby) and **📍 Nearby spots**, links to the spot's own `nearby` ids plus the closest other spots within 1.5 km, with walking times.
 
-Photos: put image files into `images/`, run `python3 tools/watermark.py` to stamp "© Wanderly" onto any new ones (already stamped photos are skipped; photos stamped before the rename still read "© Go Places" until they are re-stamped from their originals), and list them in the spot's `photos`, e.g. `{ url: "images/hackerbruecke-1.jpg", credit: "Photo: Aamir" }`. Spots without photos show a coloured card with their emoji.
+Photos: put image files into `images/`, run `python3 tools/watermark.py` to stamp "© Wanderly" onto any new ones (already stamped photos are skipped), and list them in the spot's `photos`, e.g. `{ url: "images/hackerbruecke-1.jpg", credit: "Photo: Aamir" }`. Spots without photos show a coloured card with their emoji.
 
 The site also blocks right-click and long-press "Save image" and dragging on photos ([`protect.js`](protect.js)) and asks search engines not to index them. That stops casual saving, not a determined person (a screenshot or the browser's developer tools still work), which is why the mark is in the photo itself. Keep unstamped originals outside the repo.
 

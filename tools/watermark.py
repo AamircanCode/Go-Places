@@ -23,7 +23,8 @@ import sys
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 TEXT = "© Wanderly"
-MARKER = b"GoPlaces-watermarked"  # kept from before the rename, so older photos are still skipped
+MARKER = b"Wanderly-watermarked"
+OLD_MARKERS = (b"GoPlaces-watermarked",)  # stamped "© Go Places" before the rename
 COPYRIGHT = "Copyright Wanderly. All rights reserved."  # EXIF text is ASCII-only
 FONTS = [
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
@@ -42,7 +43,8 @@ def font(size):
 
 
 def already_marked(im):
-    return MARKER in (im.info.get("comment") or b"")
+    comment = im.info.get("comment") or b""
+    return any(m in comment for m in (MARKER,) + OLD_MARKERS)
 
 
 def stamp(im):
