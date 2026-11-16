@@ -1,5 +1,5 @@
 /*
- * GO PLACES — meetup rooms
+ * WANDERLY — meetup rooms
  * ========================
  * Explorers who want to go somewhere with new people open a small, temporary
  * room for a place, a collection or a theme, on a date. Others ask to join,
@@ -45,7 +45,7 @@
   var WHY = {
     signed_out: "Sign in to join meetups.",
     email: "Confirm your email address first. Check your inbox for the link we sent when you signed up.",
-    suspended: "Your account can't use meetups right now. A Go Places moderator has paused it.",
+    suspended: "Your account can't use meetups right now. A Wanderly moderator has paused it.",
     confirm: "One quick step first: confirm you're 18 or older and read the meet-safely tips.",
     new_account: "New accounts can join meetups straight away, and can host their own after 3 days."
   };
@@ -115,7 +115,7 @@
     if (/[^\s@]+@[^\s@]+\.[a-z]{2,}/i.test(text)) return "an email address";
     if (/(\+|00)?\d[\d\s\-\/().]{7,}\d/.test(text.replace(/\b\d{1,2}[:.]\d{2}\b/g, ""))) return "a phone number";
     if (/\b[\wäöüß.-]*(straße|strasse|str\.|weg|gasse|allee|ring|damm|ufer)\s*\d+/i.test(text)) return "a street address";
-    if (/\b(wa\.me|t\.me|instagram\.com|snapchat|whats\s?app|telegram)\b/i.test(text)) return "a contact outside Go Places";
+    if (/\b(wa\.me|t\.me|instagram\.com|snapchat|whats\s?app|telegram)\b/i.test(text)) return "a contact outside Wanderly";
     return "";
   }
   function okToSend(text) {
@@ -295,10 +295,10 @@
       "<li><b>Get there and back on your own</b>. Don't accept a lift from someone you've just met.</li>" +
       "<li><b>Keep private details private</b> (phone, address, social accounts) until you feel comfortable.</li>" +
       "<li><b>Trust your gut</b>. You can leave at any time, without explaining.</li>" +
-      "<li><b>Report and block</b> anyone who makes you uncomfortable. Reports go to the Go Places moderators.</li>" +
+      "<li><b>Report and block</b> anyone who makes you uncomfortable. Reports go to the Wanderly moderators.</li>" +
       "<li><b>In an emergency, call 112</b>.</li>" +
     "</ul>" +
-    '<p class="seg-note">Go Places can\'t check who people are or guarantee a meetup is safe. Look after yourself and each other.</p>';
+    '<p class="seg-note">Wanderly can\'t check who people are or guarantee a meetup is safe. Look after yourself and each other.</p>';
   }
 
   function openSafety() {
@@ -408,7 +408,7 @@
     show(openRoom, id,
       back() +
       '<h2 class="spot-title">' + esc(room.title) + "</h2>" +
-      '<p class="meta"><a href="' + esc(topicLink) + '">' + esc(topicEmoji(room) + " " + room.topic_title) + "</a></p>" +
+      '<p class="meta meetup-topic-link"><a href="' + esc(topicLink) + '">' + esc(topicEmoji(room) + " " + room.topic_title) + "</a></p>" +
       '<div class="meetup-facts">' +
         "<div><b>📅</b> " + esc(dateLabel(room)) + "</div>" +
         "<div><b>📍</b> " + esc(room.meeting_point) + (directions ? ' · <a target="_blank" rel="noopener" href="' + esc(directions) + '">Directions</a>' : "") + "</div>" +
@@ -417,7 +417,7 @@
       (room.note ? '<p class="summary">' + esc(room.note) + "</p>" : "") +
       (s === "ended" ? '<div class="tip">This meetup has ended. The chat is read-only and will be deleted ' + esc(deleteDay(room)) + ".</div>" : "") +
       (s === "cancelled" ? '<div class="tip">The host cancelled this meetup.</div>' : "") +
-      (s === "closed" ? '<div class="tip">A Go Places moderator closed this meetup.</div>' : "") +
+      (s === "closed" ? '<div class="tip">A Wanderly moderator closed this meetup.</div>' : "") +
       (s === "open" && !hosting && !member && !room.my_status ? statusNote(false) : "") +
       '<div class="actions">' + action + "</div>" +
       ((hosting || member || room.my_status === "requested") && live ?
@@ -575,7 +575,7 @@
     });
   }
 
-  // Go Places collections, themes and public collections in an account.
+  // Wanderly collections, themes and public collections in an account.
   function canHaveMeetups(c) {
     if (!c) return false;
     if (c.kind === "pick") return true;
@@ -738,7 +738,7 @@
     show(openReport, key,
       back("Back", roomId ? "open-" + roomId : "home") +
       '<h2 class="list-title">Report ' + esc(label) + "</h2>" +
-      '<p class="list-desc">Reports go to the Go Places moderators, who can close meetups and stop accounts from using them. The person isn\'t told who reported them. <b>If you\'re in danger, call 112.</b></p>' +
+      '<p class="list-desc">Reports go to the Wanderly moderators, who can close meetups and stop accounts from using them. The person isn\'t told who reported them. <b>If you\'re in danger, call 112.</b></p>' +
       '<form class="form" id="report-form">' +
         '<fieldset><legend>What happened?</legend>' + REASONS.map(function (r, i) {
           return '<label class="check-row"><input type="radio" name="reason" value="' + r.id + '"' + (i === 0 ? " required" : "") + "> " + esc(r.label) + "</label>";
