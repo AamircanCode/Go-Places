@@ -359,7 +359,9 @@
           (!isMine && c.kind !== "wishlist" ? '<button class="btn' + (saved ? " wished" : "") + '" data-c="save" data-id="' + esc(c.id) + '">' + (saved ? "💚 Saved" : "♡ Save") + "</button>" : "") +
           (list.length ? '<button class="btn" data-c="map" data-id="' + esc(c.id) + '">Show on map</button>' : "") +
           (c.kind !== "wishlist" ? '<button class="btn" data-c="share" data-id="' + esc(c.id) + '">↗ Share</button>' : "") +
+          (window.GoMeetups ? window.GoMeetups.collectionButton(c) : "") +
         "</div>" +
+        (window.GoMeetups ? window.GoMeetups.collectionSection(c) : "") +
         (list.length ? list.map(function (s) {
           return '<button class="list-item" data-spot="' + esc(s.id) + '">' +
             '<span class="emoji">' + esc(s.emoji) + "</span>" +
@@ -369,6 +371,7 @@
         }).join("") : '<p class="empty">No places yet' + (isMine ? ". Open a place and tap “＋ Collection”." : ".") + "</p>") +
         (missing > 0 ? '<p class="seg-note">' + missing + " place" + (missing === 1 ? " is" : "s are") + " in another city.</p>" : ""),
         "collection/" + id);
+      if (window.GoMeetups) window.GoMeetups.afterCollection(c);
     });
   }
 
@@ -686,6 +689,7 @@
     createFrom: createFrom,
     exportData: exportData,
     openPicker: openPicker,
+    find: find,
     inAny: inAny
   };
 })();

@@ -431,11 +431,13 @@
       show(openFeed, null,
         back() +
         '<h2 class="list-title">Explorer feed</h2>' +
+        (window.GoMeetups ? window.GoMeetups.feedStrip() : "") +
         '<p class="list-desc">What you and the explorers you follow discovered in the last ' + FEED_DAYS + " days: places, photos, activities and quests. Nothing to like, nothing to count.</p>" +
         (items.length ? items.map(function (it) { return feedItem(it, true); }).join("")
           : '<p class="empty">Nothing here yet. Follow a few explorers, or go explore something yourself.</p>') +
         '<button class="dz-more" data-s="explorers">Discover explorers →</button>',
         "feed");
+      if (window.GoMeetups) window.GoMeetups.afterFeed();
     }).catch(showError);
   }
 
@@ -644,6 +646,7 @@
         '<p class="list-desc">Only you can see who you follow and who follows you.</p>' +
         '<div class="set-group">' +
           '<button class="set-row" data-s="feed"><span class="set-icon">📰</span><span class="set-label">Feed</span><span class="set-val"></span></button>' +
+          (window.GoMeetups ? window.GoMeetups.peopleRow() : "") +
           '<button class="set-row" data-s="following"><span class="set-icon">👣</span><span class="set-label">People you follow</span><span class="set-val"></span></button>' +
           '<button class="set-row" data-s="followers"><span class="set-icon">🤝</span><span class="set-label">People following you' +
             (asks ? ' <span class="count-dot">new request</span>' : "") + '</span><span class="set-val"></span></button>' +

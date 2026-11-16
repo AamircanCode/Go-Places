@@ -994,3 +994,719 @@ create policy "submissions: remove own or as reviewer" on storage.objects
 insert into public.reviewers (user_id, can_publish)
 select id, true from public.profiles where username = 'aamiradmin'
 on conflict (user_id) do update set can_publish = true;
+
+-- =====================================================================
+-- MEETUP ROOMS
+-- =====================================================================
+-- Added with meetup rooms. Safe to run again, like the rest of this file.
+-- Needs everything above (profiles, follows, collections, reviewers), so
+-- run the whole file.
+--
+-- A meetup room is a small, temporary group one explorer opens for a place,
+-- a collection or a theme, on a date. Others ask to join, the host lets them
+-- in, and members chat to plan the outing. Rooms lock the day after the
+-- date and are deleted, with their chat, 7 days later.
+--
+--   rooms             one meetup
+--   room_members      one person's place in a room: requested | member |
+--                     declined | removed | left. The host is a member too.
+--   room_messages     the chat. Only members can read or write it.
+--   room_reports      reports about a room, a person or a message; they go
+--                     to the reviewers
+--   blocks            one person blocking another
+--   room_suspensions  people a reviewer has stopped from using rooms
+--
+-- Safety rules, all enforced here and not just in the app:
+--   - To join you need: a confirmed email, a profile that isn't private (so
+--     people can see who they're meeting), the one-time "I'm 18 or older and
+--     I've read the meet-safely tips" step, and no suspension.
+--   - To host, the account must also be at least 3 days old.
+--   - The host lets in every member. 2 to 8 people per room, host included.
+--   - Chat and member list are for members only.
+--   - Rooms are at most 30 days ahead. They lock the day after the date and
+--     disappear 7 days later.
+--   - Limits per person: 3 open rooms hosted, 10 join requests a day,
+--     20 messages a minute, 10 reports a day.
+--   - Blocking hides rooms both ways, removes the blocked person from the
+--     blocker's rooms, and stops new join requests between the two.
+--   - Reviewers can read a room's chat only while it has an open report.
+--   - Rooms show only username, display name, emoji avatar and interests;
+--     never emails.
+
+-- ---------- one-time meetup step on the profile ----------
+alter table public.profiles add column if not exists meetups_confirmed_at timestamptz;
+
+-- ---------- tables ----------
+create table if not exists public.rooms (
+  id             uuid primary key default gen_random_uuid(),
+  host_id        uuid not null default auth.uid() references public.profiles (id) on delete cascade,
+  city           text not null check (city ~ '^[a-z0-9-]{1,30}$'),
+  -- what it's about: a place on the map, or a collection (a theme is a
+  -- collection whose id starts with "theme-")
+  topic_kind     text not null check (topic_kind in ('place', 'collection')),
+  topic_id       text not null check (topic_id ~ '^[a-z0-9-]{1,60}$'),
+  topic_title    text not null check (char_length(topic_title) between 1 and 80),
+  title          text not null check (char_length(btrim(title)) between 3 and 80),
+  note           text not null default '' check (char_length(note) <= 300),
+  meet_on        date not null,
+  meet_time      time,
+  meeting_point  text not null check (char_length(btrim(meeting_point)) between 2 and 120),
+  max_people     smallint not null default 4 check (max_people between 2 and 8),
+  -- city: every signed-in explorer in the city. followers: only the host's
+  -- accepted followers.
+  audience       text not null default 'city' check (audience in ('city', 'followers')),
+  -- closed = closed by a reviewer
+  status         text not null default 'open' check (status in ('open', 'cancelled', 'closed')),
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now()
+);
+create index if not exists rooms_city_idx on public.rooms (city, meet_on);
+create index if not exists rooms_topic_idx on public.rooms (topic_kind, topic_id, meet_on);
+create index if not exists rooms_host_idx on public.rooms (host_id, meet_on);
+
+create table if not exists public.room_members (
+  room_id     uuid not null references public.rooms (id) on delete cascade,
+  user_id     uuid not null references public.profiles (id) on delete cascade,
+  status      text not null default 'requested'
+              check (status in ('requested', 'member', 'declined', 'removed', 'left')),
+  intro       text not null default '' check (char_length(intro) <= 140),
+  created_at  timestamptz not null default now(),
+  decided_at  timestamptz,
+  primary key (room_id, user_id)
+);
+create index if not exists room_members_user_idx on public.room_members (user_id, status);
+create index if not exists room_members_recent_idx on public.room_members (user_id, created_at desc);
+
+create table if not exists public.room_messages (
+  id          uuid primary key default gen_random_uuid(),
+  room_id     uuid not null references public.rooms (id) on delete cascade,
+  -- empty for notes from the app ("The date changed to …")
+  user_id     uuid default auth.uid() references public.profiles (id) on delete cascade,
+  kind        text not null default 'text' check (kind in ('text', 'system')),
+  body        text not null check (char_length(btrim(body)) between 1 and 500),
+  created_at  timestamptz not null default now()
+);
+create index if not exists room_messages_room_idx on public.room_messages (room_id, created_at);
+create index if not exists room_messages_user_idx on public.room_messages (user_id, created_at desc);
+
+create table if not exists public.blocks (
+  blocker_id  uuid not null default auth.uid() references public.profiles (id) on delete cascade,
+  blocked_id  uuid not null references public.profiles (id) on delete cascade,
+  created_at  timestamptz not null default now(),
+  primary key (blocker_id, blocked_id),
+  check (blocker_id <> blocked_id)
+);
+create index if not exists blocks_blocked_idx on public.blocks (blocked_id);
+
+create table if not exists public.room_reports (
+  id             uuid primary key default gen_random_uuid(),
+  reporter_id    uuid references public.profiles (id) on delete set null,
+  kind           text not null check (kind in ('room', 'person', 'message')),
+  room_id        uuid references public.rooms (id) on delete set null,
+  person_id      uuid references public.profiles (id) on delete set null,
+  message_id     uuid references public.room_messages (id) on delete set null,
+  -- copies, so a report still makes sense after the room or message is gone
+  room_title     text check (char_length(room_title) <= 80),
+  message_text   text check (char_length(message_text) <= 500),
+  reason         text not null check (reason in ('unsafe', 'harassment', 'spam', 'fake', 'personal_info', 'other')),
+  details        text not null default '' check (char_length(details) <= 500),
+  status         text not null default 'open' check (status in ('open', 'dismissed', 'actioned')),
+  decided_by     uuid references public.profiles (id) on delete set null,
+  decided_at     timestamptz,
+  created_at     timestamptz not null default now()
+);
+create index if not exists room_reports_status_idx on public.room_reports (status, created_at desc);
+create index if not exists room_reports_room_idx on public.room_reports (room_id, status);
+create index if not exists room_reports_reporter_idx on public.room_reports (reporter_id, created_at desc);
+
+create table if not exists public.room_suspensions (
+  user_id     uuid primary key references public.profiles (id) on delete cascade,
+  reason      text not null default '' check (char_length(reason) <= 300),
+  by_id       uuid references public.profiles (id) on delete set null,
+  created_at  timestamptz not null default now()
+);
+
+drop trigger if exists rooms_touch on public.rooms;
+create trigger rooms_touch before update on public.rooms
+  for each row execute function public.touch_updated_at();
+
+-- ---------- helpers ----------
+-- Has either of these two people blocked the other?
+create or replace function public.is_blocked_between(a uuid, b uuid)
+returns boolean language sql stable security definer set search_path = '' as $$
+  select exists (
+    select 1 from public.blocks
+    where (blocker_id = a and blocked_id = b) or (blocker_id = b and blocked_id = a)
+  );
+$$;
+
+-- Why `uid` may not join (or, with hosting, host) a meetup right now, or
+-- null when they may. The app shows the matching explanation.
+create or replace function public.meetup_reason(uid uuid, hosting boolean)
+returns text language sql stable security definer set search_path = '' as $$
+  select case
+    when uid is null then 'signed_out'
+    when not exists (select 1 from auth.users u where u.id = uid and u.email_confirmed_at is not null) then 'email'
+    when exists (select 1 from public.room_suspensions s where s.user_id = uid) then 'suspended'
+    when not exists (select 1 from public.profiles p where p.id = uid and p.profile_visibility <> 'private') then 'private_profile'
+    when not exists (select 1 from public.profiles p where p.id = uid and p.meetups_confirmed_at is not null) then 'confirm'
+    when hosting and exists (select 1 from public.profiles p where p.id = uid and p.created_at > now() - interval '3 days') then 'new_account'
+    else null
+  end;
+$$;
+
+-- The same for the signed-in user (used by the chat rules below).
+create or replace function public.my_meetup_reason()
+returns text language sql stable security definer set search_path = '' as $$
+  select public.meetup_reason(auth.uid(), false);
+$$;
+
+-- Your own status, for the app: { join: reason or null, host: reason or null }.
+create or replace function public.my_meetup_status()
+returns table (join_reason text, host_reason text, hosting_from timestamptz)
+language sql stable security definer set search_path = '' as $$
+  select public.meetup_reason(auth.uid(), false),
+         public.meetup_reason(auth.uid(), true),
+         (select p.created_at + interval '3 days' from public.profiles p where p.id = auth.uid());
+$$;
+
+-- The one-time step: "I'm 18 or older and I've read the meet-safely tips".
+create or replace function public.confirm_meetups()
+returns void language sql security definer set search_path = '' as $$
+  update public.profiles set meetups_confirmed_at = coalesce(meetups_confirmed_at, now()) where id = auth.uid();
+$$;
+
+-- Is the signed-in user an accepted member (the host counts) of this room?
+create or replace function public.is_room_member(room uuid)
+returns boolean language sql stable security definer set search_path = '' as $$
+  select exists (
+    select 1 from public.room_members
+    where room_id = room and user_id = (select auth.uid()) and status = 'member'
+  );
+$$;
+
+-- May the signed-in user see this room's card? Its host, its members and
+-- people who asked to join always can (until it's deleted). Others: signed
+-- in, the room is open and not past, it's for the whole city or they follow
+-- the host, nobody blocked anybody, and the host isn't suspended.
+-- Reviewers can see rooms that have been reported.
+create or replace function public.can_see_room(room uuid)
+returns boolean language sql stable security definer set search_path = '' as $$
+  select exists (
+    select 1 from public.rooms r
+    where r.id = room and (select auth.uid()) is not null and (
+      exists (select 1 from public.room_members m
+              where m.room_id = r.id and m.user_id = (select auth.uid()) and m.status in ('member', 'requested'))
+      or (public.is_reviewer() and exists (select 1 from public.room_reports x where x.room_id = r.id))
+      or (r.status = 'open'
+          and r.meet_on >= current_date
+          and (r.audience = 'city' or public.is_follower(r.host_id))
+          and not public.is_blocked_between(r.host_id, (select auth.uid()))
+          and not exists (select 1 from public.room_suspensions s where s.user_id = r.host_id))
+    )
+  );
+$$;
+
+-- May the signed-in user read this room's chat? Members, and reviewers while
+-- the room has an open report.
+create or replace function public.can_read_room(room uuid)
+returns boolean language sql stable security definer set search_path = '' as $$
+  select public.is_room_member(room)
+      or (public.is_reviewer() and exists (select 1 from public.room_reports x where x.room_id = room and x.status = 'open'));
+$$;
+
+create or replace function public.room_member_count(room uuid)
+returns int language sql stable security definer set search_path = '' as $$
+  select count(*)::int from public.room_members where room_id = room and status = 'member';
+$$;
+
+-- Deletes rooms more than 7 days past their date, with their members and
+-- chat. Runs whenever someone opens or joins a room, and daily if the
+-- pg_cron extension is on (see the end of this section).
+create or replace function public.purge_old_rooms()
+returns void language sql security definer set search_path = '' as $$
+  delete from public.rooms where meet_on < current_date - 7;
+$$;
+
+-- A note from the app in the chat, e.g. "The date changed to …".
+create or replace function public.room_note(room uuid, txt text)
+returns void language sql security definer set search_path = '' as $$
+  insert into public.room_messages (room_id, user_id, kind, body) values (room, null, 'system', left(txt, 500));
+$$;
+revoke all on function public.room_note(uuid, text) from public, anon, authenticated;
+revoke all on function public.purge_old_rooms() from public, anon;
+grant execute on function public.purge_old_rooms() to authenticated;
+
+-- ---------- hosting ----------
+create or replace function public.create_room(
+  p_city text, p_topic_kind text, p_topic_id text, p_topic_title text,
+  p_title text, p_note text, p_meet_on date, p_meet_time time,
+  p_meeting_point text, p_max_people int, p_audience text)
+returns uuid language plpgsql security definer set search_path = '' as $$
+declare
+  uid uuid := auth.uid();
+  why text := public.meetup_reason(uid, true);
+  new_id uuid;
+  col_vis text;
+begin
+  if why is not null then raise exception 'meetup_not_allowed:%', why; end if;
+  if p_meet_on < current_date or p_meet_on > current_date + 30 then
+    raise exception 'Pick a date between today and 30 days from now.';
+  end if;
+  if (select count(*) from public.rooms where host_id = uid and status = 'open' and meet_on >= current_date) >= 3 then
+    raise exception 'You can host up to 3 upcoming meetups at a time.';
+  end if;
+  if (select count(*) from public.rooms where host_id = uid and created_at > now() - interval '1 day') >= 5 then
+    raise exception 'You''ve started a lot of meetups today. Try again tomorrow.';
+  end if;
+  -- someone's own collection must be public, so the others can see it
+  if p_topic_kind = 'collection' and p_topic_id ~ '^[0-9a-f-]{36}$' then
+    select visibility into col_vis from public.collections where id = p_topic_id::uuid;
+    if col_vis is distinct from 'public' then
+      raise exception 'Only public collections can have meetups.';
+    end if;
+  end if;
+  perform public.purge_old_rooms();
+  insert into public.rooms (host_id, city, topic_kind, topic_id, topic_title, title, note, meet_on, meet_time,
+                            meeting_point, max_people, audience)
+  values (uid, p_city, p_topic_kind, p_topic_id, left(p_topic_title, 80), btrim(p_title), coalesce(p_note, ''),
+          p_meet_on, p_meet_time, btrim(p_meeting_point), p_max_people, coalesce(p_audience, 'city'))
+  returning id into new_id;
+  insert into public.room_members (room_id, user_id, status, decided_at) values (new_id, uid, 'member', now());
+  return new_id;
+end;
+$$;
+
+-- The host changes the details. Members get a note in the chat when the
+-- date, time or meeting point changes. The size can't go below the members
+-- already in.
+create or replace function public.update_room(
+  room uuid, p_title text, p_note text, p_meet_on date, p_meet_time time,
+  p_meeting_point text, p_max_people int, p_audience text)
+returns void language plpgsql security definer set search_path = '' as $$
+declare
+  r public.rooms;
+begin
+  select * into r from public.rooms where id = room for update;
+  if r.id is null or r.host_id <> auth.uid() then raise exception 'Only the host can change this meetup.'; end if;
+  if r.status <> 'open' or r.meet_on < current_date then raise exception 'This meetup can''t be changed any more.'; end if;
+  if p_meet_on < current_date or p_meet_on > current_date + 30 then
+    raise exception 'Pick a date between today and 30 days from now.';
+  end if;
+  if p_max_people < public.room_member_count(room) then
+    raise exception 'There are already more people in than that.';
+  end if;
+  update public.rooms set title = btrim(p_title), note = coalesce(p_note, ''), meet_on = p_meet_on, meet_time = p_meet_time,
+    meeting_point = btrim(p_meeting_point), max_people = p_max_people, audience = coalesce(p_audience, r.audience)
+  where id = room;
+  if p_meet_on is distinct from r.meet_on or p_meet_time is distinct from r.meet_time then
+    perform public.room_note(room, 'The host moved the meetup to ' || to_char(p_meet_on, 'Dy DD Mon') ||
+      coalesce(' at ' || to_char(p_meet_time, 'HH24:MI'), '') || '.');
+  end if;
+  if btrim(p_meeting_point) is distinct from r.meeting_point then
+    perform public.room_note(room, 'New meeting point: ' || btrim(p_meeting_point));
+  end if;
+end;
+$$;
+
+create or replace function public.cancel_room(room uuid)
+returns void language plpgsql security definer set search_path = '' as $$
+begin
+  update public.rooms set status = 'cancelled' where id = room and host_id = auth.uid() and status = 'open';
+  if not found then raise exception 'Only the host can cancel this meetup.'; end if;
+  perform public.room_note(room, 'The host cancelled this meetup.');
+end;
+$$;
+
+-- ---------- joining ----------
+create or replace function public.request_join(room uuid, p_intro text)
+returns void language plpgsql security definer set search_path = '' as $$
+declare
+  uid uuid := auth.uid();
+  why text := public.meetup_reason(uid, false);
+  r public.rooms;
+  old_status text;
+begin
+  if why is not null then raise exception 'meetup_not_allowed:%', why; end if;
+  select * into r from public.rooms where id = room;
+  if r.id is null or not public.can_see_room(room) then raise exception 'This meetup isn''t available.'; end if;
+  if r.status <> 'open' or r.meet_on < current_date then raise exception 'This meetup has ended.'; end if;
+  if public.room_member_count(room) >= r.max_people then raise exception 'This meetup is full.'; end if;
+  if (select count(*) from public.room_members m join public.rooms x on x.id = m.room_id
+      where m.user_id = uid and x.host_id <> uid and m.created_at > now() - interval '1 day') >= 10 then
+    raise exception 'You''ve asked to join 10 meetups today. Try again tomorrow.';
+  end if;
+  select status into old_status from public.room_members where room_id = room and user_id = uid;
+  if old_status in ('declined', 'removed') then raise exception 'You can''t ask to join this meetup again.'; end if;
+  if old_status in ('member', 'requested') then return; end if;
+  perform public.purge_old_rooms();
+  insert into public.room_members (room_id, user_id, status, intro, created_at)
+  values (room, uid, 'requested', left(coalesce(p_intro, ''), 140), now())
+  on conflict (room_id, user_id) do update set status = 'requested', intro = excluded.intro,
+    created_at = now(), decided_at = null;
+end;
+$$;
+
+-- The host lets someone in, or says no. No reason is given to them.
+create or replace function public.decide_join(room uuid, person uuid, accept boolean)
+returns void language plpgsql security definer set search_path = '' as $$
+declare
+  r public.rooms;
+  who text;
+begin
+  select * into r from public.rooms where id = room for update;
+  if r.id is null or r.host_id <> auth.uid() then raise exception 'Only the host can decide.'; end if;
+  if not exists (select 1 from public.room_members where room_id = room and user_id = person and status = 'requested') then
+    raise exception 'That request is no longer open.';
+  end if;
+  if accept then
+    if r.status <> 'open' or r.meet_on < current_date then raise exception 'This meetup has ended.'; end if;
+    if public.room_member_count(room) >= r.max_people then raise exception 'The meetup is full. Make it bigger first.'; end if;
+    if public.is_blocked_between(r.host_id, person) or public.meetup_reason(person, false) is not null then
+      raise exception 'This person can''t join meetups right now.';
+    end if;
+  end if;
+  update public.room_members set status = case when accept then 'member' else 'declined' end, decided_at = now()
+  where room_id = room and user_id = person;
+  if accept then
+    select coalesce(display_name, username) into who from public.profiles where id = person;
+    perform public.room_note(room, who || ' joined.');
+  end if;
+end;
+$$;
+
+create or replace function public.remove_member(room uuid, person uuid)
+returns void language plpgsql security definer set search_path = '' as $$
+begin
+  if person = auth.uid() then raise exception 'Hosts cancel the meetup instead of leaving.'; end if;
+  update public.room_members set status = 'removed', decided_at = now()
+  where room_id = room and user_id = person and status in ('member', 'requested')
+    and exists (select 1 from public.rooms r where r.id = room and r.host_id = auth.uid());
+  if not found then raise exception 'Only the host can remove people.'; end if;
+end;
+$$;
+
+-- Leave a room, or take back a request. You can ask again later.
+create or replace function public.leave_room(room uuid)
+returns void language plpgsql security definer set search_path = '' as $$
+declare
+  was text;
+  who text;
+begin
+  if exists (select 1 from public.rooms where id = room and host_id = auth.uid()) then
+    raise exception 'Hosts cancel the meetup instead of leaving.';
+  end if;
+  select status into was from public.room_members where room_id = room and user_id = auth.uid();
+  if was = 'requested' then
+    delete from public.room_members where room_id = room and user_id = auth.uid();
+  elsif was = 'member' then
+    update public.room_members set status = 'left', decided_at = now() where room_id = room and user_id = auth.uid();
+    select coalesce(display_name, username) into who from public.profiles where id = auth.uid();
+    perform public.room_note(room, who || ' left.');
+  end if;
+end;
+$$;
+
+-- ---------- lists for the app ----------
+-- Rooms in a city that the signed-in user may see, optionally only those for
+-- one place or collection, with the host's name card and your own status.
+-- Past rooms show only to their members, until they are deleted.
+create or replace function public.room_list(for_city text, p_kind text default null, p_topic text default null)
+returns table (
+  id uuid, host_id uuid, city text, topic_kind text, topic_id text, topic_title text, title text, note text,
+  meet_on date, meet_time time, meeting_point text, max_people smallint, audience text, status text,
+  created_at timestamptz, member_count int, my_status text,
+  host_username text, host_display_name text, host_avatar_emoji text, host_accent_color text, host_interests text[])
+language sql stable security definer set search_path = '' as $$
+  select r.id, r.host_id, r.city, r.topic_kind, r.topic_id, r.topic_title, r.title, r.note,
+         r.meet_on, r.meet_time, r.meeting_point, r.max_people, r.audience, r.status, r.created_at,
+         public.room_member_count(r.id),
+         (select m.status from public.room_members m where m.room_id = r.id and m.user_id = auth.uid()),
+         p.username, p.display_name, p.avatar_emoji, p.accent_color, p.interests
+  from public.rooms r
+  join public.profiles p on p.id = r.host_id
+  where r.city = for_city
+    and r.meet_on >= current_date - 7
+    and (p_kind is null or r.topic_kind = p_kind)
+    and (p_topic is null or r.topic_id = p_topic)
+    and public.can_see_room(r.id)
+  order by r.meet_on, r.meet_time nulls last, r.created_at;
+$$;
+
+-- One room by id, if you may see it.
+create or replace function public.room_get(room uuid)
+returns setof public.rooms language sql stable security definer set search_path = '' as $$
+  select r.* from public.rooms r where r.id = room and public.can_see_room(room);
+$$;
+
+-- Who's in a room. The host sees members and open requests (with their
+-- intro line); members see the members; anyone else who may see the room
+-- sees only the host.
+create or replace function public.room_people(room uuid)
+returns table (user_id uuid, status text, intro text, is_host boolean, username text, display_name text,
+               avatar_emoji text, accent_color text, interests text[], created_at timestamptz)
+language sql stable security definer set search_path = '' as $$
+  select m.user_id, m.status,
+         case when r.host_id = auth.uid() or m.user_id = auth.uid() then m.intro else '' end,
+         m.user_id = r.host_id, p.username, p.display_name, p.avatar_emoji, p.accent_color, p.interests, m.created_at
+  from public.room_members m
+  join public.rooms r on r.id = m.room_id
+  join public.profiles p on p.id = m.user_id
+  where m.room_id = room and public.can_see_room(room) and (
+    m.user_id = r.host_id
+    or (r.host_id = auth.uid() and m.status in ('member', 'requested'))
+    or (public.is_room_member(room) and m.status = 'member')
+    or (public.is_reviewer() and m.status = 'member'
+        and exists (select 1 from public.room_reports x where x.room_id = room and x.status = 'open'))
+  )
+  order by m.user_id = r.host_id desc, m.created_at;
+$$;
+
+-- How many people are waiting for you to let them in, for the red dot.
+create or replace function public.my_room_requests()
+returns int language sql stable security definer set search_path = '' as $$
+  select count(*)::int from public.room_members m join public.rooms r on r.id = m.room_id
+  where r.host_id = auth.uid() and m.status = 'requested' and r.status = 'open' and r.meet_on >= current_date;
+$$;
+
+-- ---------- blocking ----------
+-- After a block: the blocked person leaves the blocker's rooms, and the
+-- blocker leaves the blocked person's rooms.
+create or replace function public.after_block()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  update public.room_members m set status = 'removed', decided_at = now()
+  from public.rooms r
+  where r.id = m.room_id and r.host_id = new.blocker_id and m.user_id = new.blocked_id and m.status in ('member', 'requested');
+  update public.room_members m set status = 'left', decided_at = now()
+  from public.rooms r
+  where r.id = m.room_id and r.host_id = new.blocked_id and m.user_id = new.blocker_id and m.status in ('member', 'requested');
+  return new;
+end;
+$$;
+drop trigger if exists blocks_after on public.blocks;
+create trigger blocks_after after insert on public.blocks
+  for each row execute function public.after_block();
+
+-- ---------- chat ----------
+-- New messages: at most 20 a minute per person.
+create or replace function public.check_room_message()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  new.created_at := now();
+  if new.kind = 'text' and (select count(*) from public.room_messages
+      where user_id = new.user_id and created_at > now() - interval '1 minute') >= 20 then
+    raise exception 'You''re sending messages very fast. Wait a minute.';
+  end if;
+  return new;
+end;
+$$;
+drop trigger if exists room_messages_check on public.room_messages;
+create trigger room_messages_check before insert on public.room_messages
+  for each row execute function public.check_room_message();
+
+-- ---------- reports ----------
+create or replace function public.report_room_thing(
+  p_kind text, p_room uuid, p_person uuid, p_message uuid, p_reason text, p_details text)
+returns void language plpgsql security definer set search_path = '' as $$
+declare
+  uid uuid := auth.uid();
+  msg public.room_messages;
+  t text;
+begin
+  if uid is null then raise exception 'Sign in to report.'; end if;
+  if (select count(*) from public.room_reports where reporter_id = uid and created_at > now() - interval '1 day') >= 10 then
+    raise exception 'You''ve sent 10 reports today. If you''re in danger, call 112.';
+  end if;
+  if p_kind = 'message' then
+    select * into msg from public.room_messages where id = p_message;
+    if msg.id is null or not public.is_room_member(msg.room_id) then raise exception 'You can only report messages you can see.'; end if;
+    p_room := msg.room_id;
+    p_person := msg.user_id;
+  elsif p_kind = 'room' then
+    if not public.can_see_room(p_room) then raise exception 'You can only report meetups you can see.'; end if;
+    select host_id into p_person from public.rooms where id = p_room;
+  elsif p_kind = 'person' then
+    if p_person is null or p_person = uid then raise exception 'Pick someone to report.'; end if;
+  else
+    raise exception 'Unknown report.';
+  end if;
+  select title into t from public.rooms where id = p_room;
+  insert into public.room_reports (reporter_id, kind, room_id, person_id, message_id, room_title, message_text, reason, details)
+  values (uid, p_kind, p_room, p_person, msg.id, t, msg.body, p_reason, left(coalesce(p_details, ''), 500));
+end;
+$$;
+
+-- ---------- moderation (reviewers only) ----------
+create or replace function public.mod_close_room(room uuid, why text)
+returns void language plpgsql security definer set search_path = '' as $$
+begin
+  if not public.is_reviewer() then raise exception 'Only reviewers can do this.'; end if;
+  update public.rooms set status = 'closed' where id = room;
+  perform public.room_note(room, 'A Go Places moderator closed this meetup.' || coalesce(' ' || nullif(btrim(why), ''), ''));
+end;
+$$;
+
+create or replace function public.mod_suspend(person uuid, why text)
+returns void language plpgsql security definer set search_path = '' as $$
+begin
+  if not public.is_reviewer() then raise exception 'Only reviewers can do this.'; end if;
+  if exists (select 1 from public.reviewers where user_id = person) then raise exception 'Reviewers can''t be suspended here.'; end if;
+  insert into public.room_suspensions (user_id, reason, by_id) values (person, left(coalesce(why, ''), 300), auth.uid())
+  on conflict (user_id) do update set reason = excluded.reason, by_id = excluded.by_id, created_at = now();
+  -- their upcoming rooms close, and they leave everyone else's
+  update public.rooms set status = 'closed' where host_id = person and status = 'open';
+  update public.room_members m set status = 'removed', decided_at = now()
+  where m.user_id = person and m.status in ('member', 'requested')
+    and exists (select 1 from public.rooms r where r.id = m.room_id and r.host_id <> person);
+end;
+$$;
+
+create or replace function public.mod_unsuspend(person uuid)
+returns void language plpgsql security definer set search_path = '' as $$
+begin
+  if not public.is_reviewer() then raise exception 'Only reviewers can do this.'; end if;
+  delete from public.room_suspensions where user_id = person;
+end;
+$$;
+
+-- Open reports first, with the names of the people involved.
+create or replace function public.mod_reports(p_status text default 'open')
+returns table (id uuid, kind text, room_id uuid, room_title text, room_exists boolean, person_id uuid,
+               person_username text, person_suspended boolean, reporter_username text, message_id uuid,
+               message_text text, reason text, details text, status text, created_at timestamptz,
+               person_reports int)
+language sql stable security definer set search_path = '' as $$
+  select x.id, x.kind, x.room_id, x.room_title, r.id is not null, x.person_id, pp.username,
+         exists (select 1 from public.room_suspensions s where s.user_id = x.person_id),
+         rp.username, x.message_id, x.message_text, x.reason, x.details, x.status, x.created_at,
+         (select count(*)::int from public.room_reports y where y.person_id = x.person_id)
+  from public.room_reports x
+  left join public.rooms r on r.id = x.room_id
+  left join public.profiles pp on pp.id = x.person_id
+  left join public.profiles rp on rp.id = x.reporter_id
+  where public.is_reviewer() and (p_status is null or x.status = p_status)
+  order by x.created_at desc
+  limit 200;
+$$;
+
+create or replace function public.mod_decide_report(report uuid, p_status text)
+returns void language plpgsql security definer set search_path = '' as $$
+begin
+  if not public.is_reviewer() then raise exception 'Only reviewers can do this.'; end if;
+  if p_status not in ('open', 'dismissed', 'actioned') then raise exception 'Unknown status.'; end if;
+  update public.room_reports set status = p_status, decided_by = auth.uid(), decided_at = now() where id = report;
+end;
+$$;
+
+-- ---------- row level security ----------
+alter table public.rooms            enable row level security;
+alter table public.room_members     enable row level security;
+alter table public.room_messages    enable row level security;
+alter table public.blocks           enable row level security;
+alter table public.room_reports     enable row level security;
+alter table public.room_suspensions enable row level security;
+
+-- Rooms and memberships change only through the functions above.
+revoke all on public.rooms, public.room_members, public.room_messages, public.blocks,
+              public.room_reports, public.room_suspensions from anon;
+revoke insert, update, delete on public.rooms, public.room_members, public.room_reports, public.room_suspensions from authenticated;
+grant select on public.rooms, public.room_members, public.room_reports, public.room_suspensions to authenticated;
+grant select, insert, delete on public.room_messages, public.blocks to authenticated;
+
+drop policy if exists "rooms: read if allowed" on public.rooms;
+create policy "rooms: read if allowed" on public.rooms
+  for select to authenticated using (public.can_see_room(id));
+
+drop policy if exists "room members: yourself, or as host" on public.room_members;
+create policy "room members: yourself, or as host" on public.room_members
+  for select to authenticated using (
+    user_id = (select auth.uid())
+    or exists (select 1 from public.rooms r where r.id = room_id and r.host_id = (select auth.uid()))
+  );
+
+drop policy if exists "room messages: members read" on public.room_messages;
+create policy "room messages: members read" on public.room_messages
+  for select to authenticated using (public.can_read_room(room_id));
+-- members write, until the day after the meetup, if they still may use rooms
+drop policy if exists "room messages: members write" on public.room_messages;
+create policy "room messages: members write" on public.room_messages
+  for insert to authenticated with check (
+    user_id = (select auth.uid()) and kind = 'text'
+    and public.is_room_member(room_id)
+    and public.my_meetup_reason() is null
+    and exists (select 1 from public.rooms r where r.id = room_id and r.status = 'open' and r.meet_on >= current_date)
+  );
+-- your own messages, or any as a reviewer
+drop policy if exists "room messages: remove own or as reviewer" on public.room_messages;
+create policy "room messages: remove own or as reviewer" on public.room_messages
+  for delete to authenticated using (user_id = (select auth.uid()) or public.is_reviewer());
+
+drop policy if exists "blocks: own only" on public.blocks;
+create policy "blocks: own only" on public.blocks
+  for select to authenticated using (blocker_id = (select auth.uid()));
+drop policy if exists "blocks: block as yourself" on public.blocks;
+create policy "blocks: block as yourself" on public.blocks
+  for insert to authenticated with check (blocker_id = (select auth.uid()));
+drop policy if exists "blocks: unblock" on public.blocks;
+create policy "blocks: unblock" on public.blocks
+  for delete to authenticated using (blocker_id = (select auth.uid()));
+
+drop policy if exists "room reports: own or as reviewer" on public.room_reports;
+create policy "room reports: own or as reviewer" on public.room_reports
+  for select to authenticated using (reporter_id = (select auth.uid()) or public.is_reviewer());
+
+drop policy if exists "room suspensions: yourself or as reviewer" on public.room_suspensions;
+create policy "room suspensions: yourself or as reviewer" on public.room_suspensions
+  for select to authenticated using (user_id = (select auth.uid()) or public.is_reviewer());
+
+-- Only used inside the functions above: they say things about other people.
+revoke all on function public.is_blocked_between(uuid, uuid) from public, anon, authenticated;
+revoke all on function public.meetup_reason(uuid, boolean) from public, anon, authenticated;
+
+-- Only signed-in people can call these.
+do $$
+declare
+  f text;
+begin
+  foreach f in array array[
+    'my_meetup_reason()', 'my_meetup_status()', 'confirm_meetups()',
+    'is_room_member(uuid)', 'can_see_room(uuid)', 'can_read_room(uuid)', 'room_member_count(uuid)',
+    'create_room(text, text, text, text, text, text, date, time, text, int, text)',
+    'update_room(uuid, text, text, date, time, text, int, text)', 'cancel_room(uuid)',
+    'request_join(uuid, text)', 'decide_join(uuid, uuid, boolean)', 'remove_member(uuid, uuid)', 'leave_room(uuid)',
+    'room_list(text, text, text)', 'room_get(uuid)', 'room_people(uuid)', 'my_room_requests()',
+    'report_room_thing(text, uuid, uuid, uuid, text, text)',
+    'mod_close_room(uuid, text)', 'mod_suspend(uuid, text)', 'mod_unsuspend(uuid)', 'mod_reports(text)',
+    'mod_decide_report(uuid, text)'
+  ] loop
+    execute format('revoke all on function public.%s from public, anon', f);
+    execute format('grant execute on function public.%s to authenticated', f);
+  end loop;
+end;
+$$;
+
+-- ---------- live chat ----------
+-- New messages reach open chats straight away through Supabase Realtime,
+-- which still applies the read rule above.
+do $$
+begin
+  if exists (select 1 from pg_publication where pubname = 'supabase_realtime')
+     and not exists (select 1 from pg_publication_tables
+                     where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'room_messages') then
+    alter publication supabase_realtime add table public.room_messages;
+  end if;
+end;
+$$;
+
+-- ---------- daily clean-up ----------
+-- If the pg_cron extension is on (Supabase: Integrations → Cron), old rooms
+-- are deleted every night at 03:00. Without it they're deleted whenever
+-- someone starts or joins a meetup, and the app never shows them anyway.
+do $$
+begin
+  if exists (select 1 from pg_extension where extname = 'pg_cron') then
+    perform cron.schedule('go-places-purge-rooms', '0 3 * * *', 'select public.purge_old_rooms()');
+  end if;
+end;
+$$;
