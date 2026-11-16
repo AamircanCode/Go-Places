@@ -34,6 +34,14 @@
     { id: "spam", label: "Spam or selling something" },
     { id: "other", label: "Something else" }
   ];
+  // Extras someone can share with one meetup, on top of their meetup card
+  // (name, avatar, interests), even when their profile is private.
+  var SHARE = [
+    { id: "bio", label: "My bio" },
+    { id: "badges", label: "My badges" },
+    { id: "explored", label: "Places I've explored" },
+    { id: "activities", label: "Activities I've done" }
+  ];
   var WHY = {
     signed_out: "Sign in to join meetups.",
     email: "Confirm your email address first. Check your inbox for the link we sent when you signed up.",
@@ -114,6 +122,46 @@
     var what = personalInfo(text);
     if (!what) return true;
     return confirm("This looks like " + what + ".\n\nFor your safety, keep private details out of meetup chats until you've met and feel comfortable. Send anyway?");
+  }
+
+  function shareFields(chosen, legend) {
+    chosen = chosen || [];
+    return '<fieldset><legend>' + esc(legend) + '</legend>' +
+      '<p class="seg-note">Everyone in the meetup sees your meetup card: name, avatar and interests. Tick anything else you\'d like this meetup to see. Only this meetup sees it, even if your profile is private. You can change it later.</p>' +
+      SHARE.map(function (x) {
+        return '<label class="check-row"><input type="checkbox" name="share" value="' + x.id + '"' + (chosen.indexOf(x.id) !== -1 ? " checked" : "") + "> " + esc(x.label) + "</label>";
+      }).join("") + "</fieldset>";
+  }
+  function readShare(form) {
+    return Array.prototype.filter.call(form.querySelectorAll('input[name="share"]'), function (i) { return i.checked; }).map(function (i) { return i.value; });
+  }
+  function shareLabel(list) {
+    list = list || [];
+    if (!list.length) return "your meetup card only";
+    return "your meetup card, " + SHARE.filter(function (x) { return list.indexOf(x.id) !== -1; })
+      .map(function (x) { return x.label.replace(/^My /, "").replace("I've", "you've").toLowerCase(); }).join(", ");
+  }
+  // What a person shared with this meetup, under their name.
+  function extrasHtml(x) {
+    if (!x) return "";
+    var L = window.GO_PLACES_LAYER || {};
+    var out = [];
+    if (x.bio) out.push('<span class="mp-extra">“' + esc(x.bio) + "”</span>");
+    if (x.badges) {
+      var names = x.badges.map(function (id) { var b = (L.badges || []).filter(function (y) { return y.id === id; })[0]; return b ? (b.emoji || "🏅") + " " + b.title : ""; }).filter(Boolean);
+      out.push('<span class="mp-extra">🏅 ' + (names.length ? esc(names.join(", ")) : "No badges yet") + "</span>");
+    }
+    if (x.explored) {
+      var spots = x.explored.map(app.spotById).filter(Boolean);
+      out.push('<span class="mp-extra">✅ ' + x.explored.length + (x.explored.length === 1 ? " place" : " places") + " explored" +
+        (spots.length ? ": " + esc(spots.slice(0, 4).map(function (s) { return s.name; }).join(", ")) + (spots.length > 4 ? "…" : "") : "") + "</span>");
+    }
+    if (x.activities) {
+      var acts = x.activities.map(function (id) { return (L.activities || []).filter(function (a) { return a.id === id; })[0]; }).filter(Boolean);
+      out.push('<span class="mp-extra">🎯 ' + x.activities.length + (x.activities.length === 1 ? " activity" : " activities") + " done" +
+        (acts.length ? ": " + esc(acts.slice(0, 3).map(function (a) { return a.title; }).join(", ")) + (acts.length > 3 ? "…" : "") : "") + "</span>");
+    }
+    return out.join("");
   }
 
   function rpc(name, args) { return sb.rpc(name, args || {}).then(check); }
@@ -299,10 +347,15 @@
     if (!chat || chat.roomId !== id) stopChat();
     var hash = "meetup/" + id;
     if (!isCurrent(openRoom, id)) loading(openRoom, id, hash);
+    var shared = {};
     Promise.all([
       rpc("room_list", { for_city: cityId(), p_kind: null, p_topic: null }),
-      rpc("room_people", { room: id })
+      rpc("room_people", { room: id }),
+      rpc("room_shared", { room: id }).catch(function () { return []; }),
+      sb.from("room_members").select("shared").eq("room_id", id).eq("user_id", me()).maybeSingle().then(check).catch(function () { return null; })
     ]).then(function (r) {
+      (r[2] || []).forEach(function (x) { shared[x.user_id] = x; });
+      shared.mine = (r[3] && r[3].shared) || [];
       var room = (r[0] || []).filter(function (x) { return x.id === id; })[0];
       if (room) return [room, r[1]];
       // a room in another city
@@ -319,11 +372,12 @@
           '<p class="list-desc">It has ended, been cancelled, or isn\'t shared with you.</p>', hash);
         return;
       }
-      drawRoom(room, people);
+      drawRoom(room, people, shared);
     }).catch(function (err) { showError(openRoom, id, hash, err); });
   }
 
-  function drawRoom(room, people) {
+  function drawRoom(room, people, shared) {
+    shared = shared || {};
     var id = room.id;
     var hosting = room.host_id === me();
     var member = room.my_status === "member";
@@ -366,11 +420,13 @@
       (s === "closed" ? '<div class="tip">A Go Places moderator closed this meetup.</div>' : "") +
       (s === "open" && !hosting && !member && !room.my_status ? statusNote(false) : "") +
       '<div class="actions">' + action + "</div>" +
+      ((hosting || member || room.my_status === "requested") && live ?
+        '<p class="seg-note meetup-sharing">🪪 You share ' + esc(shareLabel(shared.mine)) + ' with this meetup. <button class="linkish" data-m="sharing" data-id="' + esc(id) + '">Change</button></p>' : "") +
       (hosting && asks.length && live ? '<div class="spot-section"><h3>Asking to join <span class="count-dot">' + asks.length + "</span></h3>" +
-        asks.map(function (p) { return personRow(room, p, "request"); }).join("") + "</div>" : "") +
+        asks.map(function (p) { return personRow(room, p, "request", shared[p.user_id]); }).join("") + "</div>" : "") +
       '<div class="spot-section"><h3>' + (hosting || member ? "Who's going" : "Host") + "</h3>" +
         (hosting || member ? members : people.filter(function (p) { return p.is_host; }))
-          .map(function (p) { return personRow(room, p, "member"); }).join("") +
+          .map(function (p) { return personRow(room, p, "member", shared[p.user_id]); }).join("") +
         (!hosting && !member ? '<p class="seg-note">You\'ll see who else is going once the host lets you in.</p>' : "") +
       "</div>" +
       (hosting || member ? '<div class="spot-section"><h3>Chat</h3>' +
@@ -393,7 +449,7 @@
     return addDays(dayOf(room.meet_on), 8).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
   }
 
-  function personRow(room, p, mode) {
+  function personRow(room, p, mode, extras) {
     var hosting = room.host_id === me();
     var self = p.user_id === me();
     var buttons = "";
@@ -413,6 +469,7 @@
         '<span><span class="name">' + esc(nameOf(p)) + (p.is_host ? ' <span class="mc-badge">Host</span>' : "") + (self ? " (you)" : "") + "</span>" +
         '<span class="sub">@' + esc(p.username) + (interests ? " · " + esc(interests) : "") + "</span>" +
         (p.intro && mode === "request" ? '<span class="mp-intro">“' + esc(p.intro) + "”</span>" : "") +
+        (p.user_id !== me() ? extrasHtml(extras) : "") +
       "</span></a>" +
       '<span class="mp-actions">' + buttons + "</span>" +
     "</div>";
@@ -580,7 +637,7 @@
           '<label class="seg-opt"><input type="radio" name="audience" value="city"' + (d.audience !== "followers" ? " checked" : "") + "><span>Explorers in " + esc(DATA.city) + "</span></label>" +
           '<label class="seg-opt"><input type="radio" name="audience" value="followers"' + (d.audience === "followers" ? " checked" : "") + "><span>Only my followers</span></label>" +
         "</div></fieldset>" +
-        '<p class="privacy-note">🪪 Others see your meetup card: your name, avatar and interests. Nothing else from your profile, even if it\'s private.</p>' +
+        (editing ? "" : shareFields([], "Share more with people who join? (optional)")) +
         '<p class="privacy-note">🛡️ Only people you let in see who else is going and the chat. The meetup is deleted a week after the day.</p>' +
         '<p class="form-msg" role="alert"></p>' +
         '<div class="actions"><button class="btn primary" type="submit">' + (editing ? "Save" : "Start meetup") + "</button></div>" +
@@ -609,8 +666,10 @@
       btn.disabled = true;
       var call = editing ? rpc("update_room", Object.assign({ room: room.id }, fields))
         : rpc("create_room", Object.assign({ p_city: cityId(), p_topic_kind: t.kind, p_topic_id: t.id, p_topic_title: t.title }, fields));
+      var share = editing ? [] : readShare(form);
       call.then(function (newId) {
         loadStatus();
+        if (!editing && share.length) return rpc("set_room_sharing", { room: newId, p_shared: share }).catch(function () {}).then(function () { openRoom(newId); });
         openRoom(editing ? room.id : newId);
       }, function (err) {
         btn.disabled = false;
@@ -627,9 +686,10 @@
       show(openAsk, id,
         back("Meetup", "open-" + id) +
         '<h2 class="list-title">🙋 Ask to join</h2>' +
-        '<p class="list-desc">The host sees your meetup card (name, avatar and interests) and this line, nothing else from your profile, even if it\'s private. They decide who comes.</p>' +
+        '<p class="list-desc">The host sees your meetup card (name, avatar and interests), this line and anything you tick below. Nothing else from your profile. They decide who comes.</p>' +
         '<form class="form" id="ask-form">' +
           '<label>Say hi (optional)<textarea name="intro" rows="2" maxlength="140" placeholder="e.g. New in Munich, love sunsets and bookshelves."></textarea></label>' +
+          shareFields([], "Share more with this meetup? (optional)") +
           '<p class="form-msg" role="alert"></p>' +
           '<div class="actions"><button class="btn primary" type="submit">Send request</button></div>' +
         "</form>", "meetup/" + id + "/ask");
@@ -639,12 +699,35 @@
         var intro = form.elements.intro.value.trim();
         if (intro && !okToSend(intro)) return;
         form.querySelector("button").disabled = true;
-        rpc("request_join", { room: id, p_intro: intro }).then(function () { openRoom(id); }, function (err) {
+        rpc("request_join", { room: id, p_intro: intro, p_shared: readShare(form) }).then(function () { openRoom(id); }, function (err) {
           form.querySelector("button").disabled = false;
           form.querySelector(".form-msg").textContent = errText(err);
         });
       });
     });
+  }
+
+  // ---------- what you share with one meetup ----------
+  function openSharing(id) {
+    sb.from("room_members").select("shared").eq("room_id", id).eq("user_id", me()).maybeSingle().then(check).then(function (row) {
+      if (!row) { openRoom(id); return; }
+      show(openSharing, id,
+        back("Meetup", "open-" + id) +
+        '<h2 class="list-title">🪪 What this meetup sees</h2>' +
+        '<form class="form" id="share-form">' + shareFields(row.shared, "Share with this meetup") +
+          '<p class="form-msg" role="alert"></p>' +
+          '<div class="actions"><button class="btn primary" type="submit">Save</button></div></form>',
+        "meetup/" + id + "/sharing");
+      var form = document.getElementById("share-form");
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        form.querySelector("button").disabled = true;
+        rpc("set_room_sharing", { room: id, p_shared: readShare(form) }).then(function () { openRoom(id); }, function (err) {
+          form.querySelector("button").disabled = false;
+          form.querySelector(".form-msg").textContent = errText(err);
+        });
+      });
+    }).catch(function (err) { showError(openSharing, id, "meetup/" + id + "/sharing", err); });
   }
 
   // ---------- report and block ----------
@@ -861,6 +944,7 @@
     else if (m === "safety") openSafety();
     else if (m === "edit") openEdit(id);
     else if (m === "ask") openAsk(id);
+    else if (m === "sharing") openSharing(id);
     else if (m === "cancel") {
       if (confirm("Cancel this meetup? Everyone in it is told in the chat.")) act(rpc("cancel_room", { room: id }));
     }
@@ -935,6 +1019,7 @@
       else if (parts[0] === "meetup-new") go = function () { openNew(parts.slice(1).join("/")); };
       else if (parts[0] === "meetup" && parts[1] && parts[2] === "edit") go = function () { openEdit(parts[1]); };
       else if (parts[0] === "meetup" && parts[1] && parts[2] === "ask") go = function () { openAsk(parts[1]); };
+      else if (parts[0] === "meetup" && parts[1] && parts[2] === "sharing") go = function () { openSharing(parts[1]); };
       else if (parts[0] === "meetup" && parts[1]) go = function () { openRoom(parts[1]); };
       else return false;
       // A link opened straight away: your meetup status may still be loading.

@@ -1077,6 +1077,14 @@ create table if not exists public.room_members (
   decided_at  timestamptz,
   primary key (room_id, user_id)
 );
+-- What else someone shares with this meetup on top of their meetup card,
+-- whatever their profile's privacy settings: their bio, badges, places
+-- explored and activities done. Chosen per meetup; seen by the host and,
+-- once they're in, the other members.
+alter table public.room_members add column if not exists shared text[] not null default '{}';
+alter table public.room_members drop constraint if exists room_members_shared_check;
+alter table public.room_members add constraint room_members_shared_check
+  check (shared <@ array['bio', 'badges', 'explored', 'activities']::text[]);
 create index if not exists room_members_user_idx on public.room_members (user_id, status);
 create index if not exists room_members_recent_idx on public.room_members (user_id, created_at desc);
 
@@ -1321,7 +1329,8 @@ end;
 $$;
 
 -- ---------- joining ----------
-create or replace function public.request_join(room uuid, p_intro text)
+drop function if exists public.request_join(uuid, text);
+create or replace function public.request_join(room uuid, p_intro text, p_shared text[] default '{}')
 returns void language plpgsql security definer set search_path = '' as $$
 declare
   uid uuid := auth.uid();
@@ -1342,12 +1351,23 @@ begin
   if old_status in ('declined', 'removed') then raise exception 'You can''t ask to join this meetup again.'; end if;
   if old_status in ('member', 'requested') then return; end if;
   perform public.purge_old_rooms();
-  insert into public.room_members (room_id, user_id, status, intro, created_at)
-  values (room, uid, 'requested', left(coalesce(p_intro, ''), 140), now())
+  insert into public.room_members (room_id, user_id, status, intro, shared, created_at)
+  values (room, uid, 'requested', left(coalesce(p_intro, ''), 140), coalesce(p_shared, '{}'), now())
   on conflict (room_id, user_id) do update set status = 'requested', intro = excluded.intro,
-    created_at = now(), decided_at = null;
+    shared = excluded.shared, created_at = now(), decided_at = null;
 end;
 $$;
+
+-- Change what you share with a meetup you're in or asked to join.
+create or replace function public.set_room_sharing(room uuid, p_shared text[])
+returns void language plpgsql security definer set search_path = '' as $$
+begin
+  update public.room_members set shared = coalesce(p_shared, '{}')
+  where room_id = room and user_id = auth.uid() and status in ('member', 'requested');
+  if not found then raise exception 'You''re not in this meetup.'; end if;
+end;
+$$;
+
 
 -- The host lets someone in, or says no. No reason is given to them.
 create or replace function public.decide_join(room uuid, person uuid, accept boolean)
@@ -1469,6 +1489,27 @@ create or replace function public.my_room_requests()
 returns int language sql stable security definer set search_path = '' as $$
   select count(*)::int from public.room_members m join public.rooms r on r.id = m.room_id
   where r.host_id = auth.uid() and m.status = 'requested' and r.status = 'open' and r.meet_on >= current_date;
+$$;
+
+-- The extras people in a meetup chose to share with it, for the people the
+-- signed-in user may see there (see room_people below). Only what each
+-- person ticked; the rest stays private.
+create or replace function public.room_shared(room uuid)
+returns table (user_id uuid, bio text, badges text[], explored text[], activities text[])
+language sql stable security definer set search_path = '' as $$
+  select m.user_id,
+         case when 'bio' = any (m.shared) then p.bio end,
+         case when 'badges' = any (m.shared) then
+           array(select b.badge_id from public.user_badges b where b.user_id = m.user_id order by b.earned_at) end,
+         case when 'explored' = any (m.shared) then
+           array(select v.spot_id from public.spot_visits v where v.user_id = m.user_id order by v.visited_at desc) end,
+         case when 'activities' = any (m.shared) then
+           array(select distinct a.activity_id from public.activity_completions a where a.user_id = m.user_id) end
+  from public.room_members m
+  join public.profiles p on p.id = m.user_id
+  where m.room_id = room and cardinality(m.shared) > 0
+    and m.user_id in (select x.user_id from public.room_people(room) x)
+    and (public.is_room_member(room) or m.user_id = auth.uid());
 $$;
 
 -- ---------- blocking ----------
@@ -1676,7 +1717,7 @@ begin
     'is_room_member(uuid)', 'can_see_room(uuid)', 'can_read_room(uuid)', 'room_member_count(uuid)',
     'create_room(text, text, text, text, text, text, date, time, text, int, text)',
     'update_room(uuid, text, text, date, time, text, int, text)', 'cancel_room(uuid)',
-    'request_join(uuid, text)', 'decide_join(uuid, uuid, boolean)', 'remove_member(uuid, uuid)', 'leave_room(uuid)',
+    'request_join(uuid, text, text[])', 'set_room_sharing(uuid, text[])', 'room_shared(uuid)', 'decide_join(uuid, uuid, boolean)', 'remove_member(uuid, uuid)', 'leave_room(uuid)',
     'room_list(text, text, text)', 'room_get(uuid)', 'room_people(uuid)', 'my_room_requests()',
     'report_room_thing(text, uuid, uuid, uuid, text, text)',
     'mod_close_room(uuid, text)', 'mod_suspend(uuid, text)', 'mod_unsuspend(uuid)', 'mod_reports(text)',
