@@ -804,3 +804,4 @@ details.fold { border-bottom: 1px solid var(--line); padding-bottom: 6px; }
 .report-quote { background: var(--surface); border-radius: 8px; padding: 6px 8px; font-style: italic; }
 .mp-extra { display: block; font-size: 12px; color: var(--ink); margin-top: 2px; }
 .meetup-sharing { margin: 6px 0 0; }
+.meetup-topic-link a { color: var(--brand-ink); }

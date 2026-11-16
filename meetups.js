@@ -408,7 +408,7 @@
     show(openRoom, id,
       back() +
       '<h2 class="spot-title">' + esc(room.title) + "</h2>" +
-      '<p class="meta"><a href="' + esc(topicLink) + '">' + esc(topicEmoji(room) + " " + room.topic_title) + "</a></p>" +
+      '<p class="meta meetup-topic-link"><a href="' + esc(topicLink) + '">' + esc(topicEmoji(room) + " " + room.topic_title) + "</a></p>" +
       '<div class="meetup-facts">' +
         "<div><b>📅</b> " + esc(dateLabel(room)) + "</div>" +
         "<div><b>📍</b> " + esc(room.meeting_point) + (directions ? ' · <a target="_blank" rel="noopener" href="' + esc(directions) + '">Directions</a>' : "") + "</div>" +
