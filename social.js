@@ -1,7 +1,7 @@
 /*
- * GO PLACES — social discovery
+ * WANDERLY — social discovery
  * ============================
- * Meeting other explorers without turning Go Places into a popularity
+ * Meeting other explorers without turning Wanderly into a popularity
  * contest. There are no follower counts, likes, rankings or leaderboards.
  *
  *   - profile photos, interests and privacy settings
@@ -105,7 +105,7 @@
     // Avatars are emoji only for now; uploaded profile photos are not shown.
     var path = null;
     var url = null;
-    return '<span class="avatar' + (cls ? " " + cls : "") + '" style="--accent:' + esc(p.accent_color || "") + '"' +
+    return '<span class="avatar' + (cls ? " " + cls : "") + '" style="--accent:' + esc(p.accent_color && p.accent_color !== "#0f766e" ? p.accent_color : "#7ed957") + '"' +
       (path ? ' data-avatar="' + esc(path) + '"' : "") + ">" +
       (url ? '<img src="' + esc(url) + '" alt="">' : esc(p.avatar_emoji || "🧭")) + "</span>";
   }

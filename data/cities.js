@@ -1,5 +1,5 @@
 /*
- * GO PLACES — cities
+ * WANDERLY — cities
  * ==================
  * Every city has its own set of content files. This file lists the cities
  * and loads the files of the one the visitor picked, so the rest of the app

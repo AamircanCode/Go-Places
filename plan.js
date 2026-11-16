@@ -1,5 +1,5 @@
 /*
- * GO PLACES — Plan My Day
+ * WANDERLY — Plan My Day
  * =======================
  * Builds a short route through existing places from a few choices: time,
  * budget, interests, company and weather. Settings and interest rules are in
@@ -501,7 +501,7 @@
     if (!window.L || !app.map) return;
     var pts = result.stops.map(function (s) { return [s.spot.lat, s.spot.lng]; });
     routeLayer = L.layerGroup();
-    L.polyline((me ? [me] : []).concat(pts), { color: "#0f766e", weight: 4, opacity: 0.8, dashArray: "6 8" }).addTo(routeLayer);
+    L.polyline((me ? [me] : []).concat(pts), { color: getComputedStyle(document.documentElement).getPropertyValue("--brand-ink").trim() || "#2f7a1f", weight: 4, opacity: 0.8, dashArray: "6 8" }).addTo(routeLayer);
     result.stops.forEach(function (s, i) {
       L.marker([s.spot.lat, s.spot.lng], {
         icon: L.divIcon({ className: "", html: '<div class="pl-marker">' + (i + 1) + "</div>", iconSize: [26, 26], iconAnchor: [13, 13] }),
@@ -544,7 +544,7 @@
     }
     else if (k === "share") {
       var url = location.origin + location.pathname + location.search + "#" + toHash(p);
-      if (navigator.share) navigator.share({ title: "My Go Places day plan", url: url }).catch(function () {});
+      if (navigator.share) navigator.share({ title: "My Wanderly day plan", url: url }).catch(function () {});
       else if (navigator.clipboard) { navigator.clipboard.writeText(url); el.textContent = "Link copied ✓"; }
     }
     else return;

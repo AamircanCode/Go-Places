@@ -1,5 +1,5 @@
 /*
- * GO PLACES — Free Knowledge
+ * WANDERLY — Free Knowledge
  * ==========================
  * A top-level category for free learning in the city: museums, public
  * bookshelves, libraries and exhibitions. These places show under "All spots"
@@ -149,8 +149,8 @@
       tags: ["Reading", "Literature", "Community", "Sustainability", "Hidden Gem"],
       nearby: ["rudi-hierl-platz-table-tennis", "koenigsplatz"],
       photos: [
-        { url: "images/bookshelf-rudi-hierl-platz-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/bookshelf-rudi-hierl-platz-2.jpg", credit: "Photo: Go Places community" }
+        { url: "images/bookshelf-rudi-hierl-platz-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/bookshelf-rudi-hierl-platz-2.jpg", credit: "Photo: Wanderly community" }
       ]
     }),
     bookshelf({
@@ -172,9 +172,9 @@
       ],
       nearby: ["lenbachhaus-lounge", "lenbachhaus-garden", "koenigsplatz", "book-burning-memorial"],
       photos: [
-        { url: "images/bookshelf-lenbachhaus-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/bookshelf-lenbachhaus-2.jpg", credit: "Photo: Go Places community" },
-        { url: "images/bookshelf-lenbachhaus-3.jpg", credit: "Photo: Go Places community" }
+        { url: "images/bookshelf-lenbachhaus-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/bookshelf-lenbachhaus-2.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/bookshelf-lenbachhaus-3.jpg", credit: "Photo: Wanderly community" }
       ]
     }),
     bookshelf({
@@ -247,8 +247,8 @@
       whyVisit: "A well-stocked neighbourhood shelf, mostly German novels and paperbacks. One explorer found Mario Puzo's 'Der Pate' (The Godfather) here.",
       tags: ["Reading", "Literature", "Community", "Sustainability", "Hidden Gem"],
       photos: [
-        { url: "images/bookshelf-herterichstrasse-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/bookshelf-herterichstrasse-2.jpg", credit: "Photo: Go Places community" }
+        { url: "images/bookshelf-herterichstrasse-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/bookshelf-herterichstrasse-2.jpg", credit: "Photo: Wanderly community" }
       ]
     }),
     bookshelf({
@@ -260,7 +260,7 @@
       whyVisit: "The benches make it easy to sit down and read the first chapter before you decide whether to take a book home.",
       tags: ["Reading", "Literature", "Community", "Sustainability"],
       photos: [
-        { url: "images/bookshelf-herzog-ernst-platz-1.jpg", credit: "Photo: Go Places community" }
+        { url: "images/bookshelf-herzog-ernst-platz-1.jpg", credit: "Photo: Wanderly community" }
       ]
     }),
     bookshelf({
@@ -273,9 +273,9 @@
       history: "Two local residents campaigned for almost two years to get a bookshelf on the Laimer Anger, and it opened in July 2018 with readings and a marching band. Volunteers look after it and keep it tidy.", // VERIFY: that this painted cabinet is the 2018 one
       tags: ["Reading", "Literature", "Community", "Sustainability", "Hidden Gem"],
       photos: [
-        { url: "images/bookshelf-laimer-anger-2.jpg", credit: "Photo: Go Places community" },
-        { url: "images/bookshelf-laimer-anger-3.jpg", credit: "Photo: Go Places community" },
-        { url: "images/bookshelf-laimer-anger-1.jpg", credit: "Photo: Go Places community" }
+        { url: "images/bookshelf-laimer-anger-2.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/bookshelf-laimer-anger-3.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/bookshelf-laimer-anger-1.jpg", credit: "Photo: Wanderly community" }
       ]
     }),
     bookshelf({
@@ -287,7 +287,7 @@
       whyVisit: "Pick up a book on your way to the Schleißheim palaces and read it by the canal.",
       tags: ["Reading", "Community", "Sustainability", "Hidden Gem"],
       photos: [
-        { url: "images/bookshelf-oberschleissheim-1.jpg", credit: "Photo: Go Places community" }
+        { url: "images/bookshelf-oberschleissheim-1.jpg", credit: "Photo: Wanderly community" }
       ]
     })
   ];

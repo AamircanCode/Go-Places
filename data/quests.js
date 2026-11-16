@@ -1,5 +1,5 @@
 /*
- * GO PLACES — quests and badges
+ * WANDERLY — quests and badges
  * =============================
  * A quest is finished when everything in `requiredActivities` is done (and
  * `requiredCount`, if set, is reached). Finishing it earns `rewardBadgeId`.

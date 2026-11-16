@@ -1,5 +1,5 @@
 /*
- * GO PLACES — full-size photo viewer
+ * WANDERLY — full-size photo viewer
  * ==================================
  * Tapping a photo opens it full screen. Swipe or use the arrows to move between
  * the photos of the same place; tap, swipe down, ✕ or Esc closes it.

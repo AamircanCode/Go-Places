@@ -1,5 +1,5 @@
 /*
- * GO PLACES — activities ("What can I do?")
+ * WANDERLY — activities ("What can I do?")
  * ==========================================
  * An activity is something to do, linked to one or more places from
  * data/spots.js. Add one by copying a block, pasting it at the end of the

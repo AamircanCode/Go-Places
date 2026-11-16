@@ -1,10 +1,10 @@
 /*
- * GO PLACES — curated collections (Munich)
+ * WANDERLY — curated collections (Munich)
  * ========================================
  * Collections are lists of places, like playlists for the city. People make
- * their own in the app; these are the starter ones from Go Places. Every
+ * their own in the app; these are the starter ones from Wanderly. Every
  * theme in data/spots.js (Sunset spots, Architecture in Munich, Free
- * Knowledge, …) also shows up as a Go Places collection automatically, so
+ * Knowledge, …) also shows up as a Wanderly collection automatically, so
  * don't repeat a theme here.
  *
  *   id           short unique name, lowercase, letters, numbers and -

@@ -1,5 +1,5 @@
 /*
- * GO PLACES — suggestions and the review queue
+ * WANDERLY — suggestions and the review queue
  * ============================================
  * Signed-in explorers can suggest a new place (with an optional photo), or
  * a photo for a place that's already on the map. Suggestions wait in a
@@ -13,7 +13,7 @@
  *
  * Only reviewers see who sent a suggestion; it isn't shown with approved
  * places and photos. Photos are shrunk, stripped of their
- * location data and stamped "© Go Places" on the phone, before upload.
+ * location data and stamped "© Wanderly" on the phone, before upload.
  *
  * Needs the "submissions" part of supabase/schema.sql. Until it has been run,
  * none of this shows up. Reviewers are added in the SQL Editor (see the end
@@ -273,7 +273,7 @@
         placeFields(draft) +
         '<label>Photo (optional)<input name="photo" type="file" accept="image/*"></label>' +
         '<div class="upload-preview" id="suggest-preview" hidden></div>' +
-        '<p class="privacy-note">🔒 Photos are resized, their hidden location (GPS) and camera data are removed, and they get the “© Go Places” mark before upload.</p>' +
+        '<p class="privacy-note">🔒 Photos are resized, their hidden location (GPS) and camera data are removed, and they get the “© Wanderly” mark before upload.</p>' +
         '<p class="form-msg" role="alert"></p>' +
         '<div class="actions"><button class="btn primary" type="submit">' + sendLabel() + "</button>" +
           '<button class="btn" type="button" id="suggest-cancel">Cancel</button></div>' +
@@ -760,10 +760,10 @@
       if (!ready) return "";
       if (publisher) {
         return '<label class="toggle"><input type="checkbox" name="suggest"><span><b>Also add it to this place\'s page</b><br>' +
-          "It goes live for everyone straight away, with the “© Go Places” mark.</span></label>";
+          "It goes live for everyone straight away, with the “© Wanderly” mark.</span></label>";
       }
       return '<label class="toggle"><input type="checkbox" name="suggest"><span><b>Also suggest it for this place\'s page</b><br>' +
-        "After review it can be shown to everyone, with the “© Go Places” mark and without your name.</span></label>";
+        "After review it can be shown to everyone, with the “© Wanderly” mark and without your name.</span></label>";
     },
     suggestPhoto: sendPhoto,
     thanks: openThanks,
@@ -804,7 +804,7 @@
 
     // A small note on pages of places that came from a suggestion.
     spotNote: function (spot) {
-      return spot.community ? '<p class="privacy-note">🌱 Suggested by a Go Places explorer and checked by us.</p>' : "";
+      return spot.community ? '<p class="privacy-note">🌱 Suggested by a Wanderly explorer and checked by us.</p>' : "";
     },
 
     exportData: function () {

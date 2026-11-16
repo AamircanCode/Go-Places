@@ -1,5 +1,5 @@
 /*
- * GO PLACES — discovery layer ("What can I do?")
+ * WANDERLY — discovery layer ("What can I do?")
  * ==============================================
  * Adds activities, moods, "What can I do right now?", hidden gems, quests and
  * badges on top of the map. All content comes from the files in data/
@@ -650,7 +650,7 @@
   // Warns in the browser console about content that points at things that
   // don't exist, e.g. a misspelled spot id in data/activities.js.
   function checkContent() {
-    function warn(msg) { console.warn("Go Places content: " + msg); }
+    function warn(msg) { console.warn("Wanderly content: " + msg); }
     activities.forEach(function (a) {
       (a.placeIds || []).forEach(function (p) { if (!app.spotById(p)) warn('activity "' + a.id + '" links to unknown spot "' + p + '"'); });
       (a.moodTags || []).forEach(function (m) { if (!moodById(m)) warn('activity "' + a.id + '" has unknown mood "' + m + '"'); });

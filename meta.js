@@ -1,5 +1,5 @@
 /*
- * GO PLACES — place metadata
+ * WANDERLY — place metadata
  * ==========================
  * Reads the per-city metadata (data/place-meta.js), fills in a reasonable
  * guess for any spot that has no entry yet, and draws "At a glance" on the
@@ -202,7 +202,7 @@
 
   // ---------- content checks (browser console) ----------
   function check(spots) {
-    function warn(msg) { console.warn("Go Places metadata: " + msg); }
+    function warn(msg) { console.warn("Wanderly metadata: " + msg); }
     var ids = {};
     (spots || []).forEach(function (s) { ids[s.id] = true; });
     Object.keys(TABLE).forEach(function (id) {

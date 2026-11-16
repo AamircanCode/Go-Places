@@ -1,5 +1,5 @@
 /*
- * GO PLACES — Berlin quests and badges
+ * WANDERLY — Berlin quests and badges
  * ====================================
  * Works exactly like data/quests.js (Munich): the top of that file explains
  * every field. Badges that exist in both cities keep the same id, so you

@@ -495,10 +495,11 @@
     var current = DATA.cityId || CITIES.current;
     showSheet(
       (welcome
-        ? '<h2 class="list-title">Where are you exploring?</h2>' +
-          '<p class="list-desc">Welcome to Go Places. Pick your city to see its spots, sunsets and side quests. You can switch any time from the top bar.</p>'
+        ? '<img class="welcome-logo" src="images/brand/wanderly-logo.png" alt="Wanderly">' +
+          '<h2 class="list-title">Where are you exploring?</h2>' +
+          '<p class="list-desc">Welcome to Wanderly. Pick your city to see its spots, sunsets and side quests. You can switch any time from the top bar.</p>'
         : '<h2 class="list-title">Choose a city</h2>' +
-          '<p class="list-desc">Go Places is growing. Pick a city to explore; more are on the way.</p>') +
+          '<p class="list-desc">Wanderly is growing. Pick a city to explore; more are on the way.</p>') +
       CITIES.cities.map(function (c) {
         var here = !welcome && c.id === current;
         return '<a class="list-item city-item' + (here ? " current" : "") + '" href="?city=' + encodeURIComponent(c.id) + '">' +
@@ -570,8 +571,16 @@
 
   // ---------- accounts ----------
   var AVATARS = ["🧭", "🗺️", "🚲", "🥨", "🦆", "🌅", "⛪", "🏔️", "🌲", "📸", "🍺", "🎒", "🐻", "🦊", "⭐", "🎨"];
-  var COLORS = ["#0f766e", "#1d4ed8", "#7c3aed", "#db2777", "#dc2626", "#ea580c", "#15803d", "#334155"];
-  var DEFAULT_BRAND = "#0f766e";
+  var DEFAULT_BRAND = "#7ed957"; // Wanderly green (style.css --brand)
+  // Accounts made before the rename have the old teal stored as their colour
+  // without ever picking it, so it counts as "no colour picked".
+  var OLD_DEFAULT = "#0f766e";
+  var COLORS = [DEFAULT_BRAND, "#1d4ed8", "#7c3aed", "#db2777", "#dc2626", "#ea580c", "#15803d", "#334155"];
+
+  function accentOf(p) {
+    var c = p && p.accent_color;
+    return !c || c === OLD_DEFAULT ? DEFAULT_BRAND : c;
+  }
 
   function formatDate(iso) {
     return new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
@@ -581,9 +590,17 @@
     return (err && err.message) || "Something went wrong. Please try again.";
   }
 
+  // The brand colours live in style.css. A picked colour replaces them; the
+  // other choices are all dark, so text on them is white.
   function applyAccent() {
-    var color = (ACCT.profile && ACCT.profile.accent_color) || DEFAULT_BRAND;
-    document.documentElement.style.setProperty("--brand", color);
+    var color = accentOf(ACCT.profile), root = document.documentElement.style;
+    if (color === DEFAULT_BRAND) {
+      ["--brand", "--brand-ink", "--on-brand"].forEach(function (v) { root.removeProperty(v); });
+    } else {
+      root.setProperty("--brand", color);
+      root.setProperty("--brand-ink", color);
+      root.setProperty("--on-brand", "#fff");
+    }
     document.querySelector('meta[name="theme-color"]').setAttribute("content", color);
   }
 
@@ -767,7 +784,7 @@
 
   // ---------- profile ----------
   function profileHeader(p, extra) {
-    return '<div class="profile-head" style="--accent:' + esc(p.accent_color) + '">' +
+    return '<div class="profile-head" style="--accent:' + esc(accentOf(p)) + '">' +
       (SOCIAL ? SOCIAL.avatar(p) : '<span class="avatar">' + esc(p.avatar_emoji) + "</span>") +
       '<div><h2 class="profile-name">' + esc(p.display_name || p.username) + "</h2>" +
       '<p class="profile-user">@' + esc(p.username) + (p.home_city ? " · " + esc(p.home_city) : "") + (extra ? " · " + esc(extra) : "") + "</p></div>" +
@@ -904,7 +921,7 @@
     var copy = document.getElementById("set-copy");
     if (copy) copy.addEventListener("click", function () {
       var url = cityUrl("@" + p.username);
-      if (navigator.share) navigator.share({ title: "My Go Places profile", url: url }).catch(function () {});
+      if (navigator.share) navigator.share({ title: "My Wanderly profile", url: url }).catch(function () {});
       else if (navigator.clipboard) { navigator.clipboard.writeText(url); copy.querySelector(".set-val").textContent = "Copied ✓"; }
     });
     document.getElementById("signout-btn").addEventListener("click", function () {
@@ -967,7 +984,7 @@
         }).join("") + "</div></fieldset>" +
         '<fieldset><legend>Colour</legend><div class="choice-row">' + COLORS.map(function (c) {
           return '<label class="choice swatch"><input type="radio" name="color" value="' + c + '"' +
-            (c === p.accent_color ? " checked" : "") + '><span style="background:' + c + '"></span></label>';
+            (c === accentOf(p) ? " checked" : "") + '><span style="background:' + c + '"></span></label>';
         }).join("") + "</div></fieldset>" +
         '<label>Your name<input name="name" maxlength="40" value="' + esc(p.display_name || "") + '"></label>' +
         '<label>Username<input name="username" required pattern="[a-zA-Z0-9_]{3,20}" maxlength="20" autocapitalize="off" value="' + esc(p.username) + '"></label>' +
@@ -1011,7 +1028,7 @@
       var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       var a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = "go-places-" + p.username + ".json";
+      a.download = "wanderly-" + p.username + ".json";
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -1240,7 +1257,7 @@
 
   // ---------- start ----------
   document.getElementById("city-label").textContent = DATA.city;
-  document.title = "Go Places · " + DATA.city;
+  document.title = "Wanderly · " + DATA.city;
   renderThemes();
   renderMarkers();
   updateCounter();

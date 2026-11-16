@@ -1,5 +1,5 @@
 /*
- * GO PLACES — Plan My Day settings
+ * WANDERLY — Plan My Day settings
  * ================================
  * The choices on the Plan My Day screen (#plan) and how they match places.
  * Shared by every city. Plain JSON. The time choices are the same ones as

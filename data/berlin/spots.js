@@ -1,10 +1,10 @@
 /*
- * GO PLACES — Berlin content file
+ * WANDERLY — Berlin content file
  * ===============================
  * Berlin's places and themes. It works exactly like data/spots.js (Munich):
  * the top of that file explains every field.
  *
- * Sources: the Go Places community's photos (pins of photo spots come from
+ * Sources: the Wanderly community's photos (pins of photo spots come from
  * the photos' GPS data), vetted Reddit tips from r/berlinsocialclub, and the
  * official pages of each place. Pins marked "approximate" and facts marked
  * "VERIFY" are worth checking before launch.
@@ -50,8 +50,8 @@ window.GO_PLACES = {
       ],
       nearby: ["reichstag-dome", "holocaust-memorial", "unter-den-linden", "soviet-memorial-tiergarten"],
       photos: [
-        { url: "images/berlin/brandenburger-tor-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/berlin/brandenburger-tor-2.jpg", credit: "Photo: Go Places community" }
+        { url: "images/berlin/brandenburger-tor-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/berlin/brandenburger-tor-2.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -78,7 +78,7 @@ window.GO_PLACES = {
       ],
       nearby: ["spreebogen", "brandenburger-tor", "soviet-memorial-tiergarten"],
       photos: [
-        { url: "images/berlin/reichstag-1.jpg", credit: "Photo: Go Places community" }
+        { url: "images/berlin/reichstag-1.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -106,7 +106,7 @@ window.GO_PLACES = {
       ],
       nearby: ["reichstag-dome", "hauptbahnhof", "schloss-bellevue"],
       photos: [
-        { url: "images/berlin/spreebogen-1.jpg", credit: "Photo: Go Places community" }
+        { url: "images/berlin/spreebogen-1.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -127,7 +127,7 @@ window.GO_PLACES = {
       tip: "Walk the whole gallery from Ostbahnhof to Oberbaumbrücke and finish with the sunset on the bridge.",
       nearby: ["oberbaumbruecke", "karl-marx-allee"],
       photos: [
-        { url: "images/berlin/east-side-gallery-1.jpg", credit: "Photo: Go Places community" }
+        { url: "images/berlin/east-side-gallery-1.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -147,10 +147,10 @@ window.GO_PLACES = {
       ],
       tip: "Bring a drink to the wooden deck at the water's edge and put your feet up, like the photo. Sunset over the Spree is the reason to come.",
       photos: [
-        { url: "images/berlin/holzmarkt-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/berlin/holzmarkt-2.jpg", credit: "Photo: Go Places community" },
-        { url: "images/berlin/holzmarkt-3.jpg", credit: "Photo: Go Places community" },
-        { url: "images/berlin/holzmarkt-4.jpg", credit: "Photo: Go Places community" }
+        { url: "images/berlin/holzmarkt-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/berlin/holzmarkt-2.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/berlin/holzmarkt-3.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/berlin/holzmarkt-4.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -188,7 +188,7 @@ window.GO_PLACES = {
       ],
       tip: "Lean on the stone railing for the photo, then walk along the river to Monbijoupark.",
       photos: [
-        { url: "images/berlin/ebertbruecke-1.jpg", credit: "Photo: Go Places community" }
+        { url: "images/berlin/ebertbruecke-1.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -207,9 +207,9 @@ window.GO_PLACES = {
       ],
       tip: "Bring a book and find a bench on the west bank in the late afternoon.",
       photos: [
-        { url: "images/berlin/lietzensee-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/berlin/lietzensee-2.jpg", credit: "Photo: Go Places community" },
-        { url: "images/berlin/lietzensee-3.jpg", credit: "Photo: Go Places community" }
+        { url: "images/berlin/lietzensee-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/berlin/lietzensee-2.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/berlin/lietzensee-3.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -229,7 +229,7 @@ window.GO_PLACES = {
       ],
       tip: "Walk on through the Soldiner Kiez to the Panke river path, a quiet green strip few visitors know.",
       photos: [
-        { url: "images/berlin/stephanuskirche-1.jpg", credit: "Photo: Go Places community" }
+        { url: "images/berlin/stephanuskirche-1.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -250,12 +250,12 @@ window.GO_PLACES = {
       ],
       tip: "Take the winding stairs up through the trees. The platform faces west, so it's a perfect sunset spot. Berliner Unterwelten offers paid tours inside the bunker.",
       photos: [
-        { url: "images/berlin/humboldthain-2.jpg", credit: "Photo: Go Places community" },
-        { url: "images/berlin/humboldthain-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/berlin/humboldthain-3.jpg", credit: "Photo: Go Places community" },
-        { url: "images/berlin/humboldthain-4.jpg", credit: "Photo: Go Places community" },
-        { url: "images/berlin/humboldthain-5.jpg", credit: "Photo: Go Places community" },
-        { url: "images/berlin/humboldthain-6.jpg", credit: "Photo: Go Places community" }
+        { url: "images/berlin/humboldthain-2.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/berlin/humboldthain-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/berlin/humboldthain-3.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/berlin/humboldthain-4.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/berlin/humboldthain-5.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/berlin/humboldthain-6.jpg", credit: "Photo: Wanderly community" }
       ]
     },
 

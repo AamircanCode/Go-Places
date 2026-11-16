@@ -1,5 +1,5 @@
 /*
- * GO PLACES — place metadata (Munich)
+ * WANDERLY — place metadata (Munich)
  * ===================================
  * Structured facts that help people decide whether a place is worth it right
  * now. They show as "At a glance" on every spot page, and Plan My Day uses
