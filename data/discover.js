@@ -1,5 +1,5 @@
 /*
- * GO PLACES — discovery settings
+ * WANDERLY — discovery settings
  * ==============================
  * The moods, activity categories and time choices used by the "How do you
  * feel today?" and "What can I do right now?" sections. Plain JSON.

@@ -1,5 +1,5 @@
 /*
- * GO PLACES — accounts
+ * WANDERLY — accounts
  * ====================
  * Everything that talks to Supabase lives here: sign-in, the profile,
  * explored spots, the wishlist, photo uploads, and the progress of the
@@ -327,7 +327,7 @@
   // Re-draws the photo on a canvas and saves it as a new JPEG. The new file
   // has no EXIF data at all, so the GPS location, camera serial number and
   // original timestamp are gone before anything leaves the phone.
-  // With `mark`, "© Go Places" is drawn into the corner, like
+  // With `mark`, "© Wanderly" is drawn into the corner, like
   // tools/watermark.py does for the photos in images/.
   function cleanPhoto(file, maxSide, mark) {
     return decode(file).then(function (img) {
@@ -358,9 +358,9 @@
     ctx.textAlign = "right";
     ctx.textBaseline = "bottom";
     ctx.fillStyle = "rgba(0, 0, 0, 0.47)";
-    ctx.fillText("© Go Places", w - margin + shadow, h - margin + shadow);
+    ctx.fillText("© Wanderly", w - margin + shadow, h - margin + shadow);
     ctx.fillStyle = "rgba(255, 255, 255, 0.78)";
-    ctx.fillText("© Go Places", w - margin, h - margin);
+    ctx.fillText("© Wanderly", w - margin, h - margin);
   }
 
   function decode(file) {

@@ -1,5 +1,5 @@
 /*
- * GO PLACES — Berlin activities ("What can I do?")
+ * WANDERLY — Berlin activities ("What can I do?")
  * ================================================
  * Works exactly like data/activities.js (Munich): the top of that file
  * explains every field. placeIds are spot ids from data/berlin/spots.js and

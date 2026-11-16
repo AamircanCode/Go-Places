@@ -1,4 +1,4 @@
--- GO PLACES — database setup for accounts
+-- WANDERLY — database setup for accounts
 -- =========================================
 -- Paste this whole file into Supabase → SQL Editor → New query, and click Run.
 -- It is safe to run again later: it only creates what is missing and
@@ -39,7 +39,7 @@ create table if not exists public.profiles (
   display_name  text check (char_length(display_name) <= 40),
   bio           text check (char_length(bio) <= 160),
   avatar_emoji  text not null default '🧭' check (char_length(avatar_emoji) between 1 and 8),
-  accent_color  text not null default '#0f766e' check (accent_color ~ '^#[0-9a-f]{6}$'),
+  accent_color  text not null default '#7ed957' check (accent_color ~ '^#[0-9a-f]{6}$'),
   home_city     text not null default 'Munich' check (char_length(home_city) <= 40),
   is_public     boolean not null default false,
   created_at    timestamptz not null default now(),
@@ -647,7 +647,7 @@ create policy "avatars: remove own" on storage.objects
 --                        public     anyone, also people who aren't signed in
 --                        followers  the owner's accepted followers
 --                        private    only the owner
---   collection_saves   other people's collections (or Go Places ones, whose
+--   collection_saves   other people's collections (or Wanderly ones, whose
 --                      ids start with "pick-" or "theme-") that someone saved
 --
 -- Place metadata and Plan My Day need no tables: they come from data/.
@@ -738,7 +738,7 @@ create policy "collection saves: own only" on public.collection_saves
 --                 in Supabase → Table Editor → submissions by changing the
 --                 status column; it has the same effect as the app's buttons.
 --   submissions   a private storage bucket for the photos. The app stamps
---                 "© Go Places" on them and removes their location data
+--                 "© Wanderly" on them and removes their location data
 --                 before upload.
 
 -- ---------- reviewers ----------

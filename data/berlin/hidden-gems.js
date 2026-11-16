@@ -1,5 +1,5 @@
 /*
- * GO PLACES — Berlin hidden gems
+ * WANDERLY — Berlin hidden gems
  * ==============================
  * Works exactly like data/hidden-gems.js (Munich): the top of that file
  * explains every field. The coordinates are approximate: VERIFY them on the

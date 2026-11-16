@@ -1,5 +1,5 @@
 /*
- * GO PLACES — hidden gems
+ * WANDERLY — hidden gems
  * =======================
  * Small, lesser-known discoveries, shown separately from the main spots.
  * Copy a block to add one. Plain JSON.

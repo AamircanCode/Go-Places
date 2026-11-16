@@ -1,5 +1,5 @@
 /*
- * GO PLACES — explorers
+ * WANDERLY — explorers
  * =====================
  * Interests people can pick for their profile, and the groups on the
  * "Discover explorers" page (#explorers). Plain JSON.

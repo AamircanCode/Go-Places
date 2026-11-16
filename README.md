@@ -1,6 +1,15 @@
-# Go Places
+<p align="center"><img src="images/brand/wanderly-logo.png" alt="Wanderly" width="160"></p>
 
-Explore Munich and Berlin for free. A mobile-friendly map of free (or nearly free) spots, with history, fun facts, audio read-outs and themed playlists like "Sunset spots" or "Oldest churches". Tap the city name under "Go Places" in the top bar to switch cities.
+# Wanderly
+
+Explore Munich and Berlin for free. A mobile-friendly map of free (or nearly free) spots, with history, fun facts, audio read-outs and themed playlists like "Sunset spots" or "Oldest churches". Tap the city name under "Wanderly" in the top bar to switch cities.
+
+## Brand
+
+- **Name:** Wanderly (formerly Go Places).
+- **Colours:** green `#7ed957` (primary) and cyan `#5ce1e6` (secondary), set as `--brand` and `--brand-2` at the top of [`style.css`](style.css). Text on green uses `--on-brand`, and green text or links on white use the darker `--brand-ink`, because the light green is hard to read on white.
+- **Logo:** the placeholder logo and icons are in [`images/brand/`](images/brand/): `wanderly-logo.png` (W with the wordmark), `wanderly-mark.png` (W only, also drawn in the top bar), `favicon-32.png`, `apple-touch-icon.png` and `icon-192/512.png` for [`manifest.webmanifest`](manifest.webmanifest). To swap in the final logo, replace these files with the same names and sizes.
+- **Emails:** sign-up and password emails come from Supabase. Set the sender name to Wanderly under **Authentication → Emails → SMTP Settings**, and change "Go Places" in any templates you edited under **Authentication → Emails → Templates**.
 
 ## Try it
 
@@ -23,7 +32,7 @@ Every city's places come from one file: **[`data/spots.js`](data/spots.js)** for
 
 Spot pages also show **🚶 Around here** (a spot's optional `around` list of things to do nearby) and **📍 Nearby spots**, links to the spot's own `nearby` ids plus the closest other spots within 1.5 km, with walking times.
 
-Photos: put image files into `images/`, run `python3 tools/watermark.py` to stamp "© Go Places" onto any new ones (already stamped photos are skipped), and list them in the spot's `photos`, e.g. `{ url: "images/hackerbruecke-1.jpg", credit: "Photo: Aamir" }`. Spots without photos show a coloured card with their emoji.
+Photos: put image files into `images/`, run `python3 tools/watermark.py` to stamp "© Wanderly" onto any new ones (already stamped photos are skipped; photos stamped before the rename still read "© Go Places" until they are re-stamped from their originals), and list them in the spot's `photos`, e.g. `{ url: "images/hackerbruecke-1.jpg", credit: "Photo: Aamir" }`. Spots without photos show a coloured card with their emoji.
 
 The site also blocks right-click and long-press "Save image" and dragging on photos ([`protect.js`](protect.js)) and asks search engines not to index them. That stops casual saving, not a determined person (a screenshot or the browser's developer tools still work), which is why the mark is in the photo itself. Keep unstamped originals outside the repo.
 
@@ -65,7 +74,7 @@ They're normal spots, so explored, wishlist, photos and ratings all work. Everyt
 Three things that help answer "What should I do right now in my city?".
 
 - **At a glance** on every spot page: how long it takes, budget, best time of day and season, which weather it works in, who it suits, how active it is, step-free access, and three 1–10 scores (hidden gem, knowledge, photo). It also says when right now is a good time to go. All of it is in [`data/place-meta.js`](data/place-meta.js), one entry per spot; a spot without an entry gets a guess from its cost and themes, marked as not checked. Accessibility is marked VERIFY everywhere.
-- **Collections** (`…/#collections`): lists of places, like playlists. Every theme is also a Go Places collection, plus starter ones in [`data/collections.js`](data/collections.js) (Rainy Day Munich, Best First Date Locations, Birdwatching In Munich, …). Anyone can make their own: tap **♡ Save** on a spot (it lists the wishlist and your collections, plus **New collection**), or start one and search for places. Collections can be Public, Followers only or Private, shared with a link like `…/#collection/<id>`, and other people's can be saved. Spot pages show "Included in collections". The wishlist is the first choice under **♡ Save** and shows under **Places › Wishlist** on your profile. Signed out, collections are kept on the device and move into the account at sign-in.
+- **Collections** (`…/#collections`): lists of places, like playlists. Every theme is also a Wanderly collection, plus starter ones in [`data/collections.js`](data/collections.js) (Rainy Day Munich, Best First Date Locations, Birdwatching In Munich, …). Anyone can make their own: tap **♡ Save** on a spot (it lists the wishlist and your collections, plus **New collection**), or start one and search for places. Collections can be Public, Followers only or Private, shared with a link like `…/#collection/<id>`, and other people's can be saved. Spot pages show "Included in collections". The wishlist is the first choice under **♡ Save** and shows under **Places › Wishlist** on your profile. Signed out, collections are kept on the device and move into the account at sign-in.
 - **Plan My Day** (`…/#plan`, also on the "What can I do?" screen): pick time, budget, interests, company and weather, and get a route through existing places with walking or public transport estimates between stops, a matching activity and nearby hidden gems for each stop, directions, "Show on map", "Try another" and "Save as collection". The weather is detected from [Open-Meteo](https://open-meteo.com) for the city centre (no key, nothing personal sent); otherwise you pick it. A signed-in explorer's profile interests are picked for them. Plans are links too, e.g. `…/#plan/t=2h&b=free&i=books,museums`.
 
 Plan My Day's choices and how interests match places are in [`data/plan.js`](data/plan.js). The planner in `plan.js` is made of swappable parts (filters, scorers, travel time, weather), so live opening hours, real walking or cycling times, public transport or seasonal events can be added later with `GoItinerary.addFilter`, `addScorer`, `setTravel` and `setWeatherProvider` without changing the rest.
@@ -74,7 +83,7 @@ Collections in an account need the "collections" part of [`supabase/schema.sql`]
 
 ## Explorers (social discovery, privacy first)
 
-Go Places is not a social network: there are **no follower counts, likes, rankings or leaderboards** anywhere.
+Wanderly is not a social network: there are **no follower counts, likes, rankings or leaderboards** anywhere.
 
 - **Profiles** get an emoji avatar (uploaded profile photos are switched off for now), interests, quests completed and activities completed, on top of name, bio, badges, explored places and photos.
 - **Follow / unfollow.** Following a public profile is instant; a followers-only profile gets a request it can accept or decline. "People you follow" and "People following you" are plain lists that only you can see. You can remove a follower; they aren't told.
@@ -109,7 +118,7 @@ Signed-in explorers can suggest new places and photos. Nothing they send is publ
 
 If someone deletes their account, their approved places and photos stay up (listed under *Deleted accounts*) and everything else they suggested is removed.
 
-Photos are shrunk, stripped of their location data and stamped with "© Go Places" on the phone before upload. Approved places live in the database, not in `data/spots.js`; to give one full history and fun facts later, copy it into `spots.js` (keeping its `c-…` id) and unpublish the suggestion.
+Photos are shrunk, stripped of their location data and stamped with "© Wanderly" on the phone before upload. Approved places live in the database, not in `data/spots.js`; to give one full history and fun facts later, copy it into `spots.js` (keeping its `c-…` id) and unpublish the suggestion.
 
 This needs the "submissions" part of [`supabase/schema.sql`](supabase/schema.sql): paste the whole file into the SQL Editor and run it again. Until then the ＋ button stays hidden. The file makes **@aamiradmin** the reviewer; if that account doesn't exist yet, sign up with that username and run the file again. The end of the file shows how to add or remove other reviewers. Nobody can make themselves a reviewer from the app.
 
@@ -159,6 +168,7 @@ AR camera view, monthly challenges, a community forum, and local business partne
 ## Files
 
 - `index.html`, `style.css`, `app.js`: the app
+- `images/brand/`, `manifest.webmanifest`: logo, icons and home-screen app details
 - `account.js`: sign-in, profiles, wishlist and photo uploads (talks to Supabase)
 - `config.js`: your Supabase project address and publishable key
 - `supabase/schema.sql`: database tables and privacy rules, run once in Supabase
@@ -166,7 +176,7 @@ AR camera view, monthly challenges, a community forum, and local business partne
 - `knowledge.js`: the Free Knowledge screens; `data/free-knowledge.js`: its places
 - `social.js`: profiles, follows, explorers, feed, ratings and privacy; `data/social.js`: interests and explorer groups
 - `meta.js`: place metadata and "At a glance"; `data/place-meta.js`: the metadata of each place
-- `collections.js`: collections; `data/collections.js`: the Go Places starter collections
+- `collections.js`: collections; `data/collections.js`: the Wanderly starter collections
 - `plan.js`: Plan My Day and the route planner; `data/plan.js`: its choices, interests and weights
 - `submissions.js`: suggest a place or photo, and the review queue
 - `lightbox.js`: the full-size photo viewer (tap any photo; swipe or arrow keys to move, Esc or tap to close)

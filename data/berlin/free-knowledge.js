@@ -1,5 +1,5 @@
 /*
- * GO PLACES — Free Knowledge in Berlin
+ * WANDERLY — Free Knowledge in Berlin
  * ====================================
  * Free museums and learning places in Berlin. Works exactly like
  * data/free-knowledge.js (Munich): the top of that file explains every field.

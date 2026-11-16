@@ -1,5 +1,5 @@
 /*
- * GO PLACES — account settings
+ * WANDERLY — account settings
  * ============================
  * Accounts (sign-in, profiles, wishlist, photo uploads) use a free Supabase
  * project. Until both values below are filled in, the site works exactly as

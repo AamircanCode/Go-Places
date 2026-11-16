@@ -1,10 +1,10 @@
 /*
- * GO PLACES — collections
+ * WANDERLY — collections
  * =======================
  * Lists of places, like playlists for the city: "Best Sunset Spots",
  * "Rainy Day Munich". Three kinds show up together:
  *
- *   Go Places collections  every theme from data/spots.js, plus the starter
+ *   Wanderly collections  every theme from data/spots.js, plus the starter
  *                          collections in data/collections.js
  *   your collections       made in the app. Kept in the account (the
  *                          "collections" part of supabase/schema.sql), or on
@@ -188,7 +188,7 @@
   }
 
   function owner(c) {
-    if (c.kind === "pick") return "Go Places";
+    if (c.kind === "pick") return "Wanderly";
     if (c.kind === "mine" || c.kind === "wishlist") return "you";
     return names[c.ownerId] || "an explorer";
   }
@@ -299,7 +299,7 @@
       (wish ? row(wish) : "") +
       (my.length ? my.map(row).join("") : '<p class="empty">Nothing yet. Tap “＋ Collection” on any place, or start one above.</p>') +
       '<div id="col-saved"></div>' +
-      '<h3 class="dz-h">From Go Places</h3>' + goPlaces().map(row).join("") +
+      '<h3 class="dz-h">From Wanderly</h3>' + goPlaces().map(row).join("") +
       '<div id="col-public"></div>';
     show(openHome, null, html, "collections");
     fillSaved(savedIds);
@@ -501,7 +501,7 @@
   }
 
   // ---------- pieces for other screens ----------
-  // "Included in collections" on a spot page. Go Places ones right away,
+  // "Included in collections" on a spot page. Wanderly ones right away,
   // explorers' public ones as they load.
   function spotSection(spot) {
     var ours = goPlaces().filter(function (c) { return has(c.placeIds, spot.id); });
@@ -662,7 +662,7 @@
       // Warn about starter collections that point at places that don't exist.
       (LAYER.collections || []).forEach(function (c) {
         (c.placeIds || []).forEach(function (p) {
-          if (!app.spotById(p)) console.warn('Go Places content: collection "' + c.id + '" links to unknown spot "' + p + '"');
+          if (!app.spotById(p)) console.warn('Wanderly content: collection "' + c.id + '" links to unknown spot "' + p + '"');
         });
       });
     },

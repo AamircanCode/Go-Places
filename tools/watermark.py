@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-GO PLACES — bake the "© Go Places" watermark into place photos
-=============================================================
+WANDERLY — bake the "© Wanderly" watermark into place photos
+============================================================
 Run this after adding new photos to images/ (needs Python 3 and Pillow:
 `pip install Pillow`):
 
@@ -22,9 +22,9 @@ import sys
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
-TEXT = "© Go Places"
-MARKER = b"GoPlaces-watermarked"
-COPYRIGHT = "Copyright Go Places. All rights reserved."  # EXIF text is ASCII-only
+TEXT = "© Wanderly"
+MARKER = b"GoPlaces-watermarked"  # kept from before the rename, so older photos are still skipped
+COPYRIGHT = "Copyright Wanderly. All rights reserved."  # EXIF text is ASCII-only
 FONTS = [
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
     "/Library/Fonts/Arial Bold.ttf",

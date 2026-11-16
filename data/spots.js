@@ -1,5 +1,5 @@
 /*
- * GO PLACES — content file
+ * WANDERLY — content file
  * =========================
  * This is the only file you need to edit to add or change places.
  *
@@ -109,7 +109,7 @@ window.GO_PLACES = {
       ],
       tip: "Sit on the rocks by the water and wait: the birds come to you. Please don't feed them bread.",
       photos: [
-        { url: "images/hinterbruehl-ducks.jpg", credit: "Photo: Go Places community" }
+        { url: "images/hinterbruehl-ducks.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -128,8 +128,8 @@ window.GO_PLACES = {
       ],
       tip: "Come when the water is still and the bridge reflects perfectly. The ducks are a short walk north.",
       photos: [
-        { url: "images/hinterbruehl-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/hinterbruehl-2.jpg", credit: "Photo: Go Places community" }
+        { url: "images/hinterbruehl-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/hinterbruehl-2.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -261,10 +261,10 @@ window.GO_PLACES = {
       ],
       nearby: ["book-burning-memorial", "bookshelf-lenbachhaus", "lenbachhaus-garden", "ns-dokuzentrum"],
       photos: [
-        { url: "images/koenigsplatz-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/koenigsplatz-2.jpg", credit: "Photo: Go Places community" },
-        { url: "images/book-burning-memorial-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/koenigsplatz-3.jpg", credit: "Photo: Go Places community" }
+        { url: "images/koenigsplatz-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/koenigsplatz-2.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/book-burning-memorial-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/koenigsplatz-3.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -291,7 +291,7 @@ window.GO_PLACES = {
       ],
       nearby: ["koenigsplatz", "ns-dokuzentrum", "bookshelf-lenbachhaus"],
       photos: [
-        { url: "images/book-burning-memorial-1.jpg", credit: "Photo: Go Places community" }
+        { url: "images/book-burning-memorial-1.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -318,14 +318,14 @@ window.GO_PLACES = {
       ],
       nearby: ["bookshelf-lenbachhaus", "lenbachhaus-lounge", "koenigsplatz", "book-burning-memorial"],
       photos: [
-        { url: "images/lenbachhaus-garden-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/lenbachhaus-garden-2.jpg", credit: "Photo: Go Places community" },
-        { url: "images/lenbachhaus-garden-3.jpg", credit: "Photo: Go Places community" },
-        { url: "images/lenbachhaus-garden-4.jpg", credit: "Photo: Go Places community" },
-        { url: "images/lenbachhaus-garden-5.jpg", credit: "Photo: Go Places community" },
-        { url: "images/lenbachhaus-garden-6.jpg", credit: "Photo: Go Places community" },
-        { url: "images/lenbachhaus-garden-7.jpg", credit: "Photo: Go Places community" },
-        { url: "images/lenbachhaus-garden-8.jpg", credit: "Photo: Go Places community" }
+        { url: "images/lenbachhaus-garden-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/lenbachhaus-garden-2.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/lenbachhaus-garden-3.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/lenbachhaus-garden-4.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/lenbachhaus-garden-5.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/lenbachhaus-garden-6.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/lenbachhaus-garden-7.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/lenbachhaus-garden-8.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -350,7 +350,7 @@ window.GO_PLACES = {
       ],
       nearby: ["bookshelf-lenbachhaus", "lenbachhaus-garden", "koenigsplatz"],
       photos: [
-        { url: "images/lenbachhaus-lounge-1.jpg", credit: "Photo: Go Places community" }
+        { url: "images/lenbachhaus-lounge-1.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -376,9 +376,9 @@ window.GO_PLACES = {
       ],
       nearby: ["karl-stuetzel-platz-basketball", "bookshelf-lenbachhaus", "koenigsplatz"],
       photos: [
-        { url: "images/karl-stuetzel-platz-ring-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/karl-stuetzel-platz-ring-2.jpg", credit: "Photo: Go Places community" },
-        { url: "images/karl-stuetzel-platz-ring-3.jpg", credit: "Photo: Go Places community" }
+        { url: "images/karl-stuetzel-platz-ring-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/karl-stuetzel-platz-ring-2.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/karl-stuetzel-platz-ring-3.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -403,8 +403,8 @@ window.GO_PLACES = {
       ],
       nearby: ["karl-stuetzel-platz-ring", "olympiapark-sports"],
       photos: [
-        { url: "images/karl-stuetzel-platz-basketball-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/karl-stuetzel-platz-basketball-2.jpg", credit: "Photo: Go Places community" }
+        { url: "images/karl-stuetzel-platz-basketball-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/karl-stuetzel-platz-basketball-2.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -440,10 +440,10 @@ window.GO_PLACES = {
       ],
       tip: "Take the cobbled path up: it winds round the hill, and the geese on the slopes don't mind company. The benches at the top face the city towers.",
       photos: [
-        { url: "images/olympiaberg-4.jpg", credit: "Photo: Go Places community" },
-        { url: "images/olympiaberg-3.jpg", credit: "Photo: Go Places community" },
-        { url: "images/olympiaberg-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/olympiaberg-2.jpg", credit: "Photo: Go Places community" }
+        { url: "images/olympiaberg-4.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/olympiaberg-3.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/olympiaberg-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/olympiaberg-2.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -463,9 +463,9 @@ window.GO_PLACES = {
       ],
       tip: "Do a workout here, then run up Olympiaberg as your cool-down.",
       photos: [
-        { url: "images/olympiapark-sports-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/olympiapark-sports-2.jpg", credit: "Photo: Go Places community" },
-        { url: "images/olympiapark-sports-3.jpg", credit: "Photo: Go Places community" }
+        { url: "images/olympiapark-sports-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/olympiapark-sports-2.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/olympiapark-sports-3.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -486,9 +486,9 @@ window.GO_PLACES = {
       ],
       tip: "Stand on the opposite shore for the classic reflection shot, and stay for the sunset over the lake. Watch the gate times: the side gates close half an hour before the main one.",
       photos: [
-        { url: "images/nymphenburg-monopteros-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/nymphenburg-monopteros-3.jpg", credit: "Photo: Go Places community" },
-        { url: "images/nymphenburg-monopteros-2.jpg", credit: "Photo: Go Places community" }
+        { url: "images/nymphenburg-monopteros-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/nymphenburg-monopteros-3.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/nymphenburg-monopteros-2.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -508,7 +508,7 @@ window.GO_PLACES = {
       ],
       tip: "Bring a takeaway coffee from Odeonsplatz and sit on one of the benches. It's far calmer than the squares around it.",
       photos: [
-        { url: "images/wittelsbacherplatz-1.jpg", credit: "Photo: Go Places community" }
+        { url: "images/wittelsbacherplatz-1.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -634,7 +634,7 @@ window.GO_PLACES = {
       ],
       tip: "Stay on the paths along the edge of the field so you don't trample the crops.",
       photos: [
-        { url: "images/sunset-field-1.jpg", credit: "Photo: Go Places community" }
+        { url: "images/sunset-field-1.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -656,10 +656,10 @@ window.GO_PLACES = {
       ],
       tip: "Horse riders have their own marked paths, so runners and cyclists should stick to the main tracks. Feeding the animals is not allowed.",
       photos: [
-        { url: "images/forstenrieder-park-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/forstenrieder-park-2.jpg", credit: "Photo: Go Places community" },
-        { url: "images/forstenrieder-park-3.jpg", credit: "Photo: Go Places community" },
-        { url: "images/forstenrieder-park-4.jpg", credit: "Photo: Go Places community" }
+        { url: "images/forstenrieder-park-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/forstenrieder-park-2.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/forstenrieder-park-3.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/forstenrieder-park-4.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -1152,7 +1152,7 @@ window.GO_PLACES = {
       ],
       nearby: ["wittelsbacherplatz", "koenigsplatz", "ns-dokuzentrum", "feldherrnhalle"],
       photos: [
-        { url: "images/ns-victims-memorial-1.jpg", credit: "Photo: Go Places community" }
+        { url: "images/ns-victims-memorial-1.jpg", credit: "Photo: Wanderly community" }
       ]
     },
     {
@@ -1370,10 +1370,10 @@ window.GO_PLACES = {
       ],
       nearby: ["bookshelf-rudi-hierl-platz", "koenigsplatz"],
       photos: [
-        { url: "images/rudi-hierl-platz-table-tennis-1.jpg", credit: "Photo: Go Places community" },
-        { url: "images/rudi-hierl-platz-table-tennis-2.jpg", credit: "Photo: Go Places community" },
-        { url: "images/rudi-hierl-platz-table-tennis-3.jpg", credit: "Photo: Go Places community" },
-        { url: "images/rudi-hierl-platz-table-tennis-4.jpg", credit: "Photo: Go Places community" }
+        { url: "images/rudi-hierl-platz-table-tennis-1.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/rudi-hierl-platz-table-tennis-2.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/rudi-hierl-platz-table-tennis-3.jpg", credit: "Photo: Wanderly community" },
+        { url: "images/rudi-hierl-platz-table-tennis-4.jpg", credit: "Photo: Wanderly community" }
       ]
     }
   ]

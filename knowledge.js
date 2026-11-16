@@ -1,5 +1,5 @@
 /*
- * GO PLACES — Free Knowledge
+ * WANDERLY — Free Knowledge
  * ==========================
  * The screens for the 📚 Free Knowledge category: the overview (#knowledge),
  * one subcategory (#knowledge/libraries) and a content group such as the
@@ -152,9 +152,9 @@
   function checkContent() {
     places().forEach(function (s) {
       (s.knowledge || []).forEach(function (k) {
-        if (!byId(K.subcategories, k)) console.warn('Go Places content: "' + s.id + '" has unknown Free Knowledge subcategory "' + k + '"');
+        if (!byId(K.subcategories, k)) console.warn('Wanderly content: "' + s.id + '" has unknown Free Knowledge subcategory "' + k + '"');
       });
-      if (s.group && !byId(K.groups, s.group)) console.warn('Go Places content: "' + s.id + '" has unknown group "' + s.group + '"');
+      if (s.group && !byId(K.groups, s.group)) console.warn('Wanderly content: "' + s.id + '" has unknown group "' + s.group + '"');
     });
   }
 

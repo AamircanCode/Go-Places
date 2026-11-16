@@ -1,9 +1,9 @@
 /*
- * GO PLACES — photo protection
+ * WANDERLY — photo protection
  * ============================
  * Makes saving photos harder for casual visitors: no right-click / long-press
  * "Save image" menu, no dragging a photo out to the desktop, no image selection.
- * The "© Go Places" mark itself is baked into the photo files by
+ * The "© Wanderly" mark itself is baked into the photo files by
  * tools/watermark.py, and style.css adds a matching mark over cropped photos.
  *
  * This is a deterrent, not a lock. Anything a browser can show can still be
