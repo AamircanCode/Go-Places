@@ -759,15 +759,15 @@ details.fold { border-bottom: 1px solid var(--line); padding-bottom: 6px; }
 .form-row > label { flex: 1; min-width: 0; }
 .check-row { flex-direction: row !important; align-items: center; gap: 8px !important; font-weight: 400 !important; padding: 4px 0; }
 .check-row input { width: 18px; height: 18px; flex: 0 0 auto; }
-.linkish { border: none; background: none; padding: 0; color: var(--brand); font-size: 13px; text-decoration: underline; }
+.linkish { border: none; background: none; padding: 0; color: var(--brand-ink); font-size: 13px; text-decoration: underline; }
 .meetup-card .mc-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
 .meetup-card .sub { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .meetup-card .avatar.small, .meetup-person .avatar.small { width: 24px; height: 24px; font-size: 13px; border: 2px solid var(--accent, var(--brand)); }
 .meetup-card.is-past { opacity: 0.6; }
-.mc-badge { font-size: 11px; font-weight: 700; color: var(--brand); background: var(--brand-soft); border-radius: 999px; padding: 2px 8px; white-space: nowrap; align-self: center; }
+.mc-badge { font-size: 11px; font-weight: 700; color: var(--brand-ink); background: var(--brand-soft); border-radius: 999px; padding: 2px 8px; white-space: nowrap; align-self: center; }
 .meetup-facts { display: flex; flex-direction: column; gap: 6px; background: var(--surface); border-radius: 12px; padding: 10px 12px; margin: 10px 0; font-size: 14px; }
 .meetup-facts b { display: inline-block; width: 22px; font-weight: 400; }
-.meetup-facts a, .meetup-note a, .meetup-safety-card a { color: var(--brand); }
+.meetup-facts a, .meetup-note a, .meetup-safety-card a { color: var(--brand-ink); }
 .meetup-topic { margin: 0; font-weight: 600; font-size: 15px; }
 .meetup-tips { padding-left: 20px; margin: 8px 0; font-size: 15px; line-height: 1.5; }
 .meetup-tips li { margin-bottom: 6px; }

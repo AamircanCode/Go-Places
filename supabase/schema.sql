@@ -1586,7 +1586,7 @@ returns void language plpgsql security definer set search_path = '' as $$
 begin
   if not public.is_reviewer() then raise exception 'Only reviewers can do this.'; end if;
   update public.rooms set status = 'closed' where id = room;
-  perform public.room_note(room, 'A Go Places moderator closed this meetup.' || coalesce(' ' || nullif(btrim(why), ''), ''));
+  perform public.room_note(room, 'A Wanderly moderator closed this meetup.' || coalesce(' ' || nullif(btrim(why), ''), ''));
 end;
 $$;
 
@@ -1749,7 +1749,11 @@ $$;
 do $$
 begin
   if exists (select 1 from pg_extension where extname = 'pg_cron') then
-    perform cron.schedule('go-places-purge-rooms', '0 3 * * *', 'select public.purge_old_rooms()');
+    -- the job was called go-places-purge-rooms before the rename to Wanderly
+    if exists (select 1 from cron.job where jobname = 'go-places-purge-rooms') then
+      perform cron.unschedule('go-places-purge-rooms');
+    end if;
+    perform cron.schedule('wanderly-purge-rooms', '0 3 * * *', 'select public.purge_old_rooms()');
   end if;
 end;
 $$;

@@ -94,7 +94,7 @@ Wanderly is not a social network: there are **no follower counts, likes, ranking
 
 These need the "social discovery & privacy" part of [`supabase/schema.sql`](supabase/schema.sql): paste the whole file into the SQL Editor and run it again. Until then they stay hidden and everything else works as before. Existing public profiles stay public; private ones stay private.
 
-## Meetups (go places with new people)
+## Meetups (explore with new people)
 
 Explorers can start a small, temporary meetup for a place, a collection or a theme, and others ask to join. It's how people who haven't met plan to go somewhere together.
 
