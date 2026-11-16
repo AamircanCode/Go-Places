@@ -38,7 +38,6 @@
     signed_out: "Sign in to join meetups.",
     email: "Confirm your email address first. Check your inbox for the link we sent when you signed up.",
     suspended: "Your account can't use meetups right now. A Go Places moderator has paused it.",
-    private_profile: "Your profile is private. To meet people, they need to see who you are: switch it to Public or Followers only.",
     confirm: "One quick step first: confirm you're 18 or older and read the meet-safely tips.",
     new_account: "New accounts can join meetups straight away, and can host their own after 3 days."
   };
@@ -233,8 +232,7 @@
     if (!status) return "";
     var why = hosting ? status.host_reason : status.join_reason;
     if (!why) return "";
-    var fix = why === "private_profile" ? '<a href="#privacy">Change who can see my profile</a>'
-      : why === "confirm" ? '<a href="#meetups-safety">Do it now</a>'
+    var fix = why === "confirm" ? '<a href="#meetups-safety">Do it now</a>'
       : why === "new_account" && status.hosting_from ? "You can host from " + esc(new Date(status.hosting_from).toLocaleDateString("en-GB", { day: "numeric", month: "long" })) + "." : "";
     return '<div class="tip meetup-note">' + esc(WHY[why] || why) + (fix ? " " + fix : "") + "</div>";
   }
@@ -582,6 +580,7 @@
           '<label class="seg-opt"><input type="radio" name="audience" value="city"' + (d.audience !== "followers" ? " checked" : "") + "><span>Explorers in " + esc(DATA.city) + "</span></label>" +
           '<label class="seg-opt"><input type="radio" name="audience" value="followers"' + (d.audience === "followers" ? " checked" : "") + "><span>Only my followers</span></label>" +
         "</div></fieldset>" +
+        '<p class="privacy-note">🪪 Others see your meetup card: your name, avatar and interests. Nothing else from your profile, even if it\'s private.</p>' +
         '<p class="privacy-note">🛡️ Only people you let in see who else is going and the chat. The meetup is deleted a week after the day.</p>' +
         '<p class="form-msg" role="alert"></p>' +
         '<div class="actions"><button class="btn primary" type="submit">' + (editing ? "Save" : "Start meetup") + "</button></div>" +
@@ -628,7 +627,7 @@
       show(openAsk, id,
         back("Meetup", "open-" + id) +
         '<h2 class="list-title">🙋 Ask to join</h2>' +
-        '<p class="list-desc">The host sees your name, avatar and interests, and this line. They decide who comes.</p>' +
+        '<p class="list-desc">The host sees your meetup card (name, avatar and interests) and this line, nothing else from your profile, even if it\'s private. They decide who comes.</p>' +
         '<form class="form" id="ask-form">' +
           '<label>Say hi (optional)<textarea name="intro" rows="2" maxlength="140" placeholder="e.g. New in Munich, love sunsets and bookshelves."></textarea></label>' +
           '<p class="form-msg" role="alert"></p>' +

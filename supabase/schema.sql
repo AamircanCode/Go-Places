@@ -1017,9 +1017,12 @@ on conflict (user_id) do update set can_publish = true;
 --   room_suspensions  people a reviewer has stopped from using rooms
 --
 -- Safety rules, all enforced here and not just in the app:
---   - To join you need: a confirmed email, a profile that isn't private (so
---     people can see who they're meeting), the one-time "I'm 18 or older and
---     I've read the meet-safely tips" step, and no suspension.
+--   - To join you need: a confirmed email, the one-time "I'm 18 or older and
+--     I've read the meet-safely tips" step, and no suspension. Private
+--     profiles can join and host too: inside a meetup, the host and members
+--     see only a meetup card (display name, username, emoji avatar and
+--     interests), whatever the profile's privacy settings. The rest of the
+--     profile stays as private as it was.
 --   - To host, the account must also be at least 3 days old.
 --   - The host lets in every member. 2 to 8 people per room, host included.
 --   - Chat and member list are for members only.
@@ -1148,7 +1151,6 @@ returns text language sql stable security definer set search_path = '' as $$
     when uid is null then 'signed_out'
     when not exists (select 1 from auth.users u where u.id = uid and u.email_confirmed_at is not null) then 'email'
     when exists (select 1 from public.room_suspensions s where s.user_id = uid) then 'suspended'
-    when not exists (select 1 from public.profiles p where p.id = uid and p.profile_visibility <> 'private') then 'private_profile'
     when not exists (select 1 from public.profiles p where p.id = uid and p.meetups_confirmed_at is not null) then 'confirm'
     when hosting and exists (select 1 from public.profiles p where p.id = uid and p.created_at > now() - interval '3 days') then 'new_account'
     else null
